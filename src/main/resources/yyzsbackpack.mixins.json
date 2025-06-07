@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyz.yyzsbackpack.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BeaconScreenHandlerMixin",
+    "BrewingStandScreenHandlerMixin",
+    "CartographyTableScreenHandlerMixin",
+    "CraftingScreenHandlerMixin",
+    "EnchantmentScreenHandlerMixin",
+    "ForgingScreenHandlerMixin",
+    "FurnaceScreenHandlerMixin",
+    "Generic3x3ContainerScreenHandlerMixin",
+    "GenericContainerScreenHandlerMixin",
+    "GrindstoneScreenHandlerMixin",
+    "HopperScreenHandlerMixin",
+    "LoomScreenHandlerMixin",
+    "PlayerInventoryMixin",
+    "PlayerScreenHandlerMixin",
+    "ShulkerBoxScreenHandlerMixin",
+    "StonecutterScreenHandlerMixin"
+  ],
+  "client": [
+    "CreativeScreenHandlerMixin",
+    "HandledScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -36,9 +36,8 @@ public class PlayerInventoryMixin {
 	private int modifyLoopCount(DefaultedList<ItemStack> list) {
 		// 检查护甲槽位4（背包槽位）是否有背包物品
 		ItemStack backpackStack = armor.get(4);
-		if (backpackStack.getItem() instanceof BackpackItem) {
-			BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
-			// 基础槽位数 + 背包列数 * 9
+		if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
+            // 基础槽位数 + 背包列数 * 9
 			return 36 + backpackItem.getBackpackType().getColumns() * 9;
 		}
 		return 36; // 没有背包时返回基础槽位数

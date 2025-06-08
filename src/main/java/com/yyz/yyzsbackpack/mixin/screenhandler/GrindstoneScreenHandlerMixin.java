@@ -1,5 +1,6 @@
-package com.yyz.yyzsbackpack.mixin;
+package com.yyz.yyzsbackpack.mixin.screenhandler;
 
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.*;
@@ -9,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(CraftingScreenHandler.class)
-public abstract class CraftingScreenHandlerMixin extends ScreenHandler {
-    protected CraftingScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId) {
+@Mixin(GrindstoneScreenHandler.class)
+public abstract class GrindstoneScreenHandlerMixin extends ScreenHandler {
+    protected GrindstoneScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId) {
         super(type, syncId);
     }
 
 
     @Inject(method = "<init>(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/screen/ScreenHandlerContext;)V", at = @At("RETURN"))
-    private void addMoreRows(int syncId, PlayerInventory inventory, ScreenHandlerContext context, CallbackInfo ci) {
-        YyzsBackpack.addBackpack(this,inventory,176, 166, false);
-    }
+    private void addSlots(int syncId, PlayerInventory inventory, ScreenHandlerContext context, CallbackInfo ci) {
 
+        BackpackManager.addBackpackSlots(this,inventory, 176, 166, false);
+    }
 
 }

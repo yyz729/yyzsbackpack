@@ -1,5 +1,6 @@
-package com.yyz.yyzsbackpack.mixin;
+package com.yyz.yyzsbackpack.mixin.screenhandler;
 
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.*;
@@ -17,8 +18,8 @@ public abstract class CartographyTableScreenHandlerMixin extends ScreenHandler {
 
 
     @Inject(method = "<init>(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/screen/ScreenHandlerContext;)V", at = @At("RETURN"))
-    private void addMoreRows(int syncId, PlayerInventory inventory, ScreenHandlerContext context, CallbackInfo ci) {
+    private void addSlots(int syncId, PlayerInventory inventory, ScreenHandlerContext context, CallbackInfo ci) {
 
-        YyzsBackpack.addBackpack(this,inventory, 176, 166, false);
+        BackpackManager.addBackpackSlots(this,inventory, 176, 166, false);
     }
 }

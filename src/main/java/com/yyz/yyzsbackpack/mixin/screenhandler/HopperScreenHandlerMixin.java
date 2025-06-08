@@ -1,5 +1,6 @@
-package com.yyz.yyzsbackpack.mixin;
+package com.yyz.yyzsbackpack.mixin.screenhandler;
 
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -18,8 +19,8 @@ public abstract class HopperScreenHandlerMixin extends ScreenHandler {
 
 
     @Inject(method = "<init>(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/inventory/Inventory;)V", at = @At("RETURN"))
-    private void addMoreRows(int syncId, PlayerInventory inventory, Inventory inventory1, CallbackInfo ci) {
+    private void addSlots(int syncId, PlayerInventory inventory, Inventory inventory1, CallbackInfo ci) {
 
-        YyzsBackpack.addBackpack(this,inventory, 176, 133, false);
+        BackpackManager.addBackpackSlots(this,inventory, 176, 133, false);
     }
 }

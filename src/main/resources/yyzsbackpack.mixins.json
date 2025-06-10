@@ -4,6 +4,10 @@
   "package": "com.yyz.yyzsbackpack.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "PlayerInventoryMixin",
+    "PlayerScreenHandlerMixin",
+    "ScreenHandlerMixin",
+    "ServerPlayerEntityMixin",
     "screenhandler.BeaconScreenHandlerMixin",
     "screenhandler.BrewingStandScreenHandlerMixin",
     "screenhandler.CartographyTableScreenHandlerMixin",
@@ -16,14 +20,27 @@
     "screenhandler.GrindstoneScreenHandlerMixin",
     "screenhandler.HopperScreenHandlerMixin",
     "screenhandler.LoomScreenHandlerMixin",
-    "PlayerInventoryMixin",
-    "screenhandler.PlayerScreenHandlerMixin",
     "screenhandler.ShulkerBoxScreenHandlerMixin",
     "screenhandler.StonecutterScreenHandlerMixin"
   ],
   "client": [
-    "screenhandler.CreativeInventoryScreenMixin",
-    "HandledScreenMixin"
+    "CreativeInventoryScreenMixin",
+    "HandledScreenMixin",
+    "screen.AbstractFurnaceRenderConditionMixin",
+    "screen.BeaconRenderConditionMixin",
+    "screen.BrewingStandRenderConditionMixin",
+    "screen.CartographyTableRenderConditionMixin",
+    "screen.CraftingRenderConditionMixin",
+    "screen.EnchantmentRenderConditionMixin",
+    "screen.ForgingRenderConditionMixin",
+    "screen.Generic3X3ContainerRenderConditionMixin",
+    "screen.GenericContainerRenderConditionMixin",
+    "screen.GrindstoneRenderConditionMixin",
+    "screen.HopperRenderConditionMixin",
+    "screen.InventoryRenderConditionMixin",
+    "screen.LoomRenderConditionMixin",
+    "screen.ShulkerBoxRenderConditionMixin",
+    "screen.StonecutterRenderConditionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

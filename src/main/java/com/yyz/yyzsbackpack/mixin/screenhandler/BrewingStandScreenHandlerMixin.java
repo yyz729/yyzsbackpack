@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.*;
@@ -19,6 +18,6 @@ public abstract class BrewingStandScreenHandlerMixin extends ScreenHandler {
 
     @Inject(method = "<init>(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;)V", at = @At("RETURN"))
     private void addSlots(int syncId, PlayerInventory inventory, Inventory inventory1, PropertyDelegate propertyDelegate, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, 176, 166, false);
+        BackpackManager.addBackpackSlots(this,inventory, 176, 166);
     }
 }

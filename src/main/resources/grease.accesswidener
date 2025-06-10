@@ -3,3 +3,6 @@ accessWidener   v1  named
 accessible method net/minecraft/screen/ScreenHandler addSlot (Lnet/minecraft/screen/slot/Slot;)Lnet/minecraft/screen/slot/Slot;
 accessible class net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$CreativeSlot
 accessible field net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$CreativeSlot slot Lnet/minecraft/screen/slot/Slot;
+accessible field net/minecraft/screen/PlayerScreenHandler EMPTY_ARMOR_SLOT_TEXTURES [Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/screen/PlayerScreenHandler EQUIPMENT_SLOT_ORDER [Lnet/minecraft/entity/EquipmentSlot;
+accessible method net/minecraft/screen/PlayerScreenHandler onEquipStack (Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/EquipmentSlot;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V

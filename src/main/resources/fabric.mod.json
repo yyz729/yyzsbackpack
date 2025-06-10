@@ -4,17 +4,20 @@
   "version": "${version}",
   "name": "Yyz's Backpack",
   "description": "",
-  "authors": [],
-  "contact": {},
+  "authors": ["yyz729"],
+  "contact": {
+    "homepage": "https://modrinth.com/project/yyzs-backpack",
+    "sources": "https://github.com/yyz729/yyzsbackpack"
+  },
   "license": "MIT",
   "icon": "assets/yyzsbackpack/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.yyz.yyzsbackpack.client.YyzsBackpackClient"
+      "com.yyz.yyzsbackpack.client.BackpackClient"
     ],
     "main": [
-      "com.yyz.yyzsbackpack.YyzsBackpack"
+      "com.yyz.yyzsbackpack.Backpack"
     ]
   },
   "mixins": [

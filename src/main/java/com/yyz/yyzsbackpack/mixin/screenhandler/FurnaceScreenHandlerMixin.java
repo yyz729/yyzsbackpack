@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.RecipeType;
@@ -22,6 +21,6 @@ public abstract class FurnaceScreenHandlerMixin extends ScreenHandler {
 
     @Inject(method = "<init>(Lnet/minecraft/screen/ScreenHandlerType;Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/recipe/book/RecipeBookCategory;ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;)V", at = @At("RETURN"))
     private void addSlots(ScreenHandlerType type, RecipeType recipeType, RecipeBookCategory category, int syncId, PlayerInventory inventory, Inventory inventory1, PropertyDelegate propertyDelegate, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, 176, 166, false);
+        BackpackManager.addBackpackSlots(this,inventory, 176, 166);
     }
 }

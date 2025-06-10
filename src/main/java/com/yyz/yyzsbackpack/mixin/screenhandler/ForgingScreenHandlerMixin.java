@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.YyzsBackpack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.*;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +18,6 @@ public abstract class ForgingScreenHandlerMixin extends ScreenHandler {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addSlots(ScreenHandlerType type, int syncId, PlayerInventory inventory, ScreenHandlerContext context, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, 176, 166, false);
+        BackpackManager.addBackpackSlots(this,inventory, 176, 166);
     }
 }

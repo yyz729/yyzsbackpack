@@ -5,8 +5,8 @@ import net.minecraft.item.Item;
 public class BackpackItem extends Item {
     private final Backpack backpackType;
 
-    public BackpackItem(Backpack backpack) {
-        super(new Item.Settings().maxCount(1));
+    public BackpackItem(Backpack backpack, Settings settings) {
+        super(settings);
         this.backpackType = backpack;
     }
 

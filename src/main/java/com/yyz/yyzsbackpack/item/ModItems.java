@@ -1,23 +1,23 @@
 package com.yyz.yyzsbackpack.item;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import static com.yyz.yyzsbackpack.YyzsBackpack.MOD_ID;
+import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public class ModItems {
-    public static final BackpackItem WOOLEN_BACKPACK = new BackpackItem(Backpack.WOOLEN);
-    public static final BackpackItem STONE_BACKPACK = new BackpackItem(Backpack.STONE);
-    public static final BackpackItem IRON_BACKPACK = new BackpackItem(Backpack.IRON);
-    public static final BackpackItem GOLD_BACKPACK = new BackpackItem(Backpack.GOLD);
-    public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem(Backpack.DIAMOND);
-    public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem(Backpack.NETHERITE);
+    public static final BackpackItem WOOLEN_BACKPACK = new BackpackItem(Backpack.WOOLEN, new Item.Settings().maxCount(1));
+    public static final BackpackItem STONE_BACKPACK = new BackpackItem(Backpack.STONE, new Item.Settings().maxCount(1));
+    public static final BackpackItem IRON_BACKPACK = new BackpackItem(Backpack.IRON, new Item.Settings().maxCount(1));
+    public static final BackpackItem GOLD_BACKPACK = new BackpackItem(Backpack.GOLD, new Item.Settings().maxCount(1));
+    public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem(Backpack.DIAMOND, new Item.Settings().maxCount(1));
+    public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem(Backpack.NETHERITE, new Item.Settings().maxCount(1).fireproof());
 
     public static final ItemGroup GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(GOLD_BACKPACK))

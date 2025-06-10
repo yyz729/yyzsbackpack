@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
 
+import com.yyz.yyzsbackpack.BackpackRenderCondition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,14 +19,17 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HandledScreen.class)
-public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen {
+public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen{
     // 基础GUI字段
     @Shadow protected int backgroundWidth;
     @Shadow protected int backgroundHeight;
     @Shadow protected int x;
     @Shadow protected int y;
-    @Shadow @Final protected T handler;
 
+
+    @Shadow protected abstract boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button);
+
+    @Shadow @Final protected T handler;
     // 背包相关字段
     @Unique
     private PlayerInventory playerInventory;
@@ -44,8 +48,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Unique
     private int lastWindowHeight = -1;
 
+    @Unique
+    HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
+
     protected HandledScreenMixin(Text title) {
         super(title);
+
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -72,28 +80,32 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         BackpackManager.restoreOriginalScale(originalGuiScaleRef, wasAutoScaleRef);
     }
 
+
+
     @Override
     public void renderBackground(DrawContext context) {
         super.renderBackground(context);
+
         BackpackManager.renderBackpackBackground(context, x, y, backgroundWidth, backgroundHeight,
-                playerInventory, shouldRenderBackpackExtension,handler);
+                playerInventory, shouldRenderBackpackExtension);
     }
+
 
     @ModifyConstant(method = "onMouseClick(I)V", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPosition(int original) {
-        return 40 + 9 * 5 + 1;
+        return 40 + 9 * 6 + 1;
     }
 
     @ModifyConstant(method = "handleHotbarKeyPressed", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {
-        return 40 + 9 * 5 + 1;
+        return 40 + 9 * 6 + 1;
     }
 
 
 
     @Inject(method = "render", at = @At("HEAD"))
     private void checkBackpackStateChange(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        boolean currentState = BackpackManager.shouldRenderBackpackExtension(playerInventory);
+        boolean currentState = BackpackManager.shouldRenderBackpackExtension(handler,playerInventory);
         if (currentState != previousBackpackState) {
             shouldRenderBackpackExtension = currentState;
             previousBackpackState = currentState;
@@ -105,18 +117,18 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;isClickOutsideBounds(DDIII)Z"))
     private boolean handleMouseClicked(HandledScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return BackpackManager.isClickOutsideExtendedBounds(playerInventory,mouseX, mouseY, left, top, button,backgroundWidth,backgroundHeight,shouldRenderBackpackExtension, x, y);
+        return handler instanceof BackpackRenderCondition ?  BackpackManager.isClickOutsideExtendedBounds(playerInventory, isClickOutsideBounds(mouseX, mouseY, x, y, button), mouseX, mouseY, left, top, backgroundWidth, backgroundHeight, shouldRenderBackpackExtension) : isClickOutsideBounds(mouseX, mouseY, x, y, button);
     }
 
     @Redirect(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;isClickOutsideBounds(DDIII)Z"))
     private boolean handleMouseReleased(HandledScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return BackpackManager.isClickOutsideExtendedBounds(playerInventory, mouseX, mouseY, left, top, button, backgroundWidth, backgroundHeight, shouldRenderBackpackExtension,x,y);
+        return handler instanceof BackpackRenderCondition ?  BackpackManager.isClickOutsideExtendedBounds(playerInventory ,isClickOutsideBounds(mouseX, mouseY, x, y, button), mouseX, mouseY, left, top, backgroundWidth, backgroundHeight, shouldRenderBackpackExtension) : isClickOutsideBounds(mouseX, mouseY, x, y, button);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeFields(ScreenHandler handler, PlayerInventory inventory, Text title, CallbackInfo ci) {
         this.playerInventory = inventory;
-        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(playerInventory);
+        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(handler, playerInventory);
         this.previousBackpackState = shouldRenderBackpackExtension;
     }
 }

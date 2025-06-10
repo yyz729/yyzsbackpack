@@ -17,7 +17,7 @@ public abstract class BeaconScreenHandlerMixin extends ScreenHandler {
 
     @Inject(method = "<init>(ILnet/minecraft/inventory/Inventory;Lnet/minecraft/screen/PropertyDelegate;Lnet/minecraft/screen/ScreenHandlerContext;)V", at = @At("RETURN"))
     private void addSlots(int syncId, Inventory inventory, PropertyDelegate propertyDelegate, ScreenHandlerContext context, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, 230, 219, false);
+        BackpackManager.addBackpackSlots(this,inventory, 230, 219);
     }
 
 }

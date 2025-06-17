@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyz.yyzsbackpack.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.yyz.yyzsbackpack.mixin.ConditionalMixinPlugin",
+  "mixins": [
+    "CuriosContainerMixin",
+    "CuriosContainerV2Mixin"
+  ],
+  "client": [
+    "CuriosScreenMixin",
+    "BackpackInventoryScreenMixin",
+    "CuriosScreenV2Mixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "item.yyzsbackpack.woolen_backpack": "Woolen Backpack",
+  "item.yyzsbackpack.stone_backpack": "Stone Backpack",
+  "item.yyzsbackpack.iron_backpack": "Iron Backpack",
+  "item.yyzsbackpack.gold_backpack": "Gold Backpack",
+  "item.yyzsbackpack.diamond_backpack": "Diamond Backpack",
+  "item.yyzsbackpack.netherite_backpack": "Netherite Backpack",
+
+  "itemGroup.yyzsbackpack.title": "yyz's backpack"
+}

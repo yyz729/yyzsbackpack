@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "[48,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "yyzsbackpack"
+version = "${version}"
+displayName = "yyzsbackpack"
+authors = "yyz729"
+description = '''
+Modrinth https://modrinth.com/mod/yyzs-backpack
+Github https://github.com/yyz729/yyzsbackpack
+'''
+#logoFile = ""
+
+[[dependencies.yyzsbackpack]]
+modId = "forge"
+mandatory = true
+versionRange = "[48,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yyzsbackpack]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.2,1.20.5)"
+ordering = "NONE"
+side = "BOTH"
+

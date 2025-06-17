@@ -1,0 +1,49 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyz.yyzsbackpack.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.yyz.yyzsbackpack.mixin.ConditionalMixinPlugin",
+  "mixins": [
+    "PlayerInventoryMixin",
+    "PlayerScreenHandlerMixin",
+    "ScreenHandlerMixin",
+    "ServerPlayerEntityMixin",
+    "screenhandler.BeaconScreenHandlerMixin",
+    "screenhandler.BrewingStandScreenHandlerMixin",
+    "screenhandler.CartographyTableScreenHandlerMixin",
+    "screenhandler.CraftingScreenHandlerMixin",
+    "screenhandler.EnchantmentScreenHandlerMixin",
+    "screenhandler.ForgingScreenHandlerMixin",
+    "screenhandler.FurnaceScreenHandlerMixin",
+    "screenhandler.Generic3x3ContainerScreenHandlerMixin",
+    "screenhandler.GenericContainerScreenHandlerMixin",
+    "screenhandler.GrindstoneScreenHandlerMixin",
+    "screenhandler.HopperScreenHandlerMixin",
+    "screenhandler.LoomScreenHandlerMixin",
+    "screenhandler.ShulkerBoxScreenHandlerMixin",
+    "screenhandler.StonecutterScreenHandlerMixin"
+  ],
+  "client": [
+    "CreativeInventoryScreenMixin",
+    "HandledScreenMixin",
+    "screen.AbstractFurnaceRenderConditionMixin",
+    "screen.BeaconRenderConditionMixin",
+    "screen.BrewingStandRenderConditionMixin",
+    "screen.CartographyTableRenderConditionMixin",
+    "screen.CraftingRenderConditionMixin",
+    "screen.EnchantmentRenderConditionMixin",
+    "screen.ForgingRenderConditionMixin",
+    "screen.Generic3X3ContainerRenderConditionMixin",
+    "screen.GenericContainerRenderConditionMixin",
+    "screen.GrindstoneRenderConditionMixin",
+    "screen.HopperRenderConditionMixin",
+    "screen.InventoryRenderConditionMixin",
+    "screen.LoomRenderConditionMixin",
+    "screen.ShulkerBoxRenderConditionMixin",
+    "screen.StonecutterRenderConditionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

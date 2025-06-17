@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "yyzsbackpack",
+  "pattern": [
+    "LLL",
+    "LWL",
+    "LLL"
+  ],
+  "key": {
+    "L":  "minecraft:leather",
+    "W": "#minecraft:logs"
+  },
+  "result": {
+    "id": "yyzsbackpack:woolen_backpack",
+    "count": 1
+  }
+}

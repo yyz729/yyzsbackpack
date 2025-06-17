@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "yyzsbackpack",
+  "pattern": [
+    "LLL",
+    "LWL",
+    "LLL"
+  ],
+  "key": {
+    "L":  "minecraft:leather",
+    "W": "#minecraft:stone_crafting_materials"
+  },
+  "result": {
+    "id": "yyzsbackpack:stone_backpack",
+    "count": 1
+  }
+}

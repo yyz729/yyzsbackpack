@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "yyzsbackpack",
+  "version": "${version}",
+  "name": "yyzsbackpack",
+  "description": "",
+  "authors": [
+    "yyz729"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/yyzs-backpack",
+    "sources": "https://github.com/yyz729/yyzsbackpack"
+  },
+  "license": "MIT",
+  "icon": "assets/yyzsbackpack/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.yyz.yyzsbackpack.fabric.BackpackFabric"
+    ],
+    "client": [
+      "com.yyz.yyzsbackpack.fabric.client.BackpackFabricClient"
+    ]
+  },
+  "mixins": [
+    "yyzsbackpack.mixins.json"
+  ],
+  "accessWidener": "yyzsbackpack.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "1.21.5",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

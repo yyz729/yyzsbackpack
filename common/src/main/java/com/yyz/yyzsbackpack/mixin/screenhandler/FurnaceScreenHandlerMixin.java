@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
@@ -21,6 +22,6 @@ public abstract class FurnaceScreenHandlerMixin extends AbstractContainerMenu {
 
     @Inject(method = "<init>(Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/inventory/RecipeBookType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V", at = @At("RETURN"))
     private void addSlots(MenuType<?> menuType, RecipeType<?> recipeType, RecipeBookType recipeBookType, int i, Inventory inventory, Container container, ContainerData containerData, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
+        BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
     }
 }

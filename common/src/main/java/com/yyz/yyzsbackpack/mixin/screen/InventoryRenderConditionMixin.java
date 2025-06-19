@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
+import com.yyz.yyzsbackpack.ConditionalMixinHelper;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -28,6 +29,7 @@ public  abstract class InventoryRenderConditionMixin extends EffectRenderingInve
 
     @Inject(method = "renderBg", at = @At("TAIL"))
     private void renderForeground(GuiGraphics guiGraphics, float f, int i, int j, CallbackInfo ci) {
+        if(ConditionalMixinHelper.isModLoaded("trinkets")) return;
         guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
 
     }
@@ -37,9 +39,4 @@ public  abstract class InventoryRenderConditionMixin extends EffectRenderingInve
     private void addBackpackSlots(CallbackInfo ci) {
         ((BackpackRenderCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
     }
-
-//    @Inject(method = "<init>", at = @At("TAIL"))
-//    private void test(CallbackInfo ci) {
-//        ((BackpackRenderCondition)menu).setBackpackOffset(100,0);
-//    }
 }

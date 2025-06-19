@@ -1,10 +1,13 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.ConditionalMixinHelper;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -20,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
-
-
 
     @Shadow public abstract ItemStack getCarried();
 
@@ -87,18 +88,31 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
         this.equippackYOffset = y;
     }
 
+    @Unique
+    public Inventory inventory;
+    @Override
+    public Inventory getInventory() {
+        return this.inventory;
+    }
+
+    @Override
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
         AbstractContainerMenu handler = (AbstractContainerMenu)(Object) this;
+
         if (slotIndex < 0 || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem) return;
 
         if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
-        ItemStack back = player.getInventory().getItem(36).copy();
+        ItemStack back = ConditionalMixinHelper.getEquipped(player).copy();//player.getInventory().getItem(36).copy();
         ItemStack stack = getCarried().copy();
-        if(!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
+        if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
         BackpackManager.saveBackpackContents(player.getInventory(), back);
-        BackpackManager.restoreBackpackContents(player.getInventory(),stack);
-        player.getInventory().setItem(36,stack);
+        BackpackManager.restoreBackpackContents(player.getInventory(), stack);
+        Container container = ConditionalMixinHelper.getContainer(player);
+        container.setItem(ConditionalMixinHelper.getIndex(player), stack);
         setCarried(back);
     }
 }

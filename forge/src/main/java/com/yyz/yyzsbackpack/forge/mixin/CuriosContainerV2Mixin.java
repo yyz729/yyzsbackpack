@@ -1,20 +1,12 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
-import com.mojang.datafixers.util.Pair;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.resources.ResourceLocation;
+import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -42,8 +34,8 @@ public abstract class CuriosContainerV2Mixin extends AbstractContainerMenu{
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
-        BackpackManager.addEquipmentSlot(this,inventory);
+        BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
+        BackpackManager.addEquippackSlot(this,inventory);
     }
 
 }

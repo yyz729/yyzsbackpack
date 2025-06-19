@@ -46,11 +46,19 @@ subprojects {
         maven {
             url "https://www.cursemaven.com"
         }
+
+        maven { url 'https://maven.wispforest.io/releases' }
+        maven { url 'https://maven.su5ed.dev/releases' }
+        maven { url 'https://maven.fabricmc.net' }
+
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
+
+        modImplementation("io.wispforest:accessories-common:${project.accessories_version}")
+
     }
 
     java {

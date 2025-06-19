@@ -32,6 +32,10 @@ public class ConditionalMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.BackpackInventoryScreenMixin")) {
             return ConditionalMixinHelper.isModLoaded("quark");
         }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesMenuMixin")) {
+            return ConditionalMixinHelper.isModLoaded("accessories");
+        }
+
         return true; // 默认启用其他 Mixin
 
     }

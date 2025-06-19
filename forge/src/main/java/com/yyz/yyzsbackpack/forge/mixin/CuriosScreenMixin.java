@@ -30,10 +30,10 @@ public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<C
         int panelWidth = 12;
 
         if (((CuriosContainer)this.menu).hasCosmeticColumn()) {
-            panelWidth += 40;
+            panelWidth += 40/2;
         }
         if (hasScrollBar) {
-            panelWidth += 30;
+            panelWidth += 30/2;
         }
         condition.setBackpackOffset(-panelWidth, 0);
 

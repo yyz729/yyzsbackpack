@@ -1,16 +1,12 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.mojang.datafixers.util.Pair;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.resources.ResourceLocation;
+import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,8 +36,8 @@ public abstract class PlayerScreenHandlerMixin extends AbstractContainerMenu {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void addSlots(Inventory inventory, boolean onServer, Player owner, CallbackInfo info) {
 
-        BackpackManager.addBackpackSlots(this,inventory);
-        BackpackManager.addEquipmentSlot(this,inventory);
+        BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
+        BackpackManager.addEquippackSlot(this,inventory);
     }
 
 

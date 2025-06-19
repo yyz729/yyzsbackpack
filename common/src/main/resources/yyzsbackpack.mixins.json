@@ -9,6 +9,7 @@
     "PlayerScreenHandlerMixin",
     "ScreenHandlerMixin",
     "ServerPlayerEntityMixin",
+    "compat.AccessoriesMenuMixin",
     "screenhandler.BeaconScreenHandlerMixin",
     "screenhandler.BrewingStandScreenHandlerMixin",
     "screenhandler.CartographyTableScreenHandlerMixin",

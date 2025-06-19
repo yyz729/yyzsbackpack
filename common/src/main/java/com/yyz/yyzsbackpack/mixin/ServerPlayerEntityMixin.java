@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.ConditionalMixinHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -19,7 +20,7 @@ public abstract class ServerPlayerEntityMixin {
         ServerPlayer player = (ServerPlayer) (Object) this;
         Inventory inventory = player.getInventory();
 
-        ItemStack stack = inventory.getItem(36);
+        ItemStack stack = ConditionalMixinHelper.getEquipped(player);
         if(stack.getItem() instanceof BackpackItem)
             // 保存背包内容并清空槽位
             BackpackManager.saveBackpackContents(inventory,stack);

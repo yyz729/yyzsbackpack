@@ -1,18 +1,36 @@
 package com.yyz.yyzsbackpack.fabric;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.ConditionalMixinHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoriesContainer;
+import io.wispforest.accessories.api.slot.SlotEntryReference;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
@@ -54,5 +72,56 @@ public final class BackpackFabric implements ModInitializer {
     public void onInitialize() {
         register();
         Backpack.init();
+
+    }
+
+    public static ItemStack getEquipped(Player player) {
+        if (ConditionalMixinHelper.isModLoaded("trinkets")) {
+            return TrinketsApi.getTrinketComponent(player)
+                    .map(trinketComponent -> {
+                        // 使用 Predicate 检查是否为 BackpackItem
+                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                stack -> stack.getItem() instanceof BackpackItem
+                        );
+                        return !list.isEmpty() ? list.get(0).getB() : ItemStack.EMPTY;
+                    })
+                    .orElse(ItemStack.EMPTY);
+        }
+        // 检查背包槽（索引36）
+        return player.getInventory().getItem(36);
+    }
+
+    public static Container getContainer(Player player) {
+        if (ConditionalMixinHelper.isModLoaded("trinkets")) {
+            return TrinketsApi.getTrinketComponent(player)
+                    .map(trinketComponent -> {
+                        // 使用 Predicate 检查 BackpackItem
+                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                stack -> stack.getItem() instanceof BackpackItem
+                        );
+                        return !list.isEmpty()
+                                ? list.get(0).getA().inventory()  // 返回背包容器
+                                : player.getInventory();         // 未找到时返回玩家库存
+                    })
+                    .orElse(player.getInventory());
+        }
+        return player.getInventory();
+    }
+
+    public static int getIndex(Player player) {
+        if (ConditionalMixinHelper.isModLoaded("trinkets")) {
+            return TrinketsApi.getTrinketComponent(player)
+                    .map(trinketComponent -> {
+                        // 使用 Predicate 检查 BackpackItem
+                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                stack -> stack.getItem() instanceof BackpackItem
+                        );
+                        return !list.isEmpty()
+                                ? list.get(0).getA().index()  // 返回槽位索引
+                                : 36;                         // 未找到时返回默认值
+                    })
+                    .orElse(36);
+        }
+        return 36;
     }
 }

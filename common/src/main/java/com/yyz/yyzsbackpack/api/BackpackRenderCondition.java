@@ -1,5 +1,7 @@
 package com.yyz.yyzsbackpack.api;
 
+import net.minecraft.world.entity.player.Inventory;
+
 public interface BackpackRenderCondition {
 
     boolean shouldRenderBackpack() ;
@@ -20,4 +22,8 @@ public interface BackpackRenderCondition {
     int getEquippackYOffset();
 
     void setEquippackOffset(int x, int y);
+
+    Inventory getInventory();
+
+    void setInventory(Inventory inventory);
 }

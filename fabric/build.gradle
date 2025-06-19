@@ -29,7 +29,7 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
 
-//    modImplementation "dev.emi:trinkets:$rootProject.trinkets_version"
+    modImplementation "dev.emi:trinkets:$rootProject.trinkets_version"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')

@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChestMenu.class)
@@ -28,6 +29,11 @@ public abstract class GenericContainerScreenHandlerMixin extends AbstractContain
     private void addSlots(MenuType<?> menuType, int i, Inventory inventory, Container container, int j, CallbackInfo ci) {
         BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());//114+ handler.getRowCount() * 18
 
+    }
+
+    @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",ordinal = 0), index = 3)
+    private boolean injected(boolean par4) {
+        return false;
     }
 
 }

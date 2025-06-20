@@ -4,6 +4,7 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 
+import mezz.jei.gui.startup.JeiEventHandlers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -94,6 +95,7 @@ public static Container getContainer(Player player) {
                 }
             }
         }
+
     }
     return player.getInventory();
 }

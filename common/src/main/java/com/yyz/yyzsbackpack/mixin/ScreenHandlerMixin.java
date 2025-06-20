@@ -33,6 +33,8 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Shadow public abstract Slot getSlot(int i);
 
+    @Shadow protected abstract boolean moveItemStackTo(ItemStack arg, int k, int l, boolean bl);
+
     @Unique
     private boolean shouldRenderBackpack = false;
 
@@ -114,5 +116,106 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
         Container container = BackpackHelper.getContainer(player);
         container.setItem(BackpackHelper.getIndex(player), stack);
         setCarried(back);
+    }
+
+
+    @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
+    private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
+        // 只处理 PICKUP 类型的右键点击 + Shift
+        if (clickType == ClickType.QUICK_MOVE && j == 1) {
+            if (i < 0) {
+                ci.cancel();
+                return;
+            }
+
+            Slot slot = (Slot)this.slots.get(i);
+            if (!slot.mayPickup(player)) {
+                ci.cancel();
+                return;
+            }
+
+            // 如果是背包槽位，转移到快捷栏
+            if (slot instanceof BackPackSlot) {
+                for (ItemStack itemStack = this.quickMoveToHotbar(player, i);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = this.quickMoveToHotbar(player, i)) {
+                }
+                ci.cancel();
+                return;
+            }
+
+            // 如果是原版槽位，转移到背包
+            if (i >= 9 && i < 45) { // 物品栏和快捷栏槽位
+                for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = this.quickMoveToBackpack(player, i)) {
+                }
+                ci.cancel();
+            }
+        }
+    }
+
+
+    @Unique
+    private ItemStack quickMoveToHotbar(Player player, int slotIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotIndex);
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 尝试移动到快捷栏 (36-44)
+            if (!this.moveItemStackTo(slotStack, 36, 45, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
+    }
+
+    @Unique
+    private ItemStack quickMoveToBackpack(Player player, int slotIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotIndex);
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 查找背包槽位起始索引
+            int backpackStart = -1;
+            for (int i = 0; i < this.slots.size(); i++) {
+                if (this.slots.get(i) instanceof BackPackSlot) {
+                    backpackStart = i;
+                    break;
+                }
+            }
+
+            if (backpackStart == -1) {
+                return ItemStack.EMPTY;
+            }
+
+            // 尝试移动到背包槽位
+            if (!this.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
     }
 }

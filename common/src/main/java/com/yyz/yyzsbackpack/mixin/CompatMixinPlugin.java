@@ -32,14 +32,20 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackHelper.isModLoaded("curios");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CurioSlotMixin")) {
-            return BackpackHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios") ;
         }
-
-
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.BackpackInventoryScreenMixin")) {
             return BackpackHelper.isModLoaded("quark");
         }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.VanillaPluginMixin")) {
+            return BackpackHelper.isModLoaded("jei");
+        }
+
+
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesMenuMixin")) {
+            return BackpackHelper.isModLoaded("accessories");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesBasedSlotMixin")) {
             return BackpackHelper.isModLoaded("accessories");
         }
 

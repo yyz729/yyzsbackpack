@@ -51,6 +51,8 @@ subprojects {
         maven { url 'https://maven.su5ed.dev/releases' }
         maven { url 'https://maven.fabricmc.net' }
 
+
+
     }
 
     dependencies {

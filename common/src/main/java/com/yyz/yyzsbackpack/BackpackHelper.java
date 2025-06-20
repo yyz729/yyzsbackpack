@@ -3,10 +3,9 @@ package com.yyz.yyzsbackpack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
-public class ConditionalMixinHelper {
+public class BackpackHelper {
     @ExpectPlatform
     public static boolean isModLoaded(String modId) {
         throw new AssertionError();

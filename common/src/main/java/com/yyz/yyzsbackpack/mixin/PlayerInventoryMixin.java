@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.yyz.yyzsbackpack.ConditionalMixinHelper;
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
@@ -44,7 +44,7 @@ public class PlayerInventoryMixin {
 
 
 		// 检查护甲槽位4（背包槽位）是否有背包物品
-		ItemStack backpackStack = ConditionalMixinHelper.getEquipped(player);
+		ItemStack backpackStack = BackpackHelper.getEquipped(player);
 		if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
 			// 基础槽位数 + 背包列数 * 9
 			return 36 + backpackItem.getBackpackType().getColumns() * 9;

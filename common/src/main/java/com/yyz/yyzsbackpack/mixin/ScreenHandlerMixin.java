@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.yyz.yyzsbackpack.ConditionalMixinHelper;
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
@@ -106,13 +106,13 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
         if (slotIndex < 0 || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem) return;
 
         if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
-        ItemStack back = ConditionalMixinHelper.getEquipped(player).copy();//player.getInventory().getItem(36).copy();
+        ItemStack back = BackpackHelper.getEquipped(player).copy();//player.getInventory().getItem(36).copy();
         ItemStack stack = getCarried().copy();
         if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
         BackpackManager.saveBackpackContents(player.getInventory(), back);
         BackpackManager.restoreBackpackContents(player.getInventory(), stack);
-        Container container = ConditionalMixinHelper.getContainer(player);
-        container.setItem(ConditionalMixinHelper.getIndex(player), stack);
+        Container container = BackpackHelper.getContainer(player);
+        container.setItem(BackpackHelper.getIndex(player), stack);
         setCarried(back);
     }
 }

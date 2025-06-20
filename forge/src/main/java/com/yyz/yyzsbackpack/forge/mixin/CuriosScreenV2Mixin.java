@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -33,7 +34,8 @@ public abstract class CuriosScreenV2Mixin extends EffectRenderingInventoryScreen
 
     @Inject(method = "renderBg", at = @At("TAIL"))
     private void renderForeground(GuiGraphics guiGraphics, float f, int i, int j, CallbackInfo ci) {
-        guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
+//        BackpackManager.renderEquippackSlot(guiGraphics,leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2);
+//        guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
 
     }
 }

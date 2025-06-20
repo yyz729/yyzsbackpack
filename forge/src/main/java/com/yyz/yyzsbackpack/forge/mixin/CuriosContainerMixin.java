@@ -34,6 +34,6 @@ public abstract class CuriosContainerMixin extends AbstractContainerMenu{
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
         BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
-        BackpackManager.addEquippackSlot(this,inventory);
+//        BackpackManager.addEquippackSlot(this,inventory);
     }
 }

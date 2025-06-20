@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.client.gui.CuriosScreen;
 import top.theillusivec4.curios.common.inventory.container.CuriosContainer;
 
@@ -27,15 +28,18 @@ public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<C
     private void shouldRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         BackpackRenderCondition condition = (BackpackRenderCondition) menu;
         condition.setRenderBackpack(true);
-        int panelWidth = 12;
 
-        if (((CuriosContainer)this.menu).hasCosmeticColumn()) {
-            panelWidth += 40/2;
-        }
-        if (hasScrollBar) {
-            panelWidth += 30/2;
-        }
-        condition.setBackpackOffset(-panelWidth, 0);
+        CuriosApi.getCuriosHelper().getCuriosHandler(menu.player).ifPresent((handler) -> {
+            int panelWidth = handler.getVisibleSlots() >0?26:0;
+
+            if (((CuriosContainer)this.menu).hasCosmeticColumn()) {
+                panelWidth += 40/2;
+            }
+            if (hasScrollBar) {
+                panelWidth += 30/2;
+            }
+            condition.setBackpackOffset(-panelWidth, 0);
+        });
 
     }
 

@@ -72,7 +72,7 @@ public class BackpackManager {
                 screenHandler.addSlot(new BackPackSlot(inventory, row + (column + 1) * 9 + 27 + 1 ,  0 , 0) {
                     @Override
                     public boolean isActive() {
-                        ItemStack backpackStack = inventory.getItem(36);
+                        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
                         if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) {
                             return false;
                         }
@@ -90,7 +90,7 @@ public class BackpackManager {
                     }
                     @Override
                     public boolean mayPlace(ItemStack stack) {
-                        ItemStack backpackStack = inventory.getItem(36);
+                        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
                         boolean canPlace = !(stack.getItem() instanceof BackpackItem) &&
                                 backpackStack.getItem() instanceof BackpackItem &&
                                 super.mayPlace(stack);
@@ -110,7 +110,12 @@ public class BackpackManager {
             }
         }
     }
+    public static void renderEquippackSlot(GuiGraphics guiGraphics, int x, int y){
+        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
+        guiGraphics.blit(SLOT_TEXTURE,  x,  y, 0, 0, 18, 18, 18, 18);
+    }
     public static void addEquipmentSlot(AbstractContainerMenu screenHandler, Inventory inventory) {
+        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
         screenHandler.addSlot(new EquipPackSlot(inventory, 36, 8 + 69 ,  8 + 18 * 2) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -200,7 +205,7 @@ public class BackpackManager {
         if (!shouldRenderBackpack) return;
 
         int columns = 0;
-        ItemStack stack = inventory.getItem(36);
+        ItemStack stack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
         if (stack.getItem() instanceof BackpackItem backpackItem) {
             columns = backpackItem.getBackpackType().getColumns();
         }
@@ -222,7 +227,7 @@ public class BackpackManager {
         // 检查玩家是否有背包
         if (inventory != null && ((BackpackRenderCondition)handler).shouldRenderBackpack()) {
 
-            ItemStack backpackStack = inventory.getItem(36);
+            ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
 
             return backpackStack.getItem() instanceof BackpackItem;
         }
@@ -244,7 +249,7 @@ public class BackpackManager {
 
         if (shouldRenderBackpackExtension) {
             int columns = 0;
-            ItemStack backpackStack = playerInventory.getItem(36);
+            ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
             if (backpackStack.getItem() instanceof BackpackItem backpack) {
                 columns = backpack.getBackpackType().getColumns();
             }

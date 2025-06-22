@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "com.yyz.yyzsbackpack.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.yyz.yyzsbackpack.mixin.ConditionalMixinPlugin",
+  "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
     "PlayerInventoryMixin",
     "PlayerScreenHandlerMixin",

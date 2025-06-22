@@ -33,6 +33,17 @@ subprojects {
             name = "Curios"
             url = uri("https://maven.theillusivec4.top/")
         }
+        maven {
+            url "https://www.cursemaven.com"
+        }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/"
+        }
+        maven {
+            name = "Ladysnake Libs"
+            url = 'https://maven.ladysnake.org/releases'
+        }
     }
 
     dependencies {

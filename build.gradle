@@ -42,11 +42,20 @@ subprojects {
             name = "Curios"
             url = uri("https://maven.theillusivec4.top/")
         }
+
+        maven {
+            url "https://www.cursemaven.com"
+        }
+
+        maven { url 'https://maven.wispforest.io/releases' }
+        maven { url 'https://maven.su5ed.dev/releases' }
+        maven { url 'https://maven.fabricmc.net' }
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
+
     }
 
     java {

@@ -10,4 +10,6 @@ public class BackpackPlatformImpl {
     public static DataComponentType<List<ItemStack>> getBackpackItemsComponent() {
         return BackpackNeoForge.BACKPACK_ITEMS_COMPONENT.get();
     }
+
+
 }

@@ -40,6 +40,9 @@ dependencies {
 
     modImplementation "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version"
     compileOnly "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version:api"
+
+    modImplementation   ("curse.maven:jei-238222:6614392")
+    modImplementation "curse.maven:accessories-938917:6549393"
 }
 
 processResources {

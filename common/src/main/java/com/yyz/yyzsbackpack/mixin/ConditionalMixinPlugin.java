@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.yyz.yyzsbackpack.ConditionalMixinHelper;
+import com.yyz.yyzsbackpack.BackpackHelper;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -13,14 +13,27 @@ public class ConditionalMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         // 当需要应用 SomeMixin 时，检查目标模组是否加载
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.CreativeInventoryScreenMixin")) {
-            return !ConditionalMixinHelper.isModLoaded("trinkets");
+            return !BackpackHelper.isModLoaded("trinkets");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.SurvivalTrinketSlot")) {
+            return BackpackHelper.isModLoaded("trinkets");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerMixin")) {
-            return ConditionalMixinHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosScreenMixin")) {
-            return ConditionalMixinHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios");
         }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CurioSlotMixin")) {
+            return BackpackHelper.isModLoaded("curios") ;
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.AccessoriesMenuMixin")) {
+            return BackpackHelper.isModLoaded("accessories");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.AccessoriesMenuMixin")) {
+            return BackpackHelper.isModLoaded("accessories");
+        }
+
         return true; // 默认启用其他 Mixin
 
     }

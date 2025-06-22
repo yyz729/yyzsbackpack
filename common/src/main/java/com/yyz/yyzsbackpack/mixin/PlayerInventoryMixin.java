@@ -1,6 +1,8 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +45,7 @@ public class PlayerInventoryMixin {
 
 
 		// 检查护甲槽位4（背包槽位）是否有背包物品
-		ItemStack backpackStack = items.get(36);
+		ItemStack backpackStack = BackpackHelper.getEquipped(player);
 		if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
 			// 基础槽位数 + 背包列数 * 9
 			return 36 + backpackItem.getBackpackType().getColumns() * 9;

@@ -15,22 +15,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InventoryMenu.class)
+@Mixin(value = InventoryMenu.class,priority = 999)
 public abstract class PlayerScreenHandlerMixin extends AbstractContainerMenu {
 
 
     protected PlayerScreenHandlerMixin(@Nullable MenuType<?> menuType, int i) {
-        super(menuType, i);
+        super(menuType, 0);
     }
 
     @ModifyConstant(method = "<init>", constant = @Constant(intValue = 39))
     private int armorIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + 55;
     }
 
     @ModifyConstant(method = "<init>", constant = @Constant(intValue = 40))
     private int offhandIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + 55;
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))

@@ -5,6 +5,8 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import dev.emi.trinkets.SurvivalTrinketSlot;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(SurvivalTrinketSlot.class)
-public abstract class SurvivalTrinketSlotMixin  extends Slot {
+public abstract class SurvivalTrinketSlotMixin extends Slot {
 
 
     public SurvivalTrinketSlotMixin(Container container, int i, int j, int k) {

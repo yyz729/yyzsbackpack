@@ -21,6 +21,9 @@
     ],
     "client": [
       "com.yyz.yyzsbackpack.fabric.client.BackpackFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "com.yyz.yyzsbackpack.fabric.BackpackJeiPlugin"
     ]
   },
   "mixins": [

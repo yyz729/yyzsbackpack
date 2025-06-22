@@ -6,6 +6,7 @@ import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -103,12 +104,10 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
     }
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
-        AbstractContainerMenu handler = (AbstractContainerMenu)(Object) this;
-
         if (slotIndex < 0 || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem) return;
 
         if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
-        ItemStack back = BackpackHelper.getEquipped(player).copy();//player.getInventory().getItem(36).copy();
+        ItemStack back = BackpackHelper.getEquipped(player).copy();
         ItemStack stack = getCarried().copy();
         if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
         BackpackManager.saveBackpackContents(player.getInventory(), back);

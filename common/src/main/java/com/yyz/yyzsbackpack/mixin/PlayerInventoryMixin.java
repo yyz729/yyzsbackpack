@@ -28,7 +28,7 @@ public class PlayerInventoryMixin {
 
 	@ModifyArg(method = "<init>", index = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/core/NonNullList;withSize(ILjava/lang/Object;)Lnet/minecraft/core/NonNullList;"))
 	private int modifyMainSize(int size) {
-		return size + 9 * 6 + 1;
+		return 91;
 	}
 
 

@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractContainerScreen.class)
+@Mixin(value = AbstractContainerScreen.class)
 public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extends Screen {
     // 基础GUI字段
     @Shadow protected int imageWidth;
@@ -129,12 +129,6 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         }
 
         if (menu instanceof BackpackRenderCondition) {
-//            // 获取当前背包列数
-//            int columns = 0;
-//            ItemStack stack = playerInventory.getItem(36);
-//            if (stack.getItem() instanceof BackpackItem backpackItem) {
-//                columns = backpackItem.getBackpackType().getColumns();
-//            }
 
 
             int baseHeight = imageHeight;

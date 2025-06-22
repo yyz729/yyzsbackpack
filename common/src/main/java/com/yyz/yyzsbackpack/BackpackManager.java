@@ -67,7 +67,7 @@ public class BackpackManager {
             for (int row = 0; row < 9; row++) {
                 final int columnIndex = column;
 
-                screenHandler.addSlot(new BackPackSlot(container, row + (column + 1) * 9 + 27 + 1 ,  0 , 0) {
+                screenHandler.addSlot(new BackPackSlot(container, row + (column + 1) * 9 + 27 + 1 ,  - 25 - column * 18 , 3 + row * 18) {
                     @Override
                     public boolean isActive() {
                         ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
@@ -101,7 +101,8 @@ public class BackpackManager {
                             }
                         }
 
-                        return canPlace;            }
+                        return canPlace;
+                    }
                 });
 
             }

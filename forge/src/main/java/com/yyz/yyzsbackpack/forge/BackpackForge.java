@@ -55,13 +55,6 @@ public final class BackpackForge {
     public static final RegistryObject<Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack", () -> new BackpackItem(BackpackMaterial.WOOLEN, new Item.Properties().stacksTo(1)));
 
 
-//    public static ItemStack getEquipped(Player player) {
-//        return player.getInventory().getItem(36);
-//    }
-
-//    public static Container getContainer(Player player) {
-//        return player.getInventory();
-//    }
 
     public static ItemStack getEquipped(Player player) {
         if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
@@ -99,9 +92,6 @@ public static Container getContainer(Player player) {
     }
     return player.getInventory();
 }
-//    public static int getIndex(Player player) {
-//       return 36;
-//    }
 
     public static int getIndex(Player player) {
         if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {

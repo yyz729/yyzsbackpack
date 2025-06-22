@@ -29,13 +29,13 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
     }
 
     @Override
-    public void setByPlayer(@NotNull ItemStack newBackpackStack) {
+    public void set(@NotNull ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();
         if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
             BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
         }
 
-        super.setByPlayer(newBackpackStack);
+        super.set(newBackpackStack);
 
         if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
             BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);

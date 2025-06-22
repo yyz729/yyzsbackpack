@@ -19,6 +19,7 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackHelper.isModLoaded("trinkets");
         }
 
+
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerMixin")) {
             return BackpackHelper.isModLoaded("curios");
         }
@@ -37,10 +38,9 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.BackpackInventoryScreenMixin")) {
             return BackpackHelper.isModLoaded("quark");
         }
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.VanillaPluginMixin")) {
-            return BackpackHelper.isModLoaded("jei");
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.TotemOfHoldingEntity")) {
+            return BackpackHelper.isModLoaded("quark");
         }
-
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesMenuMixin")) {
             return BackpackHelper.isModLoaded("accessories");

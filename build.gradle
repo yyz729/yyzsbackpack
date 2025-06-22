@@ -34,11 +34,30 @@ subprojects {
             name = "Illusive Soulworks maven"
             url = "https://maven.theillusivec4.top/"
         }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/"
+        }
+        maven {
+            name = "Ladysnake Libs"
+            url = 'https://maven.ladysnake.org/releases'
+        }
+
+        maven { url 'https://maven.wispforest.io/releases' }
+        maven { url 'https://maven.su5ed.dev/releases' }
+        maven { url 'https://maven.fabricmc.net' }
+
+        maven {
+            url "https://www.cursemaven.com"
+        }
+
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
+
+        modImplementation("io.wispforest:accessories-common:${project.accessories_version}")
     }
 
     java {

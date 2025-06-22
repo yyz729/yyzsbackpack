@@ -46,6 +46,7 @@ dependencies {
     compileOnly  "top.theillusivec4.curios:curios-forge:$rootProject.curios_version:api"
     // Use the full Curios API jar at runtime
     modImplementation "top.theillusivec4.curios:curios-forge:$rootProject.curios_version"
+    modImplementation   ("curse.maven:jei-238222:5846847")
 }
 
 processResources {

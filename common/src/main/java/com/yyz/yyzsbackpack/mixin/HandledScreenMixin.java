@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
@@ -113,9 +114,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Inject(
             method = "render",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
-                    shift = At.Shift.BEFORE
+                    value = "HEAD"
             )
     )
     private void updateBackpackSlotsPositionBeforeRender(
@@ -128,12 +127,6 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         }
 
         if (menu instanceof BackpackRenderCondition) {
-            // 获取当前背包列数
-            int columns = 0;
-            ItemStack stack = playerInventory.getItem(36);
-            if (stack.getItem() instanceof BackpackItem backpackItem) {
-                columns = backpackItem.getBackpackType().getColumns();
-            }
 
 
             int baseHeight = imageHeight;

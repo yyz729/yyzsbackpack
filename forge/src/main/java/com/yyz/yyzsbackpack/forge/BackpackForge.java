@@ -5,15 +5,24 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotResult;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+
+import java.util.Optional;
 //import org.violetmoon.quark.addons.oddities.inventory.BackpackMenu;
 //import org.violetmoon.quark.base.Quark;
 
@@ -48,5 +57,61 @@ public final class BackpackForge {
         TABS.register(modEventBus);
         ITEMS.register(modEventBus);
         Backpack.init();
+    }
+
+
+    public static ItemStack getEquipped(Player player) {
+        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
+            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
+            if (curiosHandler.isPresent()) {
+                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                        stack -> stack.getItem() instanceof BackpackItem
+                );
+                if (backpackSlot.isPresent()) {
+                    return backpackSlot.get().stack();
+                }
+            }
+        }
+        return player.getInventory().getItem(36);
+    }
+
+    public static Container getContainer(Player player) {
+        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
+            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
+            if (curiosHandler.isPresent()) {
+                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                        stack -> stack.getItem() instanceof BackpackItem
+                );
+                if (backpackSlot.isPresent()) {
+                    String slotId = backpackSlot.get().slotContext().identifier();
+                    int slotIndex = backpackSlot.get().slotContext().index();
+
+                    Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
+                    if (stacksHandler.isPresent()) {
+                        return new CuriosContainerAdapter(stacksHandler.get().getStacks(), slotIndex);
+                    }
+                }
+            }
+
+        }
+        return player.getInventory();
+    }
+
+    public static int getIndex(Player player) {
+        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
+            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
+            if (curiosHandler.isPresent()) {
+                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                        stack -> stack.getItem() instanceof BackpackItem
+                );
+                if (backpackSlot.isPresent()) {
+                    CuriosContainerAdapter container = (CuriosContainerAdapter) getContainer(player);
+                    if (container != null) {
+                        return container.getBackpackSlotIndex();
+                    }
+                }
+            }
+        }
+        return 36;
     }
 }

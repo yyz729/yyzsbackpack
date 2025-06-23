@@ -1,0 +1,10 @@
+{
+  "item.yyzsbackpack.woolen_backpack": "Mochila de lana",
+  "item.yyzsbackpack.stone_backpack": "Mochila de piedra",
+  "item.yyzsbackpack.iron_backpack": "Mochila de hierro",
+  "item.yyzsbackpack.gold_backpack": "Mochila de oro",
+  "item.yyzsbackpack.diamond_backpack": "Mochila de diamante",
+  "item.yyzsbackpack.netherite_backpack": "Mochila de netherita",
+
+  "itemGroup.yyzsbackpack.title": "yyz's backpacks"
+}

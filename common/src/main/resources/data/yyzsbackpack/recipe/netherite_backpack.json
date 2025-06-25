@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "yyzsbackpack",
+  "pattern": [
+    "LLL",
+    "LNL",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "yyzsbackpack:netherite_backpack",
+    "count": 1
+  }
+}

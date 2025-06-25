@@ -1,13 +1,18 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
 import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import me.shedaniel.math.Rectangle;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -19,8 +24,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = AbstractContainerScreen.class)
-public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extends Screen {
+import java.util.Collections;
+import java.util.List;
+
+@Mixin(value = AbstractContainerScreen.class,priority = 1001)
+public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extends Screen implements BackpackExclusionZoneProvider {
     // 基础GUI字段
     @Shadow protected int imageWidth;
     @Shadow protected int imageHeight;
@@ -168,6 +176,43 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             );
         }
     }
+    @Override
+    public List<Rect2i> getBackpackExclusionZones() { // 修改返回类型为 Rect2i
+        // 获取偏移值
+        int xOffset = ((BackpackRenderCondition) menu).getBackpackXOffset();
+        int yOffset = ((BackpackRenderCondition) menu).getBackpackYOffset();
 
+        if (!shouldRenderBackpackExtension) {
+            return Collections.emptyList();
+        }
+
+        // 渲染背包时的完整计算
+        int columns = 0;
+        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
+        if (backpackStack.getItem() instanceof BackpackItem backpack) {
+            columns = backpack.getBackpackType().getColumns();
+        }
+
+        // 基础尺寸
+        int baseWidth = 14 + columns * 18;
+        int height = 174;
+
+        // 计算位置
+        int x = leftPos - baseWidth - 1 + xOffset;
+        int y = topPos + (imageHeight - height) / 2 + yOffset;
+
+        // 计算实际宽度（考虑偏移）
+        int actualWidth = baseWidth;
+        if (xOffset != 0) {
+            if (xOffset > 0) {
+                actualWidth += xOffset;
+            } else {
+                actualWidth -= xOffset;
+            }
+            actualWidth = Math.max(actualWidth, baseWidth);
+        }
+
+        return Collections.singletonList(new Rect2i(x, y, actualWidth, height)); // 使用 Rect2i
+    }
 
 }

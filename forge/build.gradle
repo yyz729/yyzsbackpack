@@ -47,7 +47,9 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
     modImplementation   ("curse.maven:jei-238222:4597711")
-
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:$rootProject.rei_version"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rootProject.rei_version"
+    modImplementation "curse.maven:inventory-profiles-next-495267:6095062"
 }
 
 processResources {

@@ -31,11 +31,4 @@ public abstract class CuriosScreenV2Mixin extends EffectRenderingInventoryScreen
         condition.setBackpackOffset(-panelWidth, 0);
 
     }
-
-    @Inject(method = "renderBg", at = @At("TAIL"))
-    private void renderForeground(GuiGraphics guiGraphics, float f, int i, int j, CallbackInfo ci) {
-//        BackpackManager.renderEquippackSlot(guiGraphics,leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2);
-//        guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
-
-    }
 }

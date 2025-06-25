@@ -35,6 +35,7 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
     modCompileOnly("curse.maven:jei-238222:6600309")
+    modImplementation "curse.maven:giselbaers-durability-viewer-262146:4615429"
 }
 
 processResources {

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge;
+package com.yyz.yyzsbackpack.forge.compat.curios;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -65,7 +65,6 @@ public class CuriosContainerAdapter implements Container {
             stackHandler.setStackInSlot(i, ItemStack.EMPTY);
         }
     }
-
     // 新增方法：获取背包所在槽位的索引
     public int getBackpackSlotIndex() {
         return slotIndex;

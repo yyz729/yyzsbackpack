@@ -108,12 +108,17 @@ public class BackpackManager {
             }
         }
     }
+    public static boolean isTrinketModLoaded() {
+        return BackpackHelper.isModLoaded("trinkets") ||
+                BackpackHelper.isModLoaded("curios") ||
+                BackpackHelper.isModLoaded("accessories");
+    }
     public static void renderEquippackSlot(GuiGraphics guiGraphics, int x, int y){
-        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
+        if(isTrinketModLoaded()) return;
         guiGraphics.blit(SLOT_TEXTURE,  x,  y, 0, 0, 18, 18, 18, 18);
     }
     public static void addEquippackSlot(AbstractContainerMenu screenHandler, Inventory inventory) {
-        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
+        if(isTrinketModLoaded()) return;
 
         screenHandler.addSlot(new EquipPackSlot(inventory, 36, 8 + 69 ,  8 + 18 * 2) {
             @Override

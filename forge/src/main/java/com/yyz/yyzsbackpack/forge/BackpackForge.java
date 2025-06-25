@@ -1,10 +1,14 @@
 package com.yyz.yyzsbackpack.forge;
 
 import com.yyz.yyzsbackpack.Backpack;
+
+import com.yyz.yyzsbackpack.forge.compat.curios.CuriosContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 
-import mezz.jei.gui.startup.JeiEventHandlers;
+import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoriesContainer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -24,9 +28,8 @@ import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
+import java.util.Map;
 import java.util.Optional;
-//import org.violetmoon.quark.addons.oddities.inventory.BackpackMenu;
-//import org.violetmoon.quark.base.Quark;
 
 @Mod(Backpack.MOD_ID)
 public final class BackpackForge {
@@ -57,6 +60,7 @@ public final class BackpackForge {
 
 
     public static ItemStack getEquipped(Player player) {
+        // 1. 优先检查 Curios
         if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
             Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
             if (curiosHandler.isPresent()) {
@@ -68,32 +72,71 @@ public final class BackpackForge {
                 }
             }
         }
-        return player.getInventory().getItem(36);
-    }
 
-public static Container getContainer(Player player) {
-    if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
-        Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
-        if (curiosHandler.isPresent()) {
-            Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
-                    stack -> stack.getItem() instanceof BackpackItem
-            );
-            if (backpackSlot.isPresent()) {
-                String slotId = backpackSlot.get().slotContext().identifier();
-                int slotIndex = backpackSlot.get().slotContext().index();
-
-                Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
-                if (stacksHandler.isPresent()) {
-                    return new CuriosContainerAdapter(stacksHandler.get().getStacks(), slotIndex);
+        // 2. 检查 Accessories
+        if (FMLLoader.getLoadingModList().getModFileById("accessories") != null) {
+            AccessoriesCapability capability = AccessoriesCapability.get(player);
+            if (capability != null) {
+                Map<String, AccessoriesContainer> containers = capability.getContainers();
+                for (AccessoriesContainer container : containers.values()) {
+                    Container accessoriesContainer = container.getAccessories();
+                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                        ItemStack stack = accessoriesContainer.getItem(i);
+                        if (stack.getItem() instanceof BackpackItem) {
+                            return stack;
+                        }
+                    }
                 }
             }
         }
 
+        // 3. 默认返回胸甲槽
+        return player.getInventory().getItem(36);
     }
-    return player.getInventory();
-}
+
+    public static Container getContainer(Player player) {
+        // 1. 优先检查 Curios
+        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
+            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
+            if (curiosHandler.isPresent()) {
+                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                        stack -> stack.getItem() instanceof BackpackItem
+                );
+                if (backpackSlot.isPresent()) {
+                    String slotId = backpackSlot.get().slotContext().identifier();
+                    int slotIndex = backpackSlot.get().slotContext().index();
+
+                    Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
+                    if (stacksHandler.isPresent()) {
+                        return new CuriosContainerAdapter(stacksHandler.get().getStacks(), slotIndex);
+                    }
+                }
+            }
+        }
+
+        // 2. 检查 Accessories
+        if (FMLLoader.getLoadingModList().getModFileById("accessories") != null) {
+            AccessoriesCapability capability = AccessoriesCapability.get(player);
+            if (capability != null) {
+                Map<String, AccessoriesContainer> containers = capability.getContainers();
+                for (AccessoriesContainer container : containers.values()) {
+                    Container accessoriesContainer = container.getAccessories();
+                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                        ItemStack stack = accessoriesContainer.getItem(i);
+                        if (stack.getItem() instanceof BackpackItem) {
+                            return new AccessoriesContainerAdapter(accessoriesContainer, i);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. 默认返回玩家物品栏
+        return player.getInventory();
+    }
 
     public static int getIndex(Player player) {
+        // 1. 优先检查 Curios
         if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
             Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player).resolve();
             if (curiosHandler.isPresent()) {
@@ -108,6 +151,16 @@ public static Container getContainer(Player player) {
                 }
             }
         }
+
+        // 2. 检查 Accessories
+        if (FMLLoader.getLoadingModList().getModFileById("accessories") != null) {
+            Container container = getContainer(player);
+            if (container instanceof AccessoriesContainerAdapter) {
+                return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+            }
+        }
+
+        // 3. 默认返回胸甲槽索引
         return 36;
     }
     public BackpackForge() {

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.fabric;
+package com.yyz.yyzsbackpack.forge.compat.jei;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;

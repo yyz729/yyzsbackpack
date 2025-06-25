@@ -42,12 +42,32 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackHelper.isModLoaded("quark");
         }
 
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesMenuMixin")) {
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.accessories.AccessoriesMenuMixin")) {
             return BackpackHelper.isModLoaded("accessories");
         }
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.AccessoriesBasedSlotMixin")) {
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.accessories.AccessoriesBasedSlotMixin")) {
             return BackpackHelper.isModLoaded("accessories");
         }
+
+
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.emi.CookingRecipeHandlerMixin")) {
+            return BackpackHelper.isModLoaded("emi");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.emi.CraftingRecipeHandlerMixin")) {
+            return BackpackHelper.isModLoaded("emi");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.emi.InventoryRecipeHandlerMixin")) {
+            return BackpackHelper.isModLoaded("emi");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.compat.emi.StonecuttingRecipeHandlerMixin")) {
+            return BackpackHelper.isModLoaded("emi");
+        }
+
+        if (mixinClassName.equals(" com.yyz.yyzsbackpack.fabric.mixin.InventorySlotsIndicatorMixin")) {
+            return BackpackHelper.isModLoaded("durabilityviewer");
+        }
+
+
 
         return true; // 默认启用其他 Mixin
 

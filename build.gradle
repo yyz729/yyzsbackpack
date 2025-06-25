@@ -43,24 +43,24 @@ subprojects {
             name = "Ladysnake Libs"
             url = 'https://maven.ladysnake.org/releases'
         }
-        maven {
-            url "https://www.cursemaven.com"
-        }
-
+        maven {url "https://www.cursemaven.com"}
         maven { url 'https://maven.wispforest.io/releases' }
         maven { url 'https://maven.su5ed.dev/releases' }
         maven { url 'https://maven.fabricmc.net' }
-
-
-
+        maven { url "<https://maven.shedaniel.me/>" }
+        maven { url "<https://maven.architectury.dev/>" }
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
 
-        modImplementation("io.wispforest:accessories-common:${project.accessories_version}")
+        modImplementation("io.wispforest:accessories-common:$project.accessories_version")
 
+        // REI API for Architectury Common
+        modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:$project.rei_version"
+        modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin:$project.rei_version"
+        modCompileOnly "dev.emi:emi-xplat-intermediary:$project.emi_version"
     }
 
     java {

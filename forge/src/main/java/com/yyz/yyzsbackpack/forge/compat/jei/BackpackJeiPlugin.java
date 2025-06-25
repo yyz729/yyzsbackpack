@@ -1,13 +1,24 @@
-package com.yyz.yyzsbackpack.fabric;
+package com.yyz.yyzsbackpack.forge.compat.jei;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
+import me.shedaniel.math.Rectangle;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.*;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @JeiPlugin
 public class BackpackJeiPlugin implements IModPlugin {
@@ -15,6 +26,7 @@ public class BackpackJeiPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
         return new ResourceLocation(Backpack.MOD_ID, "backpack");
     }
+
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
         registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36+54);
@@ -31,4 +43,21 @@ public class BackpackJeiPlugin implements IModPlugin {
         BackpackPlayerRecipeTransferHandler recipeTransferHandler = new BackpackPlayerRecipeTransferHandler(transferHelper);
         registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
     }
+
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addGenericGuiContainerHandler(AbstractContainerScreen.class, new BackpackGuiHandler());
+    }
+
+
+    private static class BackpackGuiHandler implements IGuiContainerHandler<AbstractContainerScreen<?>> {
+        @Nonnull
+        @Override
+        public List<Rect2i> getGuiExtraAreas(AbstractContainerScreen<?> screen) {
+            if (screen instanceof BackpackExclusionZoneProvider provider) {
+                return provider.getBackpackExclusionZones(); // 直接返回 Rect2i
+            }
+            return Collections.emptyList();
+        }
+    }
+
 }

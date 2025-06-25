@@ -4,8 +4,11 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
+import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -21,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 
 
 import java.util.List;
+import java.util.Map;
 
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
@@ -77,6 +81,22 @@ public final class BackpackFabric implements ModInitializer {
                     })
                     .orElse(ItemStack.EMPTY);
         }
+        // 2. 检查 Accessories
+        if (BackpackHelper.isModLoaded("accessories")) {
+            AccessoriesCapability capability = AccessoriesCapability.get(player);
+            if (capability != null) {
+                Map<String, AccessoriesContainer> containers = capability.getContainers();
+                for (AccessoriesContainer container : containers.values()) {
+                    Container accessoriesContainer = container.getAccessories();
+                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                        ItemStack stack = accessoriesContainer.getItem(i);
+                        if (stack.getItem() instanceof BackpackItem) {
+                            return stack;
+                        }
+                    }
+                }
+            }
+        }
         // 检查背包槽（索引36）
         return player.getInventory().getItem(36);
     }
@@ -95,6 +115,21 @@ public final class BackpackFabric implements ModInitializer {
                     })
                     .orElse(player.getInventory());
         }
+        if (BackpackHelper.isModLoaded("accessories")) {
+            AccessoriesCapability capability = AccessoriesCapability.get(player);
+            if (capability != null) {
+                Map<String, AccessoriesContainer> containers = capability.getContainers();
+                for (AccessoriesContainer container : containers.values()) {
+                    Container accessoriesContainer = container.getAccessories();
+                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                        ItemStack stack = accessoriesContainer.getItem(i);
+                        if (stack.getItem() instanceof BackpackItem) {
+                            return new AccessoriesContainerAdapter(accessoriesContainer, i);
+                        }
+                    }
+                }
+            }
+        }
         return player.getInventory();
     }
 
@@ -111,6 +146,13 @@ public final class BackpackFabric implements ModInitializer {
                                 : 36;                         // 未找到时返回默认值
                     })
                     .orElse(36);
+        }
+
+        if (BackpackHelper.isModLoaded("accessories")) {
+            Container container = getContainer(player);
+            if (container instanceof AccessoriesContainerAdapter) {
+                return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+            }
         }
         return 36;
     }

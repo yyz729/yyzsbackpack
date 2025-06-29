@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 
-@Mixin(Inventory.class)
+@Mixin(value = Inventory.class,priority = 999)
 public class PlayerInventoryMixin {
 
 
@@ -35,6 +35,7 @@ public class PlayerInventoryMixin {
 			constant = @Constant(intValue = 40) // 匹配常量值40
 	)
 	private static int modifyOffhandSlotConstant(int original) {
+
 		return 95; // 将40改为95
 	}
 

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:diamond",
+  "base": "yyzsbackpack:gold_backpack",
+  "result": {
+    "id": "yyzsbackpack:diamond_backpack"
+  },
+  "template": "minecraft:leather"
+}

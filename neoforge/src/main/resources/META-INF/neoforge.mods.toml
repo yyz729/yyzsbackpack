@@ -33,3 +33,5 @@ file="META-INF/accesstransformer.cfg"
 
 [[mixins]]
 config = "yyzsbackpack.mixins.json"
+[[mixins]]
+config = "yyzsbackpack.neoforge.mixins.json"

@@ -24,7 +24,8 @@
     ]
   },
   "mixins": [
-    "yyzsbackpack.mixins.json"
+    "yyzsbackpack.mixins.json",
+    "yyzsbackpack.fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.14",

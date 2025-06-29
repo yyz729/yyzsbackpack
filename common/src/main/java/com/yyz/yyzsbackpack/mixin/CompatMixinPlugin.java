@@ -9,20 +9,25 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-public class ConditionalMixinPlugin implements IMixinConfigPlugin {
+public class CompatMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // 当需要应用 SomeMixin 时，检查目标模组是否加载
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.CreativeInventoryScreenMixin")) {
             return !BackpackHelper.isModLoaded("trinkets");
         }
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerMixin")) {
-            return BackpackHelper.isModLoaded("curios");
+
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.trinkets.SurvivalTrinketSlotMixin")) {
+            return BackpackHelper.isModLoaded("trinkets") ;
         }
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosScreenMixin")) {
-            return BackpackHelper.isModLoaded("curios");
+
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.hotbarslotcycling.HotbarCyclingProviderMixin")) {
+            return BackpackHelper.isModLoaded("hotbarslotcycling") ;
         }
-        return true; // 默认启用其他 Mixin
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.neoforge.mixin.hotbarslotcycling.HotbarCyclingProviderMixin")) {
+            return BackpackHelper.isModLoaded("hotbarslotcycling") ;
+        }
+
+        return true;
 
     }
 

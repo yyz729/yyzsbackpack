@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.api;
 
-public interface BackpackRenderCondition {
+public interface BackpackCondition {
 
     boolean shouldRenderBackpack() ;
 

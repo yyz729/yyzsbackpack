@@ -1,18 +1,17 @@
 package com.yyz.yyzsbackpack;
 
 import com.yyz.yyzsbackpack.api.BackPackSlot;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import com.yyz.yyzsbackpack.api.EquipPackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -68,89 +67,24 @@ public class BackpackManager {
         for (int column = 0; column < 6; column++) {
             for (int row = 0; row < 9; row++) {
                 final int columnIndex = column;
-
-                screenHandler.addSlot(new BackPackSlot(inventory, row + (column + 1) * 9 + 27 + 1 ,  0 , 0) {
-                    @Override
-                    public boolean isActive() {
-                        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
-                        if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) {
-                            return false;
-                        }
-
-                        int columns = backpackItem.getBackpackType().getColumns();
-                        if (columnIndex >= columns) {
-                            return false;
-                        }
-
-                        if(!(((BackpackRenderCondition)screenHandler).shouldRenderBackpack())){
-                            return false;
-                        }
-
-                        return true;
-                    }
-                    @Override
-                    public boolean mayPlace(ItemStack stack) {
-                        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
-                        boolean canPlace = !(stack.getItem() instanceof BackpackItem) &&
-                                backpackStack.getItem() instanceof BackpackItem &&
-                                super.mayPlace(stack);
-
-                        // 添加列数检查（仅添加这一部分）
-                        if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
-                            int columns = backpackItem.getBackpackType().getColumns();
-                            if (columnIndex >= columns) {
-                                return false;
-                            }
-                        }
-
-                        return canPlace;
-                    }
-                });
-
+                screenHandler.addSlot(new BackPackSlot(screenHandler,inventory, row + (column + 1) * 9 + 27 + 1 , columnIndex, 0 , 0));
             }
         }
     }
-    public static void renderEquippackSlot(GuiGraphics guiGraphics, int x, int y){
-        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED,SLOT_TEXTURE,  x,  y, 0, 0, 18, 18, 18, 18);
+    public static boolean isTrinketModLoaded() {
+        return BackpackHelper.isModLoaded("trinkets") ||
+                BackpackHelper.isModLoaded("curios") ||
+                BackpackHelper.isModLoaded("accessories");
+    }
+
+    public static void renderEquippackSlot(InventoryMenu menu, GuiGraphics guiGraphics, int x, int y){
+        if(isTrinketModLoaded() && !Backpack.getConfig().force_slot) return;
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED,SLOT_TEXTURE,  x + ((BackpackCondition)menu).getEquippackXOffset(),  y+ ((BackpackCondition)menu).getEquippackYOffset(), 0, 0, 18, 18, 18, 18);
 
     }
     public static void addEquipmentSlot(AbstractContainerMenu screenHandler, Container inventory) {
-        if(BackpackHelper.isModLoaded("trinkets") || BackpackHelper.isModLoaded("curios")) return;
-        screenHandler.addSlot(new EquipPackSlot(inventory, 36, 8 + 69 ,  8 + 18 * 2) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.getItem() instanceof BackpackItem;
-            }
-
-            @Override
-            public void onTake(Player player, ItemStack backpackStack) {
-                if (backpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(inventory, backpackStack);
-                }
-                super.onTake(player, backpackStack);
-            }
-
-            @Override
-            public void setByPlayer(ItemStack newBackpackStack) {
-                ItemStack oldBackpackStack = this.getItem();
-                if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack);
-                }
-
-                super.setByPlayer(newBackpackStack);
-
-                if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.restoreBackpackContents(inventory, newBackpackStack);
-                }
-            }
-
-            @Override
-            public ResourceLocation getNoItemIcon() {
-                return BackpackManager.BACKSLOT_TEXTURE;
-            }
-
-        });
+        if(isTrinketModLoaded() && !Backpack.getConfig().force_slot) return;
+        screenHandler.addSlot(new EquipPackSlot(inventory, 36, 8 + 69 ,  8 + 18 * 2));
     }
 
     // 保存背包内容到数据组件
@@ -201,7 +135,7 @@ public class BackpackManager {
     public static void renderBackpackBackground(GuiGraphics context, int x, int y,
                                                 int backgroundWidth, int backgroundHeight,
                                                 Inventory inventory, boolean shouldRenderBackpack,
-                                                BackpackRenderCondition renderCondition) {
+                                                BackpackCondition renderCondition) {
 
         if (!shouldRenderBackpack) return;
 
@@ -225,7 +159,7 @@ public class BackpackManager {
 
 
         // 检查玩家是否有背包
-        if (inventory != null && ((BackpackRenderCondition)handler).shouldRenderBackpack()) {
+        if (inventory != null && ((BackpackCondition)handler).shouldRenderBackpack()) {
 
             ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
 
@@ -243,7 +177,7 @@ public class BackpackManager {
                                                        int left, int top,
                                                        int backgroundWidth, int backgroundHeight,
                                                        boolean shouldRenderBackpackExtension,
-                                                       BackpackRenderCondition renderCondition) {
+                                                       BackpackCondition renderCondition) {
 
         boolean inBackpackArea = false;
 
@@ -267,12 +201,5 @@ public class BackpackManager {
         }
 
         return outsideOriginalBounds && !inBackpackArea;
-    }
-
-    public static class Ref<T> {
-        public T value;
-        public Ref(T value) {
-            this.value = value;
-        }
     }
 }

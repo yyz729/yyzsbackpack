@@ -33,7 +33,6 @@ public abstract class PlayerScreenHandlerMixin extends AbstractCraftingMenu {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addSlots(Inventory inventory, boolean onServer, Player owner, CallbackInfo info) {
-        BackpackManager.addBackpackSlots(this,inventory);
         BackpackManager.addEquipmentSlot(this,inventory);
 
     }

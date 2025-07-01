@@ -45,5 +45,8 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "conflicts": {
+    "accessories" : "*"
   }
 }

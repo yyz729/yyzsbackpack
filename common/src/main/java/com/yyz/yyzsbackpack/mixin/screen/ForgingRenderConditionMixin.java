@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ForgingRenderConditionMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void shouldRender(ItemCombinerMenu itemCombinerMenu, Inventory inventory, Component component, ResourceLocation resourceLocation, CallbackInfo ci) {
-        ((BackpackRenderCondition)itemCombinerMenu).setRenderBackpack(true);
+        ((BackpackCondition)itemCombinerMenu).setRenderBackpack(true);
     }
 }

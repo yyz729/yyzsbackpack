@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem) {
+        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
             BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
         }
         super.onTake(player, backpackStack);
@@ -31,14 +32,15 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();
-        if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-            BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
+        if(!Backpack.getConfig().force_slot) {
+            if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
+                BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
+            }
+            super.setByPlayer(newBackpackStack);
+            if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
+                BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
+            }
         }
-
         super.setByPlayer(newBackpackStack);
-
-        if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-            BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
-        }
     }
 }

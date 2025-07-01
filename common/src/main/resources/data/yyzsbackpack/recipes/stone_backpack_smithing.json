@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "tag": "minecraft:stone_crafting_materials"
+  },
+  "base": {
+    "item": "yyzsbackpack:woolen_backpack"
+  },
+  "result": {
+    "item": "yyzsbackpack:stone_backpack"
+  },
+  "template": {
+    "item": "minecraft:leather"
+  }
+}

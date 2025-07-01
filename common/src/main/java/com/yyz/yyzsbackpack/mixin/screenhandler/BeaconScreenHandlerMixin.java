@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.*;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ public abstract class BeaconScreenHandlerMixin extends AbstractContainerMenu {
 
     @Inject(method = "<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V", at = @At("RETURN"))
     private void addSlots(int i, Container container, ContainerData containerData, ContainerLevelAccess containerLevelAccess, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,container, ((BackpackRenderCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,container, ((BackpackCondition) this).getInventory());
     }
 
 }

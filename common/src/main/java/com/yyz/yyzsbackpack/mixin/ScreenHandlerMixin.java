@@ -1,12 +1,14 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
+public abstract class ScreenHandlerMixin implements BackpackCondition {
 
     @Shadow public abstract ItemStack getCarried();
 
@@ -61,12 +63,12 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Override
     public int getBackpackXOffset() {
-        return backpackXOffset;
+        return backpackXOffset + Backpack.getConfig().backpack_offsetX;
     }
 
     @Override
     public int getBackpackYOffset() {
-        return backpackYOffset;
+        return backpackYOffset + Backpack.getConfig().backpack_offsetY;
     }
 
     @Override
@@ -77,12 +79,12 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Override
     public int getEquippackXOffset() {
-        return equippackXOffset;
+        return equippackXOffset + Backpack.getConfig().slot_offsetX;
     }
 
     @Override
     public int getEquippackYOffset() {
-        return equippackYOffset;
+        return equippackYOffset + Backpack.getConfig().slot_offsetY;
     }
 
     @Override
@@ -104,7 +106,12 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
     }
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
-        if (slotIndex < 0 || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem) return;
+        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
+        if (slotIndex < 0
+                || slotIndex >= this.slots.size()
+                || actionType != ClickType.PICKUP
+                || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem
+                || !Backpack.getConfig().quick_swap) return;
 
         if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
         ItemStack back = BackpackHelper.getEquipped(player).copy();

@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class EnchantmentRenderConditionMixin{
     @Inject(method = "<init>", at = @At("TAIL"))
     private void shouldRender(EnchantmentMenu enchantmentMenu, Inventory inventory, Component component, CallbackInfo ci) {
-        ((BackpackRenderCondition)enchantmentMenu).setRenderBackpack(true);
+        ((BackpackCondition)enchantmentMenu).setRenderBackpack(true);
     }
 }

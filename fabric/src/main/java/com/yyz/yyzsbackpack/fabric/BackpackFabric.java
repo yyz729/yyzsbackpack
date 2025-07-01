@@ -70,28 +70,30 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static ItemStack getEquipped(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets")) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查是否为 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty() ? list.get(0).getB() : ItemStack.EMPTY;
-                    })
-                    .orElse(ItemStack.EMPTY);
-        }
-        // 2. 检查 Accessories
-        if (BackpackHelper.isModLoaded("accessories")) {
-            AccessoriesCapability capability = AccessoriesCapability.get(player);
-            if (capability != null) {
-                Map<String, AccessoriesContainer> containers = capability.getContainers();
-                for (AccessoriesContainer container : containers.values()) {
-                    Container accessoriesContainer = container.getAccessories();
-                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
-                        ItemStack stack = accessoriesContainer.getItem(i);
-                        if (stack.getItem() instanceof BackpackItem) {
-                            return stack;
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("trinkets")) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查是否为 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty() ? list.get(0).getB() : ItemStack.EMPTY;
+                        })
+                        .orElse(ItemStack.EMPTY);
+            }
+            // 2. 检查 Accessories
+            else if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("trinkets")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return stack;
+                            }
                         }
                     }
                 }
@@ -102,29 +104,31 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static Container getContainer(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets")) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty()
-                                ? list.get(0).getA().inventory()  // 返回背包容器
-                                : player.getInventory();         // 未找到时返回玩家库存
-                    })
-                    .orElse(player.getInventory());
-        }
-        if (BackpackHelper.isModLoaded("accessories")) {
-            AccessoriesCapability capability = AccessoriesCapability.get(player);
-            if (capability != null) {
-                Map<String, AccessoriesContainer> containers = capability.getContainers();
-                for (AccessoriesContainer container : containers.values()) {
-                    Container accessoriesContainer = container.getAccessories();
-                    for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
-                        ItemStack stack = accessoriesContainer.getItem(i);
-                        if (stack.getItem() instanceof BackpackItem) {
-                            return new AccessoriesContainerAdapter(accessoriesContainer, i);
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("trinkets")) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty()
+                                    ? list.get(0).getA().inventory()  // 返回背包容器
+                                    : player.getInventory();         // 未找到时返回玩家库存
+                        })
+                        .orElse(player.getInventory());
+            }
+            else if (BackpackHelper.isModLoaded("accessories")  && !BackpackHelper.isModLoaded("trinkets")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return new AccessoriesContainerAdapter(accessoriesContainer, i);
+                            }
                         }
                     }
                 }
@@ -134,24 +138,26 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static int getIndex(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets")) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty()
-                                ? list.get(0).getA().index()  // 返回槽位索引
-                                : 36;                         // 未找到时返回默认值
-                    })
-                    .orElse(36);
-        }
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("trinkets") ) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty()
+                                    ? list.get(0).getA().index()  // 返回槽位索引
+                                    : 36;                         // 未找到时返回默认值
+                        })
+                        .orElse(36);
+            }
 
-        if (BackpackHelper.isModLoaded("accessories")) {
-            Container container = getContainer(player);
-            if (container instanceof AccessoriesContainerAdapter) {
-                return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+            else if (BackpackHelper.isModLoaded("accessories")  && !BackpackHelper.isModLoaded("trinkets")) {
+                Container container = getContainer(player);
+                if (container instanceof AccessoriesContainerAdapter) {
+                    return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+                }
             }
         }
         return 36;

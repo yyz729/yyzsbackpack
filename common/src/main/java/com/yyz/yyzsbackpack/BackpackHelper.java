@@ -5,6 +5,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.nio.file.Path;
+
 public class BackpackHelper {
     @ExpectPlatform
     public static boolean isModLoaded(String modId) {
@@ -23,4 +25,8 @@ public class BackpackHelper {
         throw new AssertionError();
     }
 
+    @ExpectPlatform
+    public static Path getConfigDirectory() {
+        throw new AssertionError();
+    }
 }

@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -28,7 +28,7 @@ public  abstract class InventoryRenderConditionMixin extends EffectRenderingInve
     @Inject(method = "renderBg", at = @At("TAIL"))
     private void renderForeground(GuiGraphics guiGraphics, float f, int i, int j, CallbackInfo ci) {
 
-        BackpackManager.renderEquippackSlot(guiGraphics,leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2);
+        BackpackManager.renderEquippackSlot(menu,guiGraphics,leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2);
         //guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
 
     }
@@ -36,6 +36,6 @@ public  abstract class InventoryRenderConditionMixin extends EffectRenderingInve
 
     @Inject(method = "render", at = @At("HEAD"))
     private void addBackpackSlots(CallbackInfo ci) {
-        ((BackpackRenderCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
+        ((BackpackCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
     }
 }

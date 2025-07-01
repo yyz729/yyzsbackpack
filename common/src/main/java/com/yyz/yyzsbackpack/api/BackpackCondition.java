@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.api;
 
 import net.minecraft.world.entity.player.Inventory;
 
-public interface BackpackRenderCondition {
+public interface BackpackCondition {
 
     boolean shouldRenderBackpack() ;
 

@@ -5,10 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
+    "InventorioScreenHandlerMixin",
     "InventorySlotsIndicatorMixin",
-    "SurvivalTrinketSlotMixin"
+    "SurvivalTrinketSlotMixin",
+    "compat.ae2.AEBaseMenuMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
   ],
   "client": [
+    "InventorioScreenMixin",
+    "compat.ae2.AEBaseScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

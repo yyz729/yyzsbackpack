@@ -3,10 +3,9 @@ package com.yyz.yyzsbackpack.mixin;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.api.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import me.shedaniel.math.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -59,7 +58,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         // 传递renderCondition参数
         BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight,
                 playerInventory, shouldRenderBackpackExtension,
-                (BackpackRenderCondition) this.menu);
+                (BackpackCondition) this.menu);
     }
 
 
@@ -90,26 +89,26 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseClicked(AbstractContainerScreen<?> instance, double mouseX, double mouseY,
                                        int left, int top, int button) {
-        return menu instanceof BackpackRenderCondition ?
+        return menu instanceof BackpackCondition ?
                 BackpackManager.isClickOutsideExtendedBounds(
                         playerInventory,
                         hasClickedOutside(mouseX, mouseY, leftPos, topPos, button),
                         mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight,
                         shouldRenderBackpackExtension,
-                        (BackpackRenderCondition) this.menu // 传递renderCondition
+                        (BackpackCondition) this.menu // 传递renderCondition
                 ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
     @Redirect(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseReleased(AbstractContainerScreen<?> instance, double mouseX, double mouseY,
                                         int left, int top, int button) {
-        return menu instanceof BackpackRenderCondition ?
+        return menu instanceof BackpackCondition ?
                 BackpackManager.isClickOutsideExtendedBounds(
                         playerInventory,
                         hasClickedOutside(mouseX, mouseY, leftPos, topPos, button),
                         mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight,
                         shouldRenderBackpackExtension,
-                        (BackpackRenderCondition) this.menu // 传递renderCondition
+                        (BackpackCondition) this.menu // 传递renderCondition
                 ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
@@ -136,7 +135,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             return; // 跳过创造模式界面
         }
 
-        if (menu instanceof BackpackRenderCondition) {
+        if (menu instanceof BackpackCondition) {
 
 
             int baseHeight = imageHeight;
@@ -154,12 +153,12 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             }
 
             // 获取当前偏移值
-            int xOffset = ((BackpackRenderCondition) menu).getBackpackXOffset();
-            int yOffset = ((BackpackRenderCondition) menu).getBackpackYOffset();
+            int xOffset = ((BackpackCondition) menu).getBackpackXOffset();
+            int yOffset = ((BackpackCondition) menu).getBackpackYOffset();
 
             // 获取当前偏移值
-            int xOffset1 = ((BackpackRenderCondition) menu).getEquippackXOffset();
-            int yOffset1 = ((BackpackRenderCondition) menu).getEquippackYOffset();
+            int xOffset1 = ((BackpackCondition) menu).getEquippackXOffset();
+            int yOffset1 = ((BackpackCondition) menu).getEquippackYOffset();
 
 
             // 动态更新槽位位置
@@ -179,8 +178,8 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Override
     public List<Rect2i> getBackpackExclusionZones() { // 修改返回类型为 Rect2i
         // 获取偏移值
-        int xOffset = ((BackpackRenderCondition) menu).getBackpackXOffset();
-        int yOffset = ((BackpackRenderCondition) menu).getBackpackYOffset();
+        int xOffset = ((BackpackCondition) menu).getBackpackXOffset();
+        int yOffset = ((BackpackCondition) menu).getBackpackYOffset();
 
         if (!shouldRenderBackpackExtension) {
             return Collections.emptyList();

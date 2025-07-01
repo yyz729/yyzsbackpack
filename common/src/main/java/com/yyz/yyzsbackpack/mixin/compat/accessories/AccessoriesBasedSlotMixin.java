@@ -1,5 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.compat.accessories;
 
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
@@ -26,25 +28,30 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem && entity instanceof Player) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+        if (backpackStack.getItem() instanceof BackpackItem && entity instanceof Player && !Backpack.getConfig().force_slot ) {
+            if(!BackpackHelper.isModLoaded("trinkets")) {
+                BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+            }
         }
         super.onTake(player, backpackStack);
     }
 
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
-        if(entity instanceof Player player) {
-            ItemStack oldBackpackStack = this.getItem();
-            if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
-            }
+        if(entity instanceof Player player && !Backpack.getConfig().force_slot ) {
+            if(!BackpackHelper.isModLoaded("trinkets")) {
+                ItemStack oldBackpackStack = this.getItem();
+                if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
+                    BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
+                }
 
-            super.setByPlayer(newBackpackStack);
+                super.setByPlayer(newBackpackStack);
 
-            if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
+                if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
+                    BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
+                }
             }
         }
+        super.setByPlayer(newBackpackStack);
     }
 }

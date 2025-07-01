@@ -1,25 +1,16 @@
 package com.yyz.yyzsbackpack.mixin.compat.accessories;
 
-import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import io.wispforest.accessories.client.AccessoriesMenu;
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AccessoriesMenu.class)
-public abstract class AccessoriesMenuMixin extends AbstractContainerMenu implements BackpackRenderCondition{
+public abstract class AccessoriesMenuMixin extends AbstractContainerMenu implements BackpackCondition {
     protected AccessoriesMenuMixin(@Nullable MenuType<?> menuType, int i) {
         super(menuType, i);
     }

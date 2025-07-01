@@ -8,12 +8,18 @@
     "CuriosContainerMixin",
     "CuriosContainerV2Mixin",
     "CurioSlotMixin",
-    "TotemOfHoldingEntityMixin"
+    "InventorioScreenHandlerMixin",
+    "TotemOfHoldingEntityMixin",
+    "compat.ae2.AEBaseMenuMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
+    "corpsecurioscompat.CorpseCuriosCompatConfigMixin"
   ],
   "client": [
     "BackpackInventoryScreenMixin",
     "CuriosScreenMixin",
-    "CuriosScreenV2Mixin"
+    "CuriosScreenV2Mixin",
+    "InventorioScreenMixin",
+    "compat.ae2.AEBaseScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

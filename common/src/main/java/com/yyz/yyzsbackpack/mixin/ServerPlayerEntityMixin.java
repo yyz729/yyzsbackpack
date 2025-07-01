@@ -1,10 +1,13 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
@@ -12,16 +15,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerEntityMixin {
 
     @Inject(method = "die", at = @At("HEAD"))
-    private void onPlayerDeath(CallbackInfo ci) {
+    private void onPlayerDeath(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer) (Object) this;
 
         // 检查死亡不掉落规则是否启用
-        if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+        if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || BackpackHelper.isModLoaded("yigd")) {
             return; // 如果启用则跳过后续处理
         }
 
@@ -44,7 +48,7 @@ public abstract class ServerPlayerEntityMixin {
         ItemStack stackInSlot36 = inventory.getItem(36);
 
         // 检查36号槽位是否有背包
-        if (stackInSlot36.getItem() instanceof BackpackItem && BackpackManager.isTrinketModLoaded()) {
+        if (stackInSlot36.getItem() instanceof BackpackItem && BackpackManager.isTrinketModLoaded() && !Backpack.getConfig().force_slot) {
             // 保存背包内容到NBT
             BackpackManager.saveBackpackContents(inventory, stackInSlot36);
 

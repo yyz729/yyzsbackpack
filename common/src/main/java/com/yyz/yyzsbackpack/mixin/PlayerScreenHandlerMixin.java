@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -36,7 +36,7 @@ public abstract class PlayerScreenHandlerMixin extends AbstractContainerMenu {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void addSlots(Inventory inventory, boolean onServer, Player owner, CallbackInfo info) {
 
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
         BackpackManager.addEquippackSlot(this,inventory);
     }
 

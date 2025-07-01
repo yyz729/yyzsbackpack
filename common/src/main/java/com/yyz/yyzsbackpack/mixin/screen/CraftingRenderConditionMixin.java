@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -27,6 +27,6 @@ public abstract class CraftingRenderConditionMixin extends AbstractContainerScre
 
     @Inject(method = "render", at = @At("HEAD"))
     private void addBackpackSlots(CallbackInfo ci) {
-        ((BackpackRenderCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
+        ((BackpackCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
     }
 }

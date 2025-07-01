@@ -50,6 +50,13 @@ dependencies {
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:$rootProject.rei_version"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rootProject.rei_version"
     modImplementation "curse.maven:inventory-profiles-next-495267:6095062"
+    modImplementation "curse.maven:inventorio-forge-497122:6439095"
+    modImplementation "curse.maven:gravestone-x-curios-api-compat-1139062:6544424"
+    modImplementation "curse.maven:sophisticated-backpacks-422301:6679415"
+    modImplementation("curse.maven:applied-energistics-2-223794:6629570")
+    modImplementation("curse.maven:sophisticated-core-618298:6680838")
+
+    modImplementation files('libs/SlotCycler-v8.0.1-1.20.1-Forge.jar')
 }
 
 processResources {

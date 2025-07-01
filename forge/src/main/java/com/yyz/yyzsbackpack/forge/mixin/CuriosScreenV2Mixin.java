@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
-import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -14,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.theillusivec4.curios.client.gui.CuriosScreenV2;
 import top.theillusivec4.curios.common.inventory.container.CuriosContainerV2;
 
-import static com.yyz.yyzsbackpack.BackpackManager.SLOT_TEXTURE;
-
 @Mixin(CuriosScreenV2.class)
 public abstract class CuriosScreenV2Mixin extends EffectRenderingInventoryScreen<CuriosContainerV2> {
     @Shadow(remap = false) public int panelWidth;
@@ -26,7 +23,7 @@ public abstract class CuriosScreenV2Mixin extends EffectRenderingInventoryScreen
 
     @Inject(method = "render", at = @At("HEAD"))
     private void shouldRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        BackpackRenderCondition condition = (BackpackRenderCondition) menu;
+        BackpackCondition condition = (BackpackCondition) menu;
         condition.setRenderBackpack(true);
         condition.setBackpackOffset(-panelWidth, 0);
 

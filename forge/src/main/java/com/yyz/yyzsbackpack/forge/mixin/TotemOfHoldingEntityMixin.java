@@ -24,4 +24,5 @@ public class TotemOfHoldingEntityMixin {
         }
         return stack = TotemOfHoldingCuriosCompat.equipCurios(player, this.equipedCurios, stack);
     }
+
 }

@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.BeaconScreen;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,7 @@ public abstract class BeaconRenderConditionMixin extends AbstractContainerScreen
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void shouldRender(BeaconMenu beaconMenu, Inventory inventory, Component component, CallbackInfo ci) {
-        ((BackpackRenderCondition)beaconMenu).setRenderBackpack(true);
+        ((BackpackCondition)beaconMenu).setRenderBackpack(true);
 
     }
 }

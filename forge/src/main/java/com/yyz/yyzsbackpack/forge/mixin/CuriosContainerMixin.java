@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -33,7 +33,7 @@ public abstract class CuriosContainerMixin extends AbstractContainerMenu{
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackRenderCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
 //        BackpackManager.addEquippackSlot(this,inventory);
     }
 }

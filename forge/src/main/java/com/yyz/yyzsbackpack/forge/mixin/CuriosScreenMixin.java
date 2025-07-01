@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -14,8 +14,6 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.client.gui.CuriosScreen;
 import top.theillusivec4.curios.common.inventory.container.CuriosContainer;
 
-import static com.yyz.yyzsbackpack.BackpackManager.SLOT_TEXTURE;
-
 @Mixin(CuriosScreen.class)
 public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<CuriosContainer>{
     @Shadow(remap = false) public boolean hasScrollBar;
@@ -26,7 +24,7 @@ public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<C
 
     @Inject(method = "render", at = @At("HEAD"))
     private void shouldRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        BackpackRenderCondition condition = (BackpackRenderCondition) menu;
+        BackpackCondition condition = (BackpackCondition) menu;
         condition.setRenderBackpack(true);
 
         CuriosApi.getCuriosHelper().getCuriosHandler(menu.player).ifPresent((handler) -> {

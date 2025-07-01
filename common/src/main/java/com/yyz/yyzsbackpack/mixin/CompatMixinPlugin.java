@@ -15,25 +15,25 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.CreativeInventoryScreenMixin")) {
             return !BackpackHelper.isModLoaded("trinkets");
         }
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.SurvivalTrinketSlot")) {
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.SurvivalTrinketSlot")) {
             return BackpackHelper.isModLoaded("trinkets");
         }
 
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerMixin")) {
-            return BackpackHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios") && !BackpackHelper.isModLoaded("cclayer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerV2Mixin")) {
-            return BackpackHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios") && !BackpackHelper.isModLoaded("cclayer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosScreenMixin")) {
-            return BackpackHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios") && !BackpackHelper.isModLoaded("cclayer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosScreenV2Mixin")) {
-            return BackpackHelper.isModLoaded("curios");
+            return BackpackHelper.isModLoaded("curios") && !BackpackHelper.isModLoaded("cclayer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CurioSlotMixin")) {
-            return BackpackHelper.isModLoaded("curios") ;
+            return BackpackHelper.isModLoaded("curios") && !BackpackHelper.isModLoaded("cclayer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.BackpackInventoryScreenMixin")) {
             return BackpackHelper.isModLoaded("quark");
@@ -67,7 +67,26 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackHelper.isModLoaded("durabilityviewer");
         }
 
+        if (mixinClassName.equals(" com.yyz.yyzsbackpack.forge.mixin.InventorioScreenHandler")) {
+            return BackpackHelper.isModLoaded("inventorio");
+        }
+        if (mixinClassName.equals(" com.yyz.yyzsbackpack.forge.mixin.InventorioScreen")) {
+            return BackpackHelper.isModLoaded("inventorio");
+        }
+        if (mixinClassName.equals(" com.yyz.yyzsbackpack.fabric.mixin.InventorioScreenHandler")) {
+            return BackpackHelper.isModLoaded("inventorio");
+        }
+        if (mixinClassName.equals(" com.yyz.yyzsbackpack.fabric.mixin.InventorioScreen")) {
+            return BackpackHelper.isModLoaded("inventorio");
+        }
 
+
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.hotbarslotcycling.HotbarCyclingProviderMixin")) {
+            return BackpackHelper.isModLoaded("slotcycler") ;
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.neoforge.mixin.compat.hotbarslotcycling.HotbarCyclingProviderMixin")) {
+            return BackpackHelper.isModLoaded("slotcycler") ;
+        }
 
         return true; // 默认启用其他 Mixin
 

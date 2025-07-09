@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge.mixin.corpsecurioscompat;
+package com.yyz.yyzsbackpack.forge.mixin.compat.corpsecurioscompat;
 
 import com.leclowndu93150.corpsecurioscompat.Config;
 import com.yyz.yyzsbackpack.item.BackpackItem;
@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Config.class)
 public class CorpseCuriosCompatConfigMixin {
 
-    @Inject(method = "isItemBlacklisted", at = @At("HEAD"), cancellable = true,remap = false)
-    private static void isItemBlacklisted(Item item, CallbackInfoReturnable<Boolean> cir) {
-        if(item instanceof BackpackItem){
-            cir.setReturnValue(true);
-        }
-    }
+//    @Inject(method = "isItemBlacklisted", at = @At("HEAD"), cancellable = true,remap = false)
+//    private static void isItemBlacklisted(Item item, CallbackInfoReturnable<Boolean> cir) {
+//        if(item instanceof BackpackItem){
+//            cir.setReturnValue(true);
+//        }
+//    }
 }

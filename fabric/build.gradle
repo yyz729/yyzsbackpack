@@ -40,8 +40,10 @@ dependencies {
     modImplementation "curse.maven:youre-in-grave-danger-544912:6684120"
 
     modImplementation files('libs/SlotCycler-v8.0.1-1.20.1-Fabric.jar')
+    modImplementation files('libs/gravestones-1.0.12-1.20.1.jar')
 
     modImplementation("curse.maven:applied-energistics-2-223794:6492967")
+
 }
 
 processResources {

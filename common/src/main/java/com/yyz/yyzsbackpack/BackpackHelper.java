@@ -29,4 +29,9 @@ public class BackpackHelper {
     public static Path getConfigDirectory() {
         throw new AssertionError();
     }
+
+    @ExpectPlatform
+    public static boolean getEmptyRule(Player player) {
+        throw new AssertionError();
+    }
 }

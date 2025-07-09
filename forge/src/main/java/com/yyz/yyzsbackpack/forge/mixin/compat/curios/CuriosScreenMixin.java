@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
 import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;

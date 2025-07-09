@@ -29,12 +29,12 @@ public class InventorySlotsIndicatorMixin {
         int slots = 0;
 
         // 获取实际有效的背包大小
-        int effectiveSize = getEffectiveInventorySize(inventory)+1;
+        int effectiveSize = getEffectiveInventorySize(inventory);
 
         // 只遍历有效槽位范围
         for (int i = 0; i < effectiveSize; i++) {
             ItemStack itemStack = inventory.items.get(i);
-            if (itemStack.isEmpty() && i != 36) {
+            if (itemStack.isEmpty() && i != 36+54) {
                 slots++;
             }
         }

@@ -6,8 +6,6 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import dev.emi.trinkets.SurvivalTrinketSlot;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,7 +26,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -47,7 +45,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
 
                 ItemStack oldBackpackStack = this.getItem();
                 if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack);
+                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack, true);
                 }
 
                 super.setByPlayer(newBackpackStack);

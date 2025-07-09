@@ -7,10 +7,7 @@ import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -24,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractContainerMenu.class)
+@Mixin(value = AbstractContainerMenu.class,priority = 1001)
 public abstract class ScreenHandlerMixin implements BackpackCondition {
 
     @Shadow public abstract ItemStack getCarried();
@@ -94,19 +91,21 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
     }
 
     @Unique
-    public Inventory inventory;
+    public Player inventory;
     @Override
-    public Inventory getInventory() {
+    public Player getPlayer() {
         return this.inventory;
     }
 
     @Override
-    public void setInventory(Inventory inventory) {
+    public void setPlayer(Player inventory) {
         this.inventory = inventory;
     }
+
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
         AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
+
         if (slotIndex < 0
                 || slotIndex >= this.slots.size()
                 || actionType != ClickType.PICKUP
@@ -117,7 +116,7 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
         ItemStack back = BackpackHelper.getEquipped(player).copy();
         ItemStack stack = getCarried().copy();
         if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
-        BackpackManager.saveBackpackContents(player.getInventory(), back);
+        BackpackManager.saveBackpackContents(player.getInventory(), back, true);
         BackpackManager.restoreBackpackContents(player.getInventory(), stack);
         Container container = BackpackHelper.getContainer(player);
         container.setItem(BackpackHelper.getIndex(player), stack);

@@ -26,4 +26,8 @@ public class BackpackHelperImpl {
     public static Path getConfigDirectory() {
         return FabricLoader.getInstance().getConfigDir();
     }
+
+    public static boolean getEmptyRule(Player player) {
+        return true;
+    }
 }

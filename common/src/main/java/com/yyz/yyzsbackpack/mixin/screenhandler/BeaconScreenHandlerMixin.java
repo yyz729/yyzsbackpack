@@ -17,9 +17,10 @@ public abstract class BeaconScreenHandlerMixin extends AbstractContainerMenu {
         super(menuType, i);
     }
 
+
     @Inject(method = "<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V", at = @At("RETURN"))
     private void addSlots(int i, Container container, ContainerData containerData, ContainerLevelAccess containerLevelAccess, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,container, ((BackpackCondition) this).getInventory());
+//        BackpackManager.addBackpackSlots(this,container, ((BackpackCondition) this).getPlayer());
     }
 
 }

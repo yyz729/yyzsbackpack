@@ -12,6 +12,7 @@ import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
+import moonfather.workshop_for_handsome_adventurer.ModWorkshop;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -19,7 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModWorkManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -31,6 +34,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+import top.theillusivec4.curios.common.CuriosConfig;
 
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +99,7 @@ public final class BackpackForge {
             }
         }
         // 3. 默认返回
-        return player.getInventory().getItem(36);
+        return player.getInventory().getItem(36+54);
     }
 
     public static Container getContainer(Player player) {
@@ -167,7 +171,7 @@ public final class BackpackForge {
             }
         }
         // 3. 默认返回索引
-        return 36;
+        return 36+54;
     }
     public BackpackForge() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -175,7 +179,15 @@ public final class BackpackForge {
         ITEMS.register(modEventBus);
         Backpack.init();
 
+
     }
 
 
+    public static boolean getEmptyRule(Player player) {
+        if(!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && CuriosConfig.SERVER.keepCurios.get() == CuriosConfig.KeepCurios.ON){
+            return false;
+        }
+
+        return true;
+    }
 }

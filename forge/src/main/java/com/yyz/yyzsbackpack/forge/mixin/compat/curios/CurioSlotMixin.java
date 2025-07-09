@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackManager;
@@ -24,7 +24,7 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -34,7 +34,7 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
         ItemStack oldBackpackStack = this.getItem();
         if(!Backpack.getConfig().force_slot) {
             if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
+                BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack, true);
             }
             super.setByPlayer(newBackpackStack);
             if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {

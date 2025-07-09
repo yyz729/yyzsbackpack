@@ -21,6 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.pneumono.gravestones.api.GravestonesApi;
+import net.pneumono.gravestones.compat.TrinketsSupport;
 
 
 import java.util.List;
@@ -66,7 +68,9 @@ public final class BackpackFabric implements ModInitializer {
     public void onInitialize() {
         register();
         Backpack.init();
-
+//        if (BackpackHelper.isModLoaded("gravestones")) {
+//            GravestonesApi.registerModSupport(new AAAModSupport());
+//        }
     }
 
     public static ItemStack getEquipped(Player player) {
@@ -100,7 +104,7 @@ public final class BackpackFabric implements ModInitializer {
             }
         }
         // 检查背包槽（索引36）
-        return player.getInventory().getItem(36);
+        return player.getInventory().getItem(36+54);
     }
 
     public static Container getContainer(Player player) {
@@ -148,9 +152,9 @@ public final class BackpackFabric implements ModInitializer {
                             );
                             return !list.isEmpty()
                                     ? list.get(0).getA().index()  // 返回槽位索引
-                                    : 36;                         // 未找到时返回默认值
+                                    : 36+54;                         // 未找到时返回默认值
                         })
-                        .orElse(36);
+                        .orElse(36+54);
             }
 
             else if (BackpackHelper.isModLoaded("accessories")  && !BackpackHelper.isModLoaded("trinkets")) {
@@ -160,6 +164,6 @@ public final class BackpackFabric implements ModInitializer {
                 }
             }
         }
-        return 36;
+        return 36+54;
     }
 }

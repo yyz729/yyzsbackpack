@@ -23,6 +23,6 @@ public abstract class EnchantmentScreenHandlerMixin extends AbstractContainerMen
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V", at = @At("RETURN"))
     private void addSlots(int i, Inventory inventory, ContainerLevelAccess containerLevelAccess, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
     }
 }

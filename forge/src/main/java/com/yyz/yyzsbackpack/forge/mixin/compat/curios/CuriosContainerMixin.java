@@ -1,8 +1,7 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackCondition;
-import de.rubixdev.inventorio.player.InventorioScreenHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -13,22 +12,28 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import top.theillusivec4.curios.common.inventory.container.CuriosContainer;
 
-@Mixin(InventorioScreenHandler.class)
-public abstract class InventorioScreenHandlerMixin extends AbstractContainerMenu{
+@Mixin(CuriosContainer.class)
+public abstract class CuriosContainerMixin extends AbstractContainerMenu{
 
-    protected InventorioScreenHandlerMixin(@Nullable MenuType<?> arg, int i) {
+    protected CuriosContainerMixin(@Nullable MenuType<?> arg, int i) {
         super(arg, i);
     }
 
-    @ModifyConstant(method = "<init>", constant = @Constant(intValue = 39),remap = false)
+    @ModifyConstant(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Z)V", constant = @Constant(intValue = 36),remap = false)
     private int armorIndexChange(int og) {
         return og + 9 * 6 + 1;
     }
 
+    @ModifyConstant(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Z)V", constant = @Constant(intValue = 40),remap = false)
+    private int offhandIndexChange(int og) {
+        return og + 9 * 6 + 1;
+    }
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
+//        BackpackManager.addEquippackSlot(this,inventory);
     }
 }

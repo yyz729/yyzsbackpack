@@ -28,7 +28,7 @@ public abstract class AEBaseMenuMixin extends AbstractContainerMenu {
     }
     @Inject(method = "<init>", at = @At("RETURN"),remap = false)
     private void addSlots(MenuType<?> menuType, int id, Inventory inventory, Object host, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
     }
 
 }

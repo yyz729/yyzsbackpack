@@ -29,6 +29,6 @@ public abstract class InventorioScreenHandlerMixin extends AbstractContainerMenu
 
     @Inject(method = "<init>", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
     }
 }

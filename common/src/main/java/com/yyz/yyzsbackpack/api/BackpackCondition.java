@@ -1,6 +1,8 @@
 package com.yyz.yyzsbackpack.api;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 
 public interface BackpackCondition {
 
@@ -23,7 +25,7 @@ public interface BackpackCondition {
 
     void setEquippackOffset(int x, int y);
 
-    Inventory getInventory();
+    Player getPlayer();
 
-    void setInventory(Inventory inventory);
+    void setPlayer(Player player);
 }

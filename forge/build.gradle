@@ -56,6 +56,8 @@ dependencies {
     modImplementation("curse.maven:applied-energistics-2-223794:6629570")
     modImplementation("curse.maven:sophisticated-core-618298:6680838")
 
+    modImplementation("curse.maven:workshop-for-handsome-adventurer-875843:6707497")
+
     modImplementation files('libs/SlotCycler-v8.0.1-1.20.1-Forge.jar')
 }
 

@@ -1,7 +1,8 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.inventorio;
 
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.api.BackpackCondition;
+import de.rubixdev.inventorio.player.InventorioScreenHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -12,30 +13,22 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.theillusivec4.curios.common.inventory.container.CuriosContainerV2;
 
-@Mixin(CuriosContainerV2.class)
-public abstract class CuriosContainerV2Mixin extends AbstractContainerMenu{
+@Mixin(InventorioScreenHandler.class)
+public abstract class InventorioScreenHandlerMixin extends AbstractContainerMenu{
 
-
-    protected CuriosContainerV2Mixin(@Nullable MenuType<?> arg, int i) {
+    protected InventorioScreenHandlerMixin(@Nullable MenuType<?> arg, int i) {
         super(arg, i);
     }
 
-    @ModifyConstant(method = "setPage", constant = @Constant(intValue = 36),remap = false)
+    @ModifyConstant(method = "<init>", constant = @Constant(intValue = 39),remap = false)
     private int armorIndexChange(int og) {
         return og + 9 * 6 + 1;
     }
 
-    @ModifyConstant(method = "setPage", constant = @Constant(intValue = 40),remap = false)
-    private int offhandIndexChange(int og) {
-        return og + 9 * 6 + 1;
-    }
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
-//        BackpackManager.addEquippackSlot(this,inventory);
+        BackpackManager.addBackpackSlots(this,inventory);
     }
-
 }

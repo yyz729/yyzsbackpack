@@ -23,7 +23,7 @@ public abstract class HopperScreenHandlerMixin extends AbstractContainerMenu {
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V", at = @At("RETURN"))
     private void addSlots(int i, Inventory inventory, Container container, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
 
     }
 }

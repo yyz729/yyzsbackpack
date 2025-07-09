@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.quark;
 
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;

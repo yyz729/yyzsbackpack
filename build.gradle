@@ -53,7 +53,9 @@ subprojects {
 
         mavenCentral()
 
-
+        maven {
+            url "https://jitpack.io"
+        }
     }
 
     dependencies {

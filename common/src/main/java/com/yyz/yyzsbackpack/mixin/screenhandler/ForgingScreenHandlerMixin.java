@@ -23,6 +23,6 @@ public abstract class ForgingScreenHandlerMixin extends AbstractContainerMenu {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addSlots(MenuType<?> menuType, int i, Inventory inventory, ContainerLevelAccess containerLevelAccess, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
     }
 }

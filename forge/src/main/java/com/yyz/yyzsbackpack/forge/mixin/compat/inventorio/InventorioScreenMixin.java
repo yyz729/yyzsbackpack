@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.forge.mixin;
+package com.yyz.yyzsbackpack.forge.mixin.compat.inventorio;
 
 import com.yyz.yyzsbackpack.api.BackpackCondition;
 import de.rubixdev.inventorio.client.ui.InventorioScreen;

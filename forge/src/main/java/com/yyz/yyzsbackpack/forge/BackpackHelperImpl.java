@@ -27,4 +27,7 @@ public class BackpackHelperImpl {
         return FMLPaths.CONFIGDIR.get();
     }
 
+    public static boolean getEmptyRule(Player player) {
+       return BackpackForge.getEmptyRule(player);
+    }
 }

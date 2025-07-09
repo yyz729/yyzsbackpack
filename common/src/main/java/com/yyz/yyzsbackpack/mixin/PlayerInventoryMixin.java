@@ -45,4 +45,11 @@ public class PlayerInventoryMixin {
 		return 36; // 没有背包时返回基础槽位数
 	}
 
+
+	@Inject(method = "tick", at = @At("RETURN"))
+	private void addSlot(CallbackInfo ci) {
+		if(BackpackHelper.getEquipped(player).getOrCreateTag().contains("BackpackItems")){
+			BackpackManager.restoreBackpackContents(player.getInventory(), BackpackHelper.getEquipped(player));
+		}
+	}
 }

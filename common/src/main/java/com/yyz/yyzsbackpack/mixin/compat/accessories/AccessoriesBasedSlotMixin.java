@@ -30,7 +30,7 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem && entity instanceof Player && !Backpack.getConfig().force_slot ) {
             if(!BackpackHelper.isModLoaded("trinkets")) {
-                BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+                BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
             }
         }
         super.onTake(player, backpackStack);
@@ -42,7 +42,7 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
             if(!BackpackHelper.isModLoaded("trinkets")) {
                 ItemStack oldBackpackStack = this.getItem();
                 if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack);
+                    BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack, true);
                 }
 
                 super.setByPlayer(newBackpackStack);
@@ -50,6 +50,7 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
                 if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
                     BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
                 }
+                return;
             }
         }
         super.setByPlayer(newBackpackStack);

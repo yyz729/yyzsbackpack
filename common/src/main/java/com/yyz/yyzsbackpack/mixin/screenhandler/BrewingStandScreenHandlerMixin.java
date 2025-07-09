@@ -23,6 +23,6 @@ public abstract class BrewingStandScreenHandlerMixin extends AbstractContainerMe
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V", at = @At("RETURN"))
     private void addSlots(int i, Inventory inventory, Container container, ContainerData containerData, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
     }
 }

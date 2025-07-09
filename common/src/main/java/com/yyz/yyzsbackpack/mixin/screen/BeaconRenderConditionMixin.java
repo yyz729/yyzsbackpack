@@ -19,7 +19,7 @@ public abstract class BeaconRenderConditionMixin extends AbstractContainerScreen
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void shouldRender(BeaconMenu beaconMenu, Inventory inventory, Component component, CallbackInfo ci) {
-        ((BackpackCondition)beaconMenu).setRenderBackpack(true);
+//        ((BackpackCondition)beaconMenu).setRenderBackpack(true);
 
     }
 }

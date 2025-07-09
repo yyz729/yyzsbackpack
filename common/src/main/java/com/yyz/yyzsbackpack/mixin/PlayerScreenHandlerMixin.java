@@ -36,7 +36,7 @@ public abstract class PlayerScreenHandlerMixin extends AbstractContainerMenu {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void addSlots(Inventory inventory, boolean onServer, Player owner, CallbackInfo info) {
 
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());
+        BackpackManager.addBackpackSlots(this,inventory);
         BackpackManager.addEquippackSlot(this,inventory);
     }
 

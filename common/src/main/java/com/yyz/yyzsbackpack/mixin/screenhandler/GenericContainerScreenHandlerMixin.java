@@ -27,7 +27,7 @@ public abstract class GenericContainerScreenHandlerMixin extends AbstractContain
 
     @Inject(method = "<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V", at = @At("RETURN"))
     private void addSlots(MenuType<?> menuType, int i, Inventory inventory, Container container, int j, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory, ((BackpackCondition) this).getInventory());//114+ handler.getRowCount() * 18
+        BackpackManager.addBackpackSlots(this,inventory);//114+ handler.getRowCount() * 18
 
     }
 

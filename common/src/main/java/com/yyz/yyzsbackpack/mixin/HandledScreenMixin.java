@@ -40,7 +40,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Shadow @Final protected T menu;
     // 背包相关字段
     @Unique
-    private Inventory playerInventory;
+    private Inventory inventory;
     @Unique
     private boolean shouldRenderBackpackExtension = false;
     @Unique
@@ -57,7 +57,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
         // 传递renderCondition参数
         BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight,
-                playerInventory, shouldRenderBackpackExtension,
+                inventory, shouldRenderBackpackExtension,
                 (BackpackCondition) this.menu);
     }
 
@@ -76,7 +76,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Inject(method = "render", at = @At("HEAD"))
     private void checkBackpackStateChange(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        boolean currentState = BackpackManager.shouldRenderBackpackExtension(menu,playerInventory);
+        boolean currentState = BackpackManager.shouldRenderBackpackExtension(menu, inventory);
         if (currentState != previousBackpackState) {
             shouldRenderBackpackExtension = currentState;
             previousBackpackState = currentState;
@@ -91,7 +91,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
                                        int left, int top, int button) {
         return menu instanceof BackpackCondition ?
                 BackpackManager.isClickOutsideExtendedBounds(
-                        playerInventory,
+                        inventory,
                         hasClickedOutside(mouseX, mouseY, leftPos, topPos, button),
                         mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight,
                         shouldRenderBackpackExtension,
@@ -104,7 +104,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
                                         int left, int top, int button) {
         return menu instanceof BackpackCondition ?
                 BackpackManager.isClickOutsideExtendedBounds(
-                        playerInventory,
+                        inventory,
                         hasClickedOutside(mouseX, mouseY, leftPos, topPos, button),
                         mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight,
                         shouldRenderBackpackExtension,
@@ -114,8 +114,8 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeFields(AbstractContainerMenu handler, Inventory inventory, Component component, CallbackInfo ci) {
-        this.playerInventory = inventory;
-        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(handler, playerInventory);
+        this.inventory = inventory;
+        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(handler, this.inventory);
         this.previousBackpackState = shouldRenderBackpackExtension;
 
     }
@@ -187,7 +187,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
         // 渲染背包时的完整计算
         int columns = 0;
-        ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
+        ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
         if (backpackStack.getItem() instanceof BackpackItem backpack) {
             columns = backpack.getBackpackType().getColumns();
         }

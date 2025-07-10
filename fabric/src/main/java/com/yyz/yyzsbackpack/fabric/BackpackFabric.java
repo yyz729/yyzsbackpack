@@ -21,8 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.pneumono.gravestones.api.GravestonesApi;
-import net.pneumono.gravestones.compat.TrinketsSupport;
 
 
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.Map;
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
-    public static final BackpackItem WOOLEN_BACKPACK = new BackpackItem(BackpackMaterial.WOOLEN, new Item.Properties().stacksTo(1));
+    public static final BackpackItem WOOLEN_BACKPACK = new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1));
     public static final BackpackItem STONE_BACKPACK = new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1));
     public static final BackpackItem IRON_BACKPACK = new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1));
     public static final BackpackItem GOLD_BACKPACK = new BackpackItem(BackpackMaterial.GOLD, new Item.Properties().stacksTo(1));

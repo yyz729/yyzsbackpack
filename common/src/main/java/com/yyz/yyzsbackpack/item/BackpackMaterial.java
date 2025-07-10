@@ -1,20 +1,26 @@
 package com.yyz.yyzsbackpack.item;
 
 public enum BackpackMaterial {
-    WOOLEN(1),
-    STONE(2),
-    IRON(3),
-    GOLD(4),
-    DIAMOND(5),
-    NETHERITE(6);
+    WOODEN("wooden",1),
+    STONE("stone",2),
+    IRON("iron",3),
+    GOLD("gold",4),
+    DIAMOND("diamond",5),
+    NETHERITE("netherite",6);
 
+    private final String type;
     private final int columns;
 
-    BackpackMaterial(int columns) {
+    BackpackMaterial(String type,int columns) {
+        this.type = type;
         this.columns = columns;
     }
 
     public int getColumns() {
         return columns;
+    }
+
+    public String getType() {
+        return type;
     }
 }

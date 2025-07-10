@@ -1,8 +1,5 @@
 package com.yyz.yyzsbackpack.forge;
 
-import appeng.menu.AEBaseMenu;
-import appeng.menu.implementations.WirelessAccessPointMenu;
-import appeng.menu.me.items.WirelessCraftingTermMenu;
 import com.yyz.yyzsbackpack.Backpack;
 
 import com.yyz.yyzsbackpack.BackpackHelper;
@@ -12,7 +9,6 @@ import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
-import moonfather.workshop_for_handsome_adventurer.ModWorkshop;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -22,14 +18,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModWorkManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
@@ -62,7 +55,7 @@ public final class BackpackForge {
     public static final RegistryObject<Item> GOLD_BACKPACK = ITEMS.register("gold_backpack", () -> new BackpackItem(BackpackMaterial.GOLD, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> IRON_BACKPACK = ITEMS.register("iron_backpack", () -> new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> STONE_BACKPACK = ITEMS.register("stone_backpack", () -> new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack", () -> new BackpackItem(BackpackMaterial.WOOLEN, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack", () -> new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1)));
 
 
 
@@ -184,10 +177,11 @@ public final class BackpackForge {
 
 
     public static boolean getEmptyRule(Player player) {
-        if(!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && CuriosConfig.SERVER.keepCurios.get() == CuriosConfig.KeepCurios.ON){
-            return false;
+        if(BackpackHelper.isModLoaded("curios")){
+            if(!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && CuriosConfig.SERVER.keepCurios.get() == CuriosConfig.KeepCurios.ON){
+                return false;
+            }
         }
-
         return true;
     }
 }

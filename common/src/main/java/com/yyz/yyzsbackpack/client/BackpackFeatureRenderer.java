@@ -3,7 +3,9 @@ package com.yyz.yyzsbackpack.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -25,7 +27,7 @@ import java.util.Random;
 
 
 public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Backpack.MOD_ID, "textures/backpack/gold_backpack.png");
+
     private final ModelPart backpack;
     private final Random random = new Random();
 
@@ -68,14 +70,28 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
 
     private boolean shouldRender(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        return true;
+        return BackpackHelper.getEquipped(player).getItem() instanceof BackpackItem;
     }
 
-    private void renderShield(PoseStack matrices, MultiBufferSource vertexConsumers, Player entity, int light, float tickDelta) {
+    private ResourceLocation getTexture(Player player) {
+        // 这里添加你的显示条件，比如检查物品或状态效果
+        if(BackpackHelper.getEquipped(player).getItem() instanceof BackpackItem backpackItem){
+            return new ResourceLocation(Backpack.MOD_ID, "textures/backpack/"+backpackItem.getBackpackType().getType()+"_backpack.png");
+
+        }
+        return new ResourceLocation(Backpack.MOD_ID, "textures/backpack/gold_backpack.png");
+
+    }
+
+    private void renderShield(PoseStack matrices, MultiBufferSource vertexConsumers, Player player, int light, float tickDelta) {
         matrices.pushPose();
         matrices.scale(0.8f,0.8f,0.8f);
+        if (player.isCrouching()) {
+            matrices.translate(0.0F, 0.3F, 0.0F);
+            matrices.mulPose(Axis.XP.rotationDegrees(30.0F));
+        }
         // 设置渲染参数
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityTranslucentCull(TEXTURE));
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityTranslucentCull(getTexture(player)));
         this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
         matrices.popPose();

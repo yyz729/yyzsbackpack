@@ -1,7 +1,5 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
-import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.*;
 import org.jetbrains.annotations.Nullable;

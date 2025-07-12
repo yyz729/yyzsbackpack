@@ -59,6 +59,8 @@ dependencies {
     modImplementation("curse.maven:workshop-for-handsome-adventurer-875843:6707497")
 
     modImplementation files('libs/SlotCycler-v8.0.1-1.20.1-Forge.jar')
+
+    modImplementation ("curse.maven:inventory-free-406383:4658538")
 }
 
 processResources {

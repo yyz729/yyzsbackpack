@@ -1,8 +1,8 @@
 package com.yyz.yyzsbackpack;
 
-import com.yyz.yyzsbackpack.api.BackPackSlot;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
-import com.yyz.yyzsbackpack.api.EquipPackSlot;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.EquipPackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -11,6 +11,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
@@ -206,11 +207,13 @@ public class BackpackManager {
     }
 
 
-
-    public static class Ref<T> {
-        public T value;
-        public Ref(T value) {
-            this.value = value;
+    public static int getBackpackSize(Player player){
+        // 检查是否有背包物品
+        ItemStack backpackStack = BackpackHelper.getEquipped(player);
+        if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
+            // 基础槽位数 + 背包列数 * 9
+            return 36 + backpackItem.getBackpackType().getColumns() * 9;
         }
+        return 36; // 没有背包时返回基础槽位数
     }
 }

@@ -34,7 +34,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
 
     public BackpackFeatureRenderer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> context) {
         super(context);
-        this.backpack = createShieldModel();
+        this.backpack = createBackpackModel();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
         }
     }
 
-    private ModelPart createShieldModel() {
+    private ModelPart createBackpackModel() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
@@ -56,7 +56,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
                 .texOffs(34, 0).addBox(-7.5F, -6.0F, -4.0F, 1.0F, 5.0F, 3.0F, new CubeDeformation(0.0F))
                 .texOffs(34, 0).addBox(-6.7F, -13.0F, -4.0F, 1.0F, 5.0F, 3.0F, new CubeDeformation(0.0F))
                 .texOffs(34, 8).addBox(5.7F, -13.0F, -4.0F, 1.0F, 5.0F, 3.0F, new CubeDeformation(0.0F))
-                .texOffs(0, 25).addBox(6.0F, -7.0F, -5.0F, 1.0F, 7.0F, 5.0F, new CubeDeformation(-0.1F))
+                .texOffs(0, 25).addBox(5.9F, -7.0F, -5.0F, 1.0F, 7.0F, 5.0F, new CubeDeformation(-0.1F))
                 .texOffs(34, 8).addBox(6.5F, -6.0F, -4.0F, 1.0F, 5.0F, 3.0F, new CubeDeformation(0.0F))
                 .texOffs(38, 23).addBox(-5.0F, -0.5F, -4.0F, 10.0F, 1.0F, 3.0F, new CubeDeformation(0.0F))
                 .texOffs(30, 31).addBox(-2.0F, -8.0F, -1.0F, 4.0F, 3.0F, 2.0F, new CubeDeformation(-0.3F))

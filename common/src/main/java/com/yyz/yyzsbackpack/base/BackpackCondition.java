@@ -1,7 +1,5 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.base;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
 public interface BackpackCondition {

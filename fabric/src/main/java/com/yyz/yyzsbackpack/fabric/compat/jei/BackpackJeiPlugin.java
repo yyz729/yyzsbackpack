@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.fabric.compat.jei;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;

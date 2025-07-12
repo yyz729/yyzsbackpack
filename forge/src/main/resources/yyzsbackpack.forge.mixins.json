@@ -5,22 +5,23 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
+    "compat.ae2.AEBaseMenuMixin",
+    "compat.corpsecurioscompat.CorpseCuriosCompatConfigMixin",
     "compat.curios.CuriosContainerMixin",
     "compat.curios.CuriosContainerV2Mixin",
     "compat.curios.CurioSlotMixin",
-    "compat.inventorio.InventorioScreenHandlerMixin",
-    "compat.quark.TotemOfHoldingEntityMixin",
-    "compat.ae2.AEBaseMenuMixin",
     "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
-    "compat.wfha.SimpleTableMenuMixin",
-    "compat.corpsecurioscompat.CorpseCuriosCompatConfigMixin"
+    "compat.inventorio.InventorioScreenHandlerMixin",
+    "compat.inventoryfree.InventoryEnforcerMixin",
+    "compat.quark.TotemOfHoldingEntityMixin",
+    "compat.wfha.SimpleTableMenuMixin"
   ],
   "client": [
-    "compat.quark.BackpackInventoryScreenMixin",
+    "compat.ae2.AEBaseScreenMixin",
     "compat.curios.CuriosScreenMixin",
     "compat.curios.CuriosScreenV2Mixin",
     "compat.inventorio.InventorioScreenMixin",
-    "compat.ae2.AEBaseScreenMixin"
+    "compat.quark.BackpackInventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,7 +3,7 @@ package com.yyz.yyzsbackpack.fabric.mixin.compat.ae2;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.menu.AEBaseMenu;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;

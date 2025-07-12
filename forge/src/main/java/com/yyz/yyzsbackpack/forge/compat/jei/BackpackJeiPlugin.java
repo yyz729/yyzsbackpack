@@ -1,8 +1,7 @@
 package com.yyz.yyzsbackpack.forge.compat.jei;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
-import me.shedaniel.math.Rectangle;
+import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -16,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.*;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

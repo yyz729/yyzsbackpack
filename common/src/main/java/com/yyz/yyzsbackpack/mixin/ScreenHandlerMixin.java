@@ -2,12 +2,15 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
-import com.yyz.yyzsbackpack.api.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -19,6 +22,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AbstractContainerMenu.class,priority = 1001)
@@ -90,22 +94,10 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
         this.equippackYOffset = y;
     }
 
-    @Unique
-    public Player inventory;
-    @Override
-    public Player getPlayer() {
-        return this.inventory;
-    }
-
-    @Override
-    public void setPlayer(Player inventory) {
-        this.inventory = inventory;
-    }
 
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
         AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
-
         if (slotIndex < 0
                 || slotIndex >= this.slots.size()
                 || actionType != ClickType.PICKUP

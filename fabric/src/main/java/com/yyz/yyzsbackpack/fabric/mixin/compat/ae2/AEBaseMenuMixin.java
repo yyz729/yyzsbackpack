@@ -2,7 +2,6 @@ package com.yyz.yyzsbackpack.fabric.mixin.compat.ae2;
 
 import appeng.menu.AEBaseMenu;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;

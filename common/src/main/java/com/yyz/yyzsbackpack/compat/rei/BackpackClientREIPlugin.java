@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.compat.rei;
 
-import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.screen.ExclusionZones;

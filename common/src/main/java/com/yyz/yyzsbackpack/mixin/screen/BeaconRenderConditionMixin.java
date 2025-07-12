@@ -1,6 +1,5 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.BeaconScreen;
 import net.minecraft.network.chat.Component;

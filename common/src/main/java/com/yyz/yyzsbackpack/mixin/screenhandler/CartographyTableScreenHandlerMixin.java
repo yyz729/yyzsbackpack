@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CartographyTableMenu;

@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.quark;
 
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.entity.player.Player;

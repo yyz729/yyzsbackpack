@@ -1,12 +1,11 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackHelper;
-import com.yyz.yyzsbackpack.api.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
-import com.yyz.yyzsbackpack.api.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

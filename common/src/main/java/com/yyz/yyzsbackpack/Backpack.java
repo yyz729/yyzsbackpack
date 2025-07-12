@@ -3,6 +3,8 @@ package com.yyz.yyzsbackpack;
 
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Items;
 
 import java.io.File;
 

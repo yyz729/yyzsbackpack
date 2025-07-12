@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.base;
 
 import com.mojang.datafixers.util.Pair;
 import com.yyz.yyzsbackpack.BackpackManager;

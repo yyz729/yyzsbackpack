@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.compat.accessories;
 
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import io.wispforest.accessories.client.AccessoriesMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;

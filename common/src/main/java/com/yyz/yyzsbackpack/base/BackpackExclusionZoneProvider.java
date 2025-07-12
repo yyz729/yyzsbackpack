@@ -1,6 +1,5 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.base;
 
-import me.shedaniel.math.Rectangle;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;

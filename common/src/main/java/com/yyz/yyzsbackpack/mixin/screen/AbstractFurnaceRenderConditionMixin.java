@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;

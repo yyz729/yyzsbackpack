@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.fabric.mixin;
 
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import de.rubixdev.inventorio.client.ui.InventorioScreen;
 import de.rubixdev.inventorio.player.InventorioScreenHandler;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;

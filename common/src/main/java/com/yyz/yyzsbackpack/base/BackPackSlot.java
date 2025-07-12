@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.base;
 
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;

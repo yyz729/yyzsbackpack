@@ -70,4 +70,3 @@ body:
     attributes:
       label: Additional Context
       description: Other useful information
-      required: false

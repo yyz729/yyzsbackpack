@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "yyzsbackpack",
+  "pattern": [
+    "LLL",
+    "LDL",
+    "LLL"
+  ],
+  "key": {
+    "L":  "minecraft:leather",
+    "D":  "minecraft:diamond"
+  },
+  "result": {
+    "id": "yyzsbackpack:diamond_backpack",
+    "count": 1
+  }
+}

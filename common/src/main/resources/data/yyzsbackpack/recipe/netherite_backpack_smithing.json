@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "yyzsbackpack:diamond_backpack",
+  "result": {
+    "id": "yyzsbackpack:netherite_backpack"
+  },
+  "template": "minecraft:leather"
+}

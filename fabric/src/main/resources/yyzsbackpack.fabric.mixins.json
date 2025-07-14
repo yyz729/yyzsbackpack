@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyz.yyzsbackpack.fabric.mixin.compat",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
+  "mixins": [
+    "hotbarslotcycling.HotbarCyclingProviderMixin",
+    "trinkets.SurvivalTrinketSlotMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

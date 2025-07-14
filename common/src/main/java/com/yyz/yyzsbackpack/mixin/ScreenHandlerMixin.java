@@ -1,0 +1,219 @@
+package com.yyz.yyzsbackpack.mixin;
+
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(value = AbstractContainerMenu.class,priority = 999)
+public abstract class ScreenHandlerMixin implements BackpackCondition {
+
+    @Shadow public abstract ItemStack getCarried();
+
+    @Shadow @Final public NonNullList<Slot> slots;
+
+    @Shadow public abstract void setCarried(ItemStack stack);
+
+    @Shadow public abstract Slot getSlot(int i);
+
+    @Shadow protected abstract boolean moveItemStackTo(ItemStack arg, int m, int n, boolean bl);
+
+    @Unique
+    private boolean shouldRenderBackpack = false;
+
+    @Override
+    public boolean shouldRenderBackpack() {
+        return this.shouldRenderBackpack;
+    }
+
+    @Override
+    public void setRenderBackpack(boolean shouldRenderBackpack) {
+        this.shouldRenderBackpack = shouldRenderBackpack;
+    }
+
+    @Unique
+    private int backpackXOffset = 0;
+    @Unique
+    private int backpackYOffset = 0;
+
+    @Unique
+    private int equippackXOffset = 0;
+    @Unique
+    private int equippackYOffset = 0;
+
+    @Override
+    public int getBackpackXOffset() {
+        return backpackXOffset + Backpack.getConfig().backpack_offsetX;
+    }
+
+    @Override
+    public int getBackpackYOffset() {
+        return backpackYOffset + Backpack.getConfig().backpack_offsetY;
+    }
+
+    @Override
+    public void setBackpackOffset(int x, int y) {
+        this.backpackXOffset = x;
+        this.backpackYOffset = y;
+    }
+
+    @Override
+    public int getEquippackXOffset() {
+        return equippackXOffset + Backpack.getConfig().slot_offsetX;
+    }
+
+    @Override
+    public int getEquippackYOffset() {
+        return equippackYOffset + Backpack.getConfig().slot_offsetY;
+    }
+
+    @Override
+    public void setEquippackOffset(int x, int y) {
+        this.equippackXOffset = x;
+        this.equippackYOffset = y;
+    }
+
+    @Inject(method = "addStandardInventorySlots", at = @At("RETURN"))
+    private void addSlot(Container container, int i, int j, CallbackInfo ci) {
+        if(container instanceof Inventory inventory) {
+            setRenderBackpack(true);
+            AbstractContainerMenu containerMenu = (AbstractContainerMenu) (Object) this;
+            BackpackManager.addBackpackSlots(containerMenu, inventory);
+        }
+    }
+
+    @Inject(method = "clicked", at = @At("RETURN"))
+    private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
+
+        if (slotIndex < 0 || slotIndex >= this.slots.size() || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem || !Backpack.getConfig().quick_swap) return;
+
+        ItemStack back = BackpackHelper.getEquipped(player).copy();
+        ItemStack stack = getCarried().copy();
+        if (back.getItem() instanceof BackpackItem && stack.getItem() instanceof BackpackItem) {
+            if(getSlot(slotIndex) instanceof BackPackSlot) {
+                BackpackManager.saveBackpackContents(player.getInventory(), back, true);
+                BackpackManager.restoreBackpackContents(player.getInventory(), stack);
+                Container container = BackpackHelper.getContainer(player);
+                container.setItem(BackpackHelper.getIndex(player), stack);
+                setCarried(back);
+            }
+        }
+    }
+
+    @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
+    private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
+        // 只处理 PICKUP 类型的右键点击 + Shift
+        if (clickType == ClickType.QUICK_MOVE && j == 1) {
+            if (i < 0) {
+                ci.cancel();
+                return;
+            }
+
+            Slot slot = (Slot)this.slots.get(i);
+            if (!slot.mayPickup(player)) {
+                ci.cancel();
+                return;
+            }
+
+            // 如果是背包槽位，转移到快捷栏
+            if (slot instanceof BackPackSlot) {
+                for (ItemStack itemStack = this.quickMoveToHotbar(player, i);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = this.quickMoveToHotbar(player, i)) {
+                }
+                ci.cancel();
+                return;
+            }
+
+            // 如果是原版槽位，转移到背包
+            if (i >= 9 && i < 45) { // 物品栏和快捷栏槽位
+                for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = this.quickMoveToBackpack(player, i)) {
+                }
+                ci.cancel();
+            }
+        }
+    }
+
+
+    @Unique
+    private ItemStack quickMoveToHotbar(Player player, int slotIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotIndex);
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 尝试移动到快捷栏 (36-44)
+            if (!this.moveItemStackTo(slotStack, 36, 45, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
+    }
+
+    @Unique
+    private ItemStack quickMoveToBackpack(Player player, int slotIndex) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotIndex);
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 查找背包槽位起始索引
+            int backpackStart = -1;
+            for (int i = 0; i < this.slots.size(); i++) {
+                if (this.slots.get(i) instanceof BackPackSlot) {
+                    backpackStart = i;
+                    break;
+                }
+            }
+
+            if (backpackStart == -1) {
+                return ItemStack.EMPTY;
+            }
+
+            // 尝试移动到背包槽位
+            if (!this.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
+    }
+}

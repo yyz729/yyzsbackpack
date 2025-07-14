@@ -1,0 +1,39 @@
+name: ✨ Feature Request
+description: Suggest new functionality or improvements
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: game-version
+    attributes:
+      label: Target Minecraft Version
+      description: Version you want this feature in (e.g. 1.20.1)
+      placeholder: "1.x.x"
+    validations:
+      required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: Current Mod Version
+      description: Your current mod version (e.g. 1.5.0)
+      placeholder: "x.x.x"
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Clearly explain what you want added
+      placeholder: "I want the mod to..."
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why is this needed?
+      description: How would this improve gameplay?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Possible Alternatives
+      description: "Have you considered other solutions? (Optional)"

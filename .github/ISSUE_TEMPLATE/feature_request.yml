@@ -3,6 +3,15 @@ description: Suggest new functionality or improvements
 title: "[FEATURE] "
 labels: ["enhancement"]
 body:
+  - type: markdown 
+    attributes:
+      value: |
+        **This template helps me understand and prioritize feature requests.**
+        
+        If you're unsure how to fill this form, you can use the Blank Issue instead.
+        However, providing the requested details below will help me evaluate your request faster.
+        
+        ---
   - type: input
     id: game-version
     attributes:

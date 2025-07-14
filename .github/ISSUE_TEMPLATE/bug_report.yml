@@ -3,6 +3,16 @@ description: Report unexpected behavior or crashes
 title: "[BUG] "
 labels: ["bug"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ℹ️ Template Guidance
+        **This template helps me quickly identify and fix issues.**
+        
+        If you're unsure how to fill this form, you can use the [Blank Issue Template](?template=blank_issue.yml) instead.
+        However, providing the requested details below will help resolve your issue faster.
+        
+        ---
   - type: input
     id: game-version
     attributes:

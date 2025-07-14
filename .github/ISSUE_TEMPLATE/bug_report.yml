@@ -6,7 +6,6 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## ℹ️ Template Guidance
         **This template helps me quickly identify and fix issues.**
         
         If you're unsure how to fill this form, you can use the Blank Issue instead.

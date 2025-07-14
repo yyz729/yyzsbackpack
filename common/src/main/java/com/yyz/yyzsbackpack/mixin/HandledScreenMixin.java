@@ -1,8 +1,8 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackPackSlot;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -30,7 +30,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Shadow @Final protected T menu;
     // 背包相关字段
     @Unique
-    private Inventory playerInventory;
+    private Inventory inventory;
     @Unique
     private boolean shouldRenderBackpackExtension = false;
     @Unique
@@ -43,7 +43,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Inject(method = "renderBackground", at = @At("RETURN"))
     private void onRenderBackground(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, playerInventory, shouldRenderBackpackExtension, (BackpackCondition) this.menu);
+        BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpackExtension, (BackpackCondition) this.menu);
     }
 
     @ModifyConstant(method = "checkHotbarMouseClicked", constant = @Constant(intValue = 40))
@@ -58,7 +58,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Inject(method = "renderContents", at = @At("HEAD"))
     private void checkBackpackStateChange(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        boolean currentState = BackpackManager.shouldRenderBackpackExtension(menu,playerInventory);
+        boolean currentState = BackpackManager.shouldRenderBackpackExtension(menu, inventory);
         if (currentState != previousBackpackState) {
             shouldRenderBackpackExtension = currentState;
             previousBackpackState = currentState;
@@ -68,18 +68,18 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseClicked(AbstractContainerScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(playerInventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
+        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
     @Redirect(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseReleased(AbstractContainerScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(playerInventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
+        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeFields(AbstractContainerMenu abstractContainerMenu, Inventory inventory, Component component, CallbackInfo ci) {
-        this.playerInventory = inventory;
-        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(menu, playerInventory);
+        this.inventory = inventory;
+        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(menu, this.inventory);
         this.previousBackpackState = shouldRenderBackpackExtension;
     }
 

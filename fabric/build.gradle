@@ -33,12 +33,12 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
     modImplementation "maven.modrinth:trinkets-canary:${rootProject.trinkets_version}"
-    modCompileOnly("org.ladysnake.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
-    modCompileOnly("org.ladysnake.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
-    modImplementation files('libs/hotbarslotcycling-fabric-21.6.0.jar')
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
+    modCompileOnly files('libs/hotbarslotcycling-fabric-21.6.0.jar')
 
-    modImplementation "curse.maven:inventory-profiles-next-495267:6616906"
-    modImplementation "curse.maven:libipn-679177:6616850"
+    modCompileOnly "curse.maven:inventory-profiles-next-495267:6616906"
+    modCompileOnly "curse.maven:libipn-679177:6616850"
 }
 
 processResources {

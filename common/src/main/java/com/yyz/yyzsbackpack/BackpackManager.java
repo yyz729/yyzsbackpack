@@ -1,15 +1,15 @@
 package com.yyz.yyzsbackpack;
 
-import com.yyz.yyzsbackpack.api.BackPackSlot;
-import com.yyz.yyzsbackpack.api.BackpackCondition;
-import com.yyz.yyzsbackpack.api.EquipPackSlot;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.EquipPackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
@@ -62,12 +62,12 @@ public class BackpackManager {
     }
 
     // 背包槽位管理
-    public static void addBackpackSlots(AbstractContainerMenu screenHandler, Container inventory) {
+    public static void addBackpackSlots(AbstractContainerMenu screenHandler, Inventory inventory) {
 
         for (int column = 0; column < 6; column++) {
             for (int row = 0; row < 9; row++) {
                 final int columnIndex = column;
-                screenHandler.addSlot(new BackPackSlot(screenHandler,inventory, row + (column + 1) * 9 + 27 + 1 , columnIndex, 0 , 0));
+                screenHandler.addSlot(new BackPackSlot(screenHandler,inventory, row + (column + 1) * 9 + 27 , columnIndex, 0 , 0));
             }
         }
     }
@@ -84,11 +84,11 @@ public class BackpackManager {
     }
     public static void addEquipmentSlot(AbstractContainerMenu screenHandler, Container inventory) {
         if(isTrinketModLoaded() && !Backpack.getConfig().force_slot) return;
-        screenHandler.addSlot(new EquipPackSlot(inventory, 36, 8 + 69 ,  8 + 18 * 2));
+        screenHandler.addSlot(new EquipPackSlot(inventory, 36+54, 8 + 69 ,  8 + 18 * 2));
     }
 
     // 保存背包内容到数据组件
-    public static void saveBackpackContents(Container inventory, ItemStack backpackStack) {
+    public static void saveBackpackContents(Container inventory, ItemStack backpackStack, boolean b) {
         BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
         int columns = backpackItem.getBackpackType().getColumns();
         int numSlots = columns * 9;
@@ -96,12 +96,14 @@ public class BackpackManager {
         // 创建固定大小的列表（所有槽位，包括空）
         List<ItemStack> items = new ArrayList<>(numSlots);
         for (int i = 0; i < numSlots; i++) {
-            int slotIndex = 37 + i;
+            int slotIndex = 36 + i;
             ItemStack stack = inventory.getItem(slotIndex);
             // 复制堆栈防止引用问题
             items.add(stack.copy());
             // 清空原库存槽位
-            inventory.setItem(slotIndex, ItemStack.EMPTY);
+            if(b) {
+                inventory.setItem(slotIndex, ItemStack.EMPTY);
+            }
         }
 
         // 设置数据组件
@@ -123,7 +125,7 @@ public class BackpackManager {
             ItemStack stack = items.get(i);
             // 只恢复非空堆栈
             if (!stack.isEmpty()) {
-                inventory.setItem(37 + i, stack.copy());
+                inventory.setItem(36 + i, stack.copy());
             }
         }
 
@@ -140,7 +142,7 @@ public class BackpackManager {
         if (!shouldRenderBackpack) return;
 
         int columns = 0;
-        ItemStack stack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
+        ItemStack stack = BackpackHelper.getEquipped(inventory.player);
         if (stack.getItem() instanceof BackpackItem backpackItem) {
             columns = backpackItem.getBackpackType().getColumns();
         }
@@ -161,7 +163,7 @@ public class BackpackManager {
         // 检查玩家是否有背包
         if (inventory != null && ((BackpackCondition)handler).shouldRenderBackpack()) {
 
-            ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
+            ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
 
             return backpackStack.getItem() instanceof BackpackItem;
         }
@@ -171,7 +173,7 @@ public class BackpackManager {
 
 
     // 点击范围判断 - 添加偏移值支持
-    public static boolean isClickOutsideExtendedBounds(Inventory playerInventory,
+    public static boolean isClickOutsideExtendedBounds(Inventory inventory,
                                                        boolean outsideOriginalBounds,
                                                        double mouseX, double mouseY,
                                                        int left, int top,
@@ -183,7 +185,7 @@ public class BackpackManager {
 
         if (shouldRenderBackpackExtension) {
             int columns = 0;
-            ItemStack backpackStack = BackpackHelper.getEquipped(Minecraft.getInstance().player);
+            ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
             if (backpackStack.getItem() instanceof BackpackItem backpack) {
                 columns = backpack.getBackpackType().getColumns();
             }
@@ -201,5 +203,15 @@ public class BackpackManager {
         }
 
         return outsideOriginalBounds && !inBackpackArea;
+    }
+
+    public static int getBackpackSize(Player player){
+        // 检查是否有背包物品
+        ItemStack backpackStack = BackpackHelper.getEquipped(player);
+        if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
+            // 基础槽位数 + 背包列数 * 9
+            return 36 + backpackItem.getBackpackType().getColumns() * 9;
+        }
+        return 36; // 没有背包时返回基础槽位数
     }
 }

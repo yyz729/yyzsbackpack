@@ -26,7 +26,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack);
+            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -45,7 +45,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
 
                 ItemStack oldBackpackStack = this.getItem();
                 if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack);
+                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack, true);
                 }
 
                 super.setByPlayer(newBackpackStack);

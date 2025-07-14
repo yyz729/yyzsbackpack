@@ -7,7 +7,6 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
-import fuzs.hotbarslotcycling.api.v1.client.SlotCyclingProvider;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -24,7 +23,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.anti_ad.mc.ipnext.mixin.MixinPlayerInventory;
 
 import java.util.List;
 import java.util.function.Function;
@@ -32,7 +30,7 @@ import java.util.function.Function;
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
-    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOOLEN, props), new Item.Properties().stacksTo(1));
+    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOODEN, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem STONE_BACKPACK = (BackpackItem) register("stone_backpack", props -> new BackpackItem(BackpackMaterial.STONE, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem IRON_BACKPACK = (BackpackItem) register("iron_backpack", props -> new BackpackItem(BackpackMaterial.IRON, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem GOLD_BACKPACK = (BackpackItem) register("gold_backpack", props -> new BackpackItem(BackpackMaterial.GOLD, props), new Item.Properties().stacksTo(1));
@@ -87,7 +85,7 @@ public final class BackpackFabric implements ModInitializer {
                     })
                     .orElse(ItemStack.EMPTY);
         }
-        return player.getInventory().getItem(36);
+        return player.getInventory().getItem(36+54);
     }
 
     public static Container getContainer(Player player) {
@@ -117,10 +115,10 @@ public final class BackpackFabric implements ModInitializer {
                         );
                         return !list.isEmpty()
                                 ? list.get(0).getA().index()  // 返回槽位索引
-                                : 36;                         // 未找到时返回默认值
+                                : 36+54;                         // 未找到时返回默认值
                     })
-                    .orElse(36);
+                    .orElse(36+54);
         }
-        return 36;
+        return 36+54;
     }
 }

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.base;
 
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
@@ -25,7 +25,7 @@ public class EquipPackSlot extends Slot {
     @Override
     public void onTake(Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem) {
-            BackpackManager.saveBackpackContents(inventory, backpackStack);
+            BackpackManager.saveBackpackContents(inventory, backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -34,7 +34,7 @@ public class EquipPackSlot extends Slot {
     public void setByPlayer(ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();
         if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-            BackpackManager.saveBackpackContents(inventory, oldBackpackStack);
+            BackpackManager.saveBackpackContents(inventory, oldBackpackStack, true);
         }
 
         super.setByPlayer(newBackpackStack);

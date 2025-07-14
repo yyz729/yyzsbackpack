@@ -15,14 +15,11 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @Mod(Backpack.MOD_ID)
@@ -87,7 +84,7 @@ public final class BackpackNeoForge {
 
     public static final DeferredItem<Item> WOOLEN_BACKPACK = ITEMS.registerItem(
             "woolen_backpack",
-            props -> new BackpackItem(BackpackMaterial.WOOLEN, props),
+            props -> new BackpackItem(BackpackMaterial.WOODEN, props),
             new Item.Properties().stacksTo(1)
     );
 
@@ -98,7 +95,7 @@ public final class BackpackNeoForge {
     );
 
     public static ItemStack getEquipped(Player player) {
-        return player.getInventory().getItem(36);
+        return player.getInventory().getItem(36+54);
     }
 
     public static Container getContainer(Player player) {
@@ -106,6 +103,6 @@ public final class BackpackNeoForge {
     }
 
     public static int getIndex(Player player) {
-        return 36;
+        return 36+54;
     }
 }

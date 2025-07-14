@@ -6,6 +6,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "EquipmentSlotMixin",
+    "ItemEntityMixin",
+    "NonNullListMixin",
     "PlayerInventoryMixin",
     "PlayerScreenHandlerMixin",
     "ScreenHandlerMixin",
@@ -14,6 +16,8 @@
   "client": [
     "CreativeInventoryScreenMixin",
     "HandledScreenMixin",
+    "PlayerEntitRendererMixin",
+    "PlayerRenderStateMixin",
     "screen.AbstractRecipeBookScreenMixin",
     "screen.InventoryRenderConditionMixin"
   ],

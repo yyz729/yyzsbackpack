@@ -23,4 +23,8 @@ public class BackpackHelperImpl {
     public static int getIndex(Player player){
         return BackpackFabric.getIndex(player);
     }
+    public static boolean getEmptyRule(Player player) {
+        return true;
+    }
+
 }

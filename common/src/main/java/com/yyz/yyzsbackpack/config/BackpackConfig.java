@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class BackpackConfig {
 
@@ -13,10 +14,15 @@ public class BackpackConfig {
 
     public boolean quick_swap = true;
     public boolean force_slot = false;
+    public boolean container_item = false;
     public int slot_offsetX = 0;
     public int slot_offsetY = 0;
     public int backpack_offsetX = 0;
     public int backpack_offsetY = 0;
+    public Set<String> container_item_list = Set.of(
+            "namespace:item_id"
+    );
+
 
     public static BackpackConfig loadConfig(File file) {
         BackpackConfig config;

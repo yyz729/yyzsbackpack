@@ -56,11 +56,9 @@ public final class BackpackFabric implements ModInitializer {
 
     public static void register(){
 
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"),
-                BACKPACK_ITEMS_COMPONENT);
-
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"), BACKPACK_ITEMS_COMPONENT);
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "group"), GROUP);
+
     }
 
     public static Item register(String path, Function<Item.Properties, Item> factory, Item.Properties settings) {

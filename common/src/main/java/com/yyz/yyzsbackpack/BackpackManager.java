@@ -4,8 +4,10 @@ import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.base.BackpackCondition;
 import com.yyz.yyzsbackpack.base.EquipPackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,10 +15,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class BackpackManager {
@@ -113,6 +119,7 @@ public class BackpackManager {
     // 从数据组件恢复背包内容
     public static void restoreBackpackContents(Container inventory, ItemStack backpackStack) {
         // 获取数据组件
+
         List<ItemStack> items = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
         if (items == null) return;
 
@@ -154,14 +161,33 @@ public class BackpackManager {
         int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
         context.blit(RenderPipelines.GUI_TEXTURED,BACKPACK_TEXTURE, left, top, u, 0, width, 174, 462, 174);
     }
+    // 背景渲染方法 - 添加偏移值支持
+    public static void renderBackpackBackground1(GuiGraphics context, ItemStack stack,int x, int y,
+                                                int backgroundWidth, int backgroundHeight,
+                                                Inventory inventory, boolean shouldRenderBackpack,
+                                                BackpackCondition renderCondition) {
+
+        if (!shouldRenderBackpack) return;
+
+        int columns = 0;
+        if (stack.getItem() instanceof BackpackItem backpackItem) {
+            columns = backpackItem.getBackpackType().getColumns();
+        }
+
+        int width = 14 + columns * 18;
+        // 应用偏移值
+        int left = x - 14 - columns * 18 - 1 + renderCondition.getBackpackXOffset();
+        int top = y + (backgroundHeight - 174) / 2 + renderCondition.getBackpackYOffset();
+        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
+        context.blit(RenderPipelines.GUI_TEXTURED,BACKPACK_TEXTURE, left, top, u, 0, width, 174, 462, 174);
+    }
 
 
 
-    public static boolean shouldRenderBackpackExtension(AbstractContainerMenu handler, Inventory inventory) {
-
+    public static boolean shouldRenderBackpackExtension(AbstractContainerMenu menu, Inventory inventory) {
 
         // 检查玩家是否有背包
-        if (inventory != null && ((BackpackCondition)handler).shouldRenderBackpack()) {
+        if (inventory != null && ((BackpackCondition)menu).shouldRenderBackpack()) {
 
             ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
 
@@ -214,4 +240,25 @@ public class BackpackManager {
         }
         return 36; // 没有背包时返回基础槽位数
     }
+
+    private static Set<ResourceLocation> convertStringSetToIdentifierSet(Set<String> stringSet) {
+        return stringSet.stream()
+                .map(s -> {
+                    try {
+                        return ResourceLocation.tryParse(s);
+                    } catch (ResourceLocationException e) {
+                        System.err.println("Invalid Identifier: " + s);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    public static boolean disableBackpack(Item item) {
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+        return convertStringSetToIdentifierSet(Backpack.getConfig().container_item_list).contains(id);
+    }
+
+
 }

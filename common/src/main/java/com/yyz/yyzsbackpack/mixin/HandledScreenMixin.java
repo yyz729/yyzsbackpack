@@ -1,21 +1,32 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extends Screen {
@@ -28,6 +39,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Shadow protected abstract boolean hasClickedOutside(double mouseX, double mouseY, int left, int top, int button);
 
     @Shadow @Final protected T menu;
+    @Shadow @Nullable protected Slot hoveredSlot;
     // 背包相关字段
     @Unique
     private Inventory inventory;
@@ -84,16 +96,9 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     }
 
 
-    @Inject(
-            method = "renderContents",
-            at = @At("HEAD")
-    )
-    private void updateBackpackSlotsPositionBeforeRender(
-            GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci
-    ) {
-
+    @Inject(method = "renderContents", at = @At("HEAD"))
+    private void updateBackpackSlotsPositionBeforeRender(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         Screen screen = (Screen)(Object)this;
-
         if (screen instanceof CreativeModeInventoryScreen) {
             return; // 跳过创造模式界面
         }
@@ -136,4 +141,70 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             );
         }
     }
+//    @Inject(method = "renderBackground", at = @At("RETURN"))
+//    private void renderBackpackContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+//        Minecraft minecraft = Minecraft.getInstance();
+//        Player player = minecraft.player;
+//        if (player == null) return;
+//
+//        // 1. 获取玩家选中的背包物品
+//        if(this.hoveredSlot == null || !this.menu.getCarried().isEmpty()) return;
+//        ItemStack backpackStack = this.hoveredSlot.getItem();
+//
+//        if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) return;
+//        BackpackManager.renderBackpackBackground1(guiGraphics,backpackStack, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpackExtension, (BackpackCondition) this.menu);
+//
+//        // 2. 从数据组件读取背包内容
+//        List<ItemStack> backpackItems = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
+//        if (backpackItems == null) return;
+//
+//        // 使用您的位置计算逻辑
+//        int baseHeight = this.imageHeight;
+//        int columns = backpackItem.getBackpackType().getColumns();
+//        int rows = 9; // 固定9行
+//
+//        // 计算渲染位置（左侧）
+//        int totalWidth = columns * 18;
+//        int totalHeight = rows * 18;
+//
+//        // 使用您的偏移计算逻辑
+//        int startX = -25; // 基础X偏移
+//        int startY = (baseHeight - 166) / 2 + 3; // 基础Y位置
+//
+//
+//        // 5. 渲染物品
+//
+////        for (int i = 0; i < backpackItems.size(); i++) {
+////            ItemStack stack = backpackItems.get(i);
+////            if (stack.isEmpty()) continue;
+////
+////            int row = i / 9;
+////            int col = i % 9;
+////            int x = startX + col * 16;
+////            int y = startY + row * 16;
+////
+////            // 绘制物品图标
+////            guiGraphics.renderItem(stack, x, y);
+////            // 绘制物品数量
+////            guiGraphics.renderItemDecorations(minecraft.font, stack, x, y);
+////        }
+//
+////        for (int column = 0; column < columns; column++) {
+////            for (int row = 0; row < rows; row++) {
+////                int slotIndex = column * rows + row;
+////                if (slotIndex >= backpackItems.size()) continue;
+////
+////                // 计算每个物品的位置
+////                int x = startX - column * 18;
+////                int y = startY + row * 18;
+////                ItemStack stack = backpackItems.get(slotIndex);
+////                // 绘制物品图标
+////                guiGraphics.renderItem(stack, x, y);
+////                // 绘制物品数量
+////                guiGraphics.renderItemDecorations(minecraft.font, stack, x, y);
+////            }
+////        }
+//    }
+
+
 }

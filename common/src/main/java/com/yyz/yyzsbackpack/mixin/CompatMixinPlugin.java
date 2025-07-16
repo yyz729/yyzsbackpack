@@ -16,6 +16,14 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return !BackpackHelper.isModLoaded("trinkets");
         }
 
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.ItemEntityMixin")) {
+            return !BackpackHelper.isModLoaded("collective");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.collective.ItemEntityMixin")) {
+            return BackpackHelper.isModLoaded("collective");
+        }
+
+
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.trinkets.SurvivalTrinketSlotMixin")) {
             return BackpackHelper.isModLoaded("trinkets") ;
         }

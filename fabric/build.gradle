@@ -39,6 +39,7 @@ dependencies {
 
     modCompileOnly "curse.maven:inventory-profiles-next-495267:6616906"
     modCompileOnly "curse.maven:libipn-679177:6616850"
+    modCompileOnly "curse.maven:collective-342584:6668185"
 }
 
 processResources {

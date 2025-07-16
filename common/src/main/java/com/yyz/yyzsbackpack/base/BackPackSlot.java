@@ -1,6 +1,8 @@
 package com.yyz.yyzsbackpack.base;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -50,6 +52,13 @@ public class BackPackSlot extends Slot {
             if (columnIndex >= columns) {
                 return false;
             }
+        }
+        if(BackpackManager.disableBackpack(stack.getItem())){
+            return false;
+        }
+
+        if(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item){
+            return false;
         }
 
         return canPlace;

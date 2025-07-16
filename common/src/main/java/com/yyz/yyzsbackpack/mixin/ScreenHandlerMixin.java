@@ -140,7 +140,7 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
             }
 
             // 如果是原版槽位，转移到背包
-            if (i >= 9 && i < 45) { // 物品栏和快捷栏槽位
+            else  { // 物品栏和快捷栏槽位
                 for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
                      !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
                      itemStack = this.quickMoveToBackpack(player, i)) {
@@ -156,12 +156,26 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
 
+
+        // 动态获取快捷栏索引范围
+        int hotbarStart = -1;
+        int hotbarEnd = -1;
+        for (int idx = 0; idx < this.slots.size(); idx++) {
+            Slot s = this.slots.get(idx);
+            if (s.container instanceof Inventory &&
+                    s.getContainerSlot() >= 0 &&
+                    s.getContainerSlot() < 9) {
+                if (hotbarStart == -1) hotbarStart = idx;
+                hotbarEnd = idx + 1; // 结束索引是exclusive的
+            }
+        }
+
         if (slot != null && slot.hasItem()) {
             ItemStack slotStack = slot.getItem();
             itemStack = slotStack.copy();
 
             // 尝试移动到快捷栏 (36-44)
-            if (!this.moveItemStackTo(slotStack, 36, 45, false)) {
+            if (!this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
                 return ItemStack.EMPTY;
             }
 

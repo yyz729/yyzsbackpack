@@ -164,10 +164,9 @@ public class BackpackManager {
     // 背景渲染方法 - 添加偏移值支持
     public static void renderBackpackBackground1(GuiGraphics context, ItemStack stack,int x, int y,
                                                 int backgroundWidth, int backgroundHeight,
-                                                Inventory inventory, boolean shouldRenderBackpack,
-                                                BackpackCondition renderCondition) {
+                                                 BackpackCondition renderCondition) {
 
-        if (!shouldRenderBackpack) return;
+
 
         int columns = 0;
         if (stack.getItem() instanceof BackpackItem backpackItem) {

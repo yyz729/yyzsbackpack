@@ -37,17 +37,26 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
 
     @Unique
     private boolean shouldRenderBackpack = false;
-
+    @Unique
+    private boolean renderTipBackpack = false;
     @Override
     public boolean shouldRenderBackpack() {
-        return this.shouldRenderBackpack;
+        return this.shouldRenderBackpack && !renderTipBackpack();
     }
 
     @Override
     public void setRenderBackpack(boolean shouldRenderBackpack) {
         this.shouldRenderBackpack = shouldRenderBackpack;
     }
+    @Override
+    public boolean renderTipBackpack() {
+        return this.renderTipBackpack;
+    }
 
+    @Override
+    public void setRenderTipBackpack(boolean renderTipBackpack) {
+        this.renderTipBackpack = renderTipBackpack;
+    }
     @Unique
     private int backpackXOffset = 0;
     @Unique

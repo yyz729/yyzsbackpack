@@ -19,7 +19,8 @@ public class BackpackConfig {
     public int slot_offsetY = 0;
     public int backpack_offsetX = 0;
     public int backpack_offsetY = 0;
-    public Set<String> container_item_list = Set.of(
+    public String tip_key = "shift";//alt,ctrl,none
+     public Set<String> container_item_list = Set.of(
             "namespace:item_id"
     );
 

@@ -89,11 +89,7 @@ public abstract class PlayerInventoryMixin implements Container {
 	@Inject(method = "placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;Z)V", at = @At("HEAD"), cancellable = true)
 	private void placeItemBackInInventory(ItemStack itemStack, boolean bl, CallbackInfo ci) {
 		ci.cancel();
-		// 检查物品是否应被禁止放入背包
-		if (!itemStack.isEmpty() && (BackpackManager.disableBackpack(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item))) {
-			this.player.drop(itemStack, false); // 直接掉落物品
-			return;
-		}
+
 		while(true) {
 			if (!itemStack.isEmpty()) {
 				int i = this.getSlotWithRemainingSpace(itemStack);
@@ -103,6 +99,10 @@ public abstract class PlayerInventoryMixin implements Container {
 
 				if (i != -1 && i < BackpackManager.getBackpackSize(player)) {
 					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
+					if (i>=36 && (BackpackManager.disableBackpack(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item))) {
+						this.player.drop(itemStack, false); // 直接掉落物品
+						return;
+					}
 					if (this.add(i, itemStack.split(j)) && bl && this.player instanceof ServerPlayer) {
 						((ServerPlayer)this.player).connection.send(new ClientboundContainerSetSlotPacket(-2, 0, i, this.getItem(i)));
 					}
@@ -122,54 +122,7 @@ public abstract class PlayerInventoryMixin implements Container {
 		}
 	}
 
-	public boolean modAdd(int i, ItemStack itemStack) {
-		if (itemStack.isEmpty() ) {
-			return false;
-		} else {
-			try {
-				if (itemStack.isDamaged()) {
-					if (i == -1) {
-						i = this.getFreeSlot();
-					}
 
-					if (i >= 0) {
-						this.items.set(i, itemStack.copyAndClear());
-						((ItemStack)this.items.get(i)).setPopTime(5);
-						return true;
-					} else if (this.player.getAbilities().instabuild) {
-						itemStack.setCount(0);
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					int j;
-					do {
-						j = itemStack.getCount();
-						if (i == -1) {
-							itemStack.setCount(this.addResource(itemStack));
-						} else {
-							itemStack.setCount(this.addResource(i, itemStack));
-						}
-					} while(!itemStack.isEmpty() && itemStack.getCount() < j);
-
-					if (itemStack.getCount() == j && this.player.getAbilities().instabuild) {
-						itemStack.setCount(0);
-						return true;
-					} else {
-						return itemStack.getCount() < j;
-					}
-				}
-			} catch (Throwable throwable) {
-				CrashReport crashReport = CrashReport.forThrowable(throwable, "Adding item to inventory");
-				CrashReportCategory crashReportCategory = crashReport.addCategory("Item being added");
-				crashReportCategory.setDetail("Item ID", Item.getId(itemStack.getItem()));
-				crashReportCategory.setDetail("Item data", itemStack.getDamageValue());
-				crashReportCategory.setDetail("Item name", () -> itemStack.getHoverName().getString());
-				throw new ReportedException(crashReport);
-			}
-		}
-	}
 //	@Unique
 //	private static final int BASE_SIZE = 36; // 原版物品栏大小
 //	@Unique

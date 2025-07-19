@@ -5,24 +5,25 @@ import com.google.gson.GsonBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Set;
 
 public class BackpackConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-
     public boolean quick_swap = true;
     public boolean force_slot = false;
+    public boolean render_model = true;
     public boolean container_item = false;
     public int slot_offsetX = 0;
     public int slot_offsetY = 0;
     public int backpack_offsetX = 0;
     public int backpack_offsetY = 0;
     public String tip_key = "shift";//alt,ctrl,none
-     public Set<String> container_item_list = Set.of(
+    public Set<String> container_item_list = new HashSet<>(Set.of(
             "namespace:item_id"
-    );
+    ));
 
 
     public static BackpackConfig loadConfig(File file) {

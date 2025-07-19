@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.fabric.mixin.compat.collective;
 
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,11 +15,18 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class ItemEntityMixin {
 
     @Redirect(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"))
-	private boolean modifyFindSlotMatchingItem(Inventory instance, ItemStack itemStack) {
+	private boolean modifyFindSlotMatchingItem(Inventory instance, ItemStack stack) {
 		Player player = instance.player;
-		((CollectivePlayerEvents.Player_Picked_Up_Item)CollectivePlayerEvents.ON_ITEM_PICKED_UP.invoker()).onItemPickedUp(player.level(), player, itemStack);
+		((CollectivePlayerEvents.Player_Picked_Up_Item)CollectivePlayerEvents.ON_ITEM_PICKED_UP.invoker()).onItemPickedUp(player.level(), player, stack);
 
-		return instance.getFreeSlot() < BackpackManager.getBackpackSize(instance.player) && instance.add(itemStack);
+		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
+			return !BackpackManager.disableBackpack(stack.getItem())
+					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item))
+					&& instance.getFreeSlot() < BackpackManager.getBackpackSize(instance.player)
+					&& instance.add(stack);
+		}else {
+			return instance.add(stack);
+		}
 	}
 
 

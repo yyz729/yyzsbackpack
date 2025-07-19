@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.BackpackPlatform;
@@ -74,6 +75,7 @@ public abstract class PlayerInventoryMixin {
 	@Inject(method = "placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;Z)V", at = @At("HEAD"), cancellable = true)
 	private void placeItemBackInInventory(ItemStack itemStack, boolean bl, CallbackInfo ci) {
 		ci.cancel();
+
 		while(true) {
 			if (!itemStack.isEmpty()) {
 				int i = this.getSlotWithRemainingSpace(itemStack);
@@ -83,6 +85,10 @@ public abstract class PlayerInventoryMixin {
 
 				if (i != -1 && i < BackpackManager.getBackpackSize(player)) {
 					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
+					if (i>=36 && (BackpackManager.disableBackpack(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item))) {
+						this.player.drop(itemStack, false); // 直接掉落物品
+						return;
+					}
 					if (this.add(i, itemStack.split(j)) && bl && this.player instanceof ServerPlayer) {
 						((ServerPlayer)this.player).connection.send(new ClientboundContainerSetSlotPacket(-2, 0, i, this.getItem(i)));
 					}

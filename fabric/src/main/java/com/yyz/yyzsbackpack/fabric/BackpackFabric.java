@@ -8,6 +8,7 @@ import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
@@ -58,7 +59,9 @@ public final class BackpackFabric implements ModInitializer {
 
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"), BACKPACK_ITEMS_COMPONENT);
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "group"), GROUP);
-
+        CommandRegistrationCallback.EVENT.register((dispatcher, registry, env) -> {
+            Backpack.registerCommands(dispatcher);
+        });
     }
 
     public static Item register(String path, Function<Item.Properties, Item> factory, Item.Properties settings) {

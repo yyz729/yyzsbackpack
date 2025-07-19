@@ -9,6 +9,7 @@
     "InventorySlotsIndicatorMixin",
     "SurvivalTrinketSlotMixin",
     "compat.ae2.AEBaseMenuMixin",
+    "compat.collective.ItemEntityMixin",
     "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
   ],
   "client": [

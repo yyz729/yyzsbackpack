@@ -4,7 +4,9 @@ import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.base.BackpackCondition;
 import com.yyz.yyzsbackpack.base.EquipPackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -15,7 +17,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BackpackManager {
     public static final ResourceLocation BACKPACK_TEXTURE = new ResourceLocation(Backpack.MOD_ID, "textures/gui/backpack.png");
@@ -156,7 +163,25 @@ public class BackpackManager {
 
         context.blit(BACKPACK_TEXTURE, left, top, u, 0, width, 174, 462, 174);
     }
+    // 背景渲染方法 - 添加偏移值支持
+    public static void renderBackpackBackground1(GuiGraphics context, ItemStack stack,int x, int y,
+                                                 int backgroundWidth, int backgroundHeight,
+                                                 BackpackCondition renderCondition) {
 
+
+
+        int columns = 0;
+        if (stack.getItem() instanceof BackpackItem backpackItem) {
+            columns = backpackItem.getBackpackType().getColumns();
+        }
+
+        int width = 14 + columns * 18;
+        // 应用偏移值
+        int left = x - 14 - columns * 18 - 1 + renderCondition.getBackpackXOffset();
+        int top = y + (backgroundHeight - 174) / 2 + renderCondition.getBackpackYOffset();
+        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
+        context.blit(BACKPACK_TEXTURE, left, top, u, 0, width, 174, 462, 174);
+    }
 
     public static boolean shouldRenderBackpackExtension(AbstractContainerMenu handler, Inventory inventory) {
 
@@ -215,5 +240,23 @@ public class BackpackManager {
             return 36 + backpackItem.getBackpackType().getColumns() * 9;
         }
         return 36; // 没有背包时返回基础槽位数
+    }
+    private static Set<ResourceLocation> convertStringSetToIdentifierSet(Set<String> stringSet) {
+        return stringSet.stream()
+                .map(s -> {
+                    try {
+                        return ResourceLocation.tryParse(s);
+                    } catch (ResourceLocationException e) {
+                        System.err.println("Invalid Identifier: " + s);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    public static boolean disableBackpack(Item item) {
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+        return convertStringSetToIdentifierSet(Backpack.getConfig().container_item_list).contains(id);
     }
 }

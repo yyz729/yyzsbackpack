@@ -40,6 +40,7 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
             if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
                 BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
             }
+            return;
         }
         super.setByPlayer(newBackpackStack);
     }

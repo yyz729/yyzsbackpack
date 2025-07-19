@@ -6,14 +6,12 @@
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
     "compat.ae2.AEBaseMenuMixin",
-    "compat.corpsecurioscompat.CorpseCuriosCompatConfigMixin",
     "compat.curios.CuriosContainerMixin",
     "compat.curios.CuriosContainerV2Mixin",
     "compat.curios.CurioSlotMixin",
     "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
     "compat.inventorio.InventorioScreenHandlerMixin",
     "compat.inventoryfree.InventoryEnforcerMixin",
-    "compat.quark.TotemOfHoldingEntityMixin",
     "compat.wfha.SimpleTableMenuMixin"
   ],
   "client": [

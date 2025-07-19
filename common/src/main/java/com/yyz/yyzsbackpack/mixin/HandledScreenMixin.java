@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.base.BackPackSlot;
 import com.yyz.yyzsbackpack.BackpackManager;
@@ -11,10 +12,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +28,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +44,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Shadow protected abstract boolean hasClickedOutside(double mouseX, double mouseY, int left, int top, int button);
 
     @Shadow @Final protected T menu;
+    @Shadow @Nullable protected Slot hoveredSlot;
     // 背包相关字段
     @Unique
     private Inventory inventory;
@@ -58,6 +66,80 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight,
                 inventory, shouldRenderBackpackExtension,
                 (BackpackCondition) this.menu);
+
+
+        ((BackpackCondition)menu).setRenderTipBackpack(false);
+        boolean requireKey;
+        switch (Backpack.getConfig().tip_key.toLowerCase()) {
+            case "shift" -> requireKey = hasShiftDown();
+            case "alt" -> requireKey = hasAltDown();
+            case "ctrl" -> requireKey = hasControlDown();
+            case "none" -> requireKey = true; // 不需要按键
+            default -> {
+                // 无效配置时使用默认值（shift）
+                if (!hasShiftDown()) return;
+                return;
+            }
+        }
+
+        // 如果配置要求按键但未按下，则返回
+        if (!requireKey) return;
+
+        if(this.hoveredSlot == null || !this.menu.getCarried().isEmpty()) return;
+
+        ItemStack backpackStack = this.hoveredSlot.getItem();
+
+        if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) return;
+        BackpackManager.renderBackpackBackground1(context,backpackStack, leftPos, topPos, imageWidth, imageHeight, (BackpackCondition) this.menu);
+        ((BackpackCondition)menu).setRenderTipBackpack(true);
+        // 从数据组件读取背包内容
+
+        List<ItemStack> backpackItems = new ArrayList<>();
+        CompoundTag nbt = backpackStack.getTag();
+        if (nbt != null && nbt.contains("BackpackItems", Tag.TAG_LIST)) {
+
+            int numSlots = backpackItem.getBackpackType().getColumns() * 9;
+
+            // 初始化全空物品列表
+            for (int i = 0; i < numSlots; i++) {
+                backpackItems.add(ItemStack.EMPTY);
+            }
+
+            // 填充非空物品
+            ListTag itemsTag = nbt.getList("BackpackItems", Tag.TAG_COMPOUND);
+            for (int i = 0; i < itemsTag.size(); i++) {
+                CompoundTag itemTag = itemsTag.getCompound(i);
+                int slotIndex = itemTag.getInt("Slot");
+                if (slotIndex >= 0 && slotIndex < numSlots) {
+                    backpackItems.set(slotIndex, ItemStack.of(itemTag));
+                }
+            }
+        }
+        if (backpackItems.isEmpty()) return;
+        // 使用您的位置计算逻辑
+        int baseHeight = this.imageHeight;
+        int columns = backpackItem.getBackpackType().getColumns();
+        int rows = 9; // 固定9行
+
+        int startX = leftPos-25; // 基础X偏移
+        int startY = topPos + (baseHeight - 166) / 2 + 3; // 基础Y位置
+
+
+        for (int column = 0; column < columns; column++) {
+            for (int row = 0; row < rows; row++) {
+                int slotIndex = column * rows + row;
+                if (slotIndex >= backpackItems.size()) continue;
+
+                // 计算每个物品的位置
+                int x = startX - column * 18;
+                int y = startY + row * 18;
+                ItemStack stack = backpackItems.get(slotIndex);
+                // 绘制物品图标
+                context.renderItem(stack, x, y);
+                // 绘制物品数量
+                context.renderItemDecorations(minecraft.font, stack, x, y);
+            }
+        }
     }
 
 

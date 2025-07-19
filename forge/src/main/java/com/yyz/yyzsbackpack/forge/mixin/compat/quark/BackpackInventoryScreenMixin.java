@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.quark;
 
+import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.base.BackpackCondition;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -24,7 +25,8 @@ public abstract class BackpackInventoryScreenMixin extends InventoryScreen {
     private void renderForeground(GuiGraphics guiGraphics, float f, int i, int j, CallbackInfo ci) {
         BackpackCondition condition = (BackpackCondition) menu;
         condition.setEquippackOffset(0, -29);
-        guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
+        BackpackManager.renderEquippackSlot(menu,guiGraphics,leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2);
+//        guiGraphics.blit(SLOT_TEXTURE,  leftPos + 8 + 69 -1,  topPos + 8 - 1 + 18 * 2, 0, 0, 18, 18, 18, 18);
 
     }
 }

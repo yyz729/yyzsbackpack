@@ -43,7 +43,7 @@ dependencies {
     modImplementation files('libs/gravestones-1.0.12-1.20.1.jar')
 
     modImplementation("curse.maven:applied-energistics-2-223794:6492967")
-
+    modImplementation "curse.maven:collective-342584:6429218"
 }
 
 processResources {

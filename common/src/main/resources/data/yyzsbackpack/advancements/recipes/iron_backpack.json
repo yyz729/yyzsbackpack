@@ -1,0 +1,24 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_leather": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["minecraft:leather"]}]
+      }
+    },
+    "has_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"items": ["minecraft:iron_ingot"]}]
+      }
+    }
+  },
+  "requirements": [
+    ["has_leather", "has_iron"]
+  ],
+  "rewards": {
+    "recipes": ["yyzsbackpack:iron_backpack"]
+  },
+  "sends_telemetry_event": false
+}

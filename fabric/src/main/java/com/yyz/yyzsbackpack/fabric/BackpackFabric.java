@@ -10,6 +10,7 @@ import dev.emi.trinkets.api.TrinketsApi;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -60,6 +61,9 @@ public final class BackpackFabric implements ModInitializer {
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(MOD_ID, "netherite_backpack"), NETHERITE_BACKPACK);
 
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, "group"), GROUP);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registry, env) -> {
+            Backpack.registerCommands(dispatcher);
+        });
     }
 
     @Override

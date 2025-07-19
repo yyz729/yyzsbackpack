@@ -8,6 +8,10 @@ public interface BackpackCondition {
 
     void setRenderBackpack(boolean bl);
 
+    boolean renderTipBackpack() ;
+
+    void setRenderTipBackpack(boolean bl);
+
     // 新增方法获取X偏移值
     int getBackpackXOffset();
 

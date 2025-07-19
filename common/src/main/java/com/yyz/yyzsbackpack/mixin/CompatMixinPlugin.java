@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.BackpackHelper;
+import dev.architectury.platform.Platform;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -18,6 +19,13 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.SurvivalTrinketSlot")) {
             return BackpackHelper.isModLoaded("trinkets");
         }
+
+//        if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.ItemEntityMixin")) {
+//            return !BackpackHelper.isModLoaded("collective");
+//        }
+//        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.collective.ItemEntityMixin")) {
+//            return BackpackHelper.isModLoaded("collective");
+//        }
 
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.forge.mixin.CuriosContainerMixin")) {

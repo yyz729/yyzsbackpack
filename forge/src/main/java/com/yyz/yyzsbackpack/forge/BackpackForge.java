@@ -17,7 +17,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -56,7 +59,6 @@ public final class BackpackForge {
     public static final RegistryObject<Item> IRON_BACKPACK = ITEMS.register("iron_backpack", () -> new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> STONE_BACKPACK = ITEMS.register("stone_backpack", () -> new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack", () -> new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1)));
-
 
 
     public static ItemStack getEquipped(Player player) {

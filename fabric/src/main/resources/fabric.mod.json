@@ -22,7 +22,13 @@
       "com.yyz.yyzsbackpack.fabric.client.BackpackFabricClient"
     ],
     "jei_mod_plugin": [
-      "com.yyz.yyzsbackpack.fabric.BackpackJeiPlugin"
+      "com.yyz.yyzsbackpack.compat.jei.BackpackJeiPlugin"
+    ],
+    "rei_client": [
+      "com.yyz.yyzsbackpack.compat.rei.BackpackClientREIPlugin"
+    ],
+    "emi": [
+      "com.yyz.yyzsbackpack.compat.emi.BackpackEmiPlugin"
     ]
   },
   "mixins": [

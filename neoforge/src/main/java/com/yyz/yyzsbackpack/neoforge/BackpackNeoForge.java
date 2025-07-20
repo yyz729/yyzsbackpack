@@ -1,20 +1,23 @@
 package com.yyz.yyzsbackpack.neoforge;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
-import net.minecraft.core.component.DataComponentPatch;
+import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoriesContainer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
@@ -25,8 +28,10 @@ import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+import top.theillusivec4.curios.common.CuriosConfig;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mod(Backpack.MOD_ID)
@@ -69,7 +74,7 @@ public final class BackpackNeoForge {
             () -> new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1)));
 
     public static final DeferredHolder<Item, Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack",
-            () -> new BackpackItem(BackpackMaterial.WOOLEN, new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1)));
 
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> BACKPACK_ITEMS_COMPONENT = DATA_COMPONENT.registerComponentType(
@@ -88,37 +93,73 @@ public final class BackpackNeoForge {
     }
 
     public static ItemStack getEquipped(Player player) {
-        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
-            // 直接使用 Optional 替代 resolve()
-            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
-            if (curiosHandler.isPresent()) {
-                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
-                        stack -> stack.getItem() instanceof BackpackItem
-                );
-                if (backpackSlot.isPresent()) {
-                    return backpackSlot.get().stack();
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("curios")) {
+                // 直接使用 Optional 替代 resolve()
+                Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
+                if (curiosHandler.isPresent()) {
+                    Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                            stack -> stack.getItem() instanceof BackpackItem
+                    );
+                    if (backpackSlot.isPresent()) {
+                        return backpackSlot.get().stack();
+                    }
+                }
+            }
+
+            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return stack;
+                            }
+                        }
+                    }
                 }
             }
         }
-        return player.getInventory().getItem(36);
+        return player.getInventory().getItem(36+54);
     }
 
     public static Container getContainer(Player player) {
-        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
-            // 直接使用 Optional 替代 resolve()
-            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
-            if (curiosHandler.isPresent()) {
-                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
-                        stack -> stack.getItem() instanceof BackpackItem
-                );
-                if (backpackSlot.isPresent()) {
-                    SlotContext slotContext = backpackSlot.get().slotContext();
-                    String slotId = slotContext.identifier();
-                    int slotIndex = slotContext.index();
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("curios")) {
+                // 直接使用 Optional 替代 resolve()
+                Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
+                if (curiosHandler.isPresent()) {
+                    Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                            stack -> stack.getItem() instanceof BackpackItem
+                    );
+                    if (backpackSlot.isPresent()) {
+                        SlotContext slotContext = backpackSlot.get().slotContext();
+                        String slotId = slotContext.identifier();
+                        int slotIndex = slotContext.index();
 
-                    Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
-                    if (stacksHandler.isPresent()) {
-                        return new CuriosContainerAdapter(stacksHandler.get().getStacks(), slotIndex);
+                        Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
+                        if (stacksHandler.isPresent()) {
+                            return new CuriosContainerAdapter(stacksHandler.get().getStacks(), slotIndex);
+                        }
+                    }
+                }
+            }
+
+            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return new AccessoriesContainerAdapter(accessoriesContainer, i);
+                            }
+                        }
                     }
                 }
             }
@@ -127,21 +168,39 @@ public final class BackpackNeoForge {
     }
 
     public static int getIndex(Player player) {
-        if (FMLLoader.getLoadingModList().getModFileById("curios") != null) {
-            // 直接使用 Optional 替代 resolve()
-            Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
-            if (curiosHandler.isPresent()) {
-                Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
-                        stack -> stack.getItem() instanceof BackpackItem
-                );
-                if (backpackSlot.isPresent()) {
-                    Container container = getContainer(player);
-                    if (container instanceof CuriosContainerAdapter) {
-                        return ((CuriosContainerAdapter) container).getBackpackSlotIndex();
+        if(!Backpack.getConfig().force_slot) {
+            if (BackpackHelper.isModLoaded("curios")) {
+                // 直接使用 Optional 替代 resolve()
+                Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
+                if (curiosHandler.isPresent()) {
+                    Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                            stack -> stack.getItem() instanceof BackpackItem
+                    );
+                    if (backpackSlot.isPresent()) {
+                        Container container = getContainer(player);
+                        if (container instanceof CuriosContainerAdapter) {
+                            return ((CuriosContainerAdapter) container).getBackpackSlotIndex();
+                        }
                     }
                 }
             }
+
+            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+                Container container = getContainer(player);
+                if (container instanceof AccessoriesContainerAdapter) {
+                    return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+                }
+            }
         }
-        return 36;
+        return 36+54;
+    }
+
+    public static boolean getEmptyRule(Player player) {
+        if(BackpackHelper.isModLoaded("curios")) {
+            if (!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && CuriosConfig.SERVER.keepCurios.get() == CuriosConfig.KeepCurios.ON) {
+                return false;
+            }
+        }
+        return true;
     }
 }

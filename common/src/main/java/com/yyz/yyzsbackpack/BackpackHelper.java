@@ -23,4 +23,8 @@ public class BackpackHelper {
     public static int getIndex(Player player){
         throw new AssertionError();
     }
+    @ExpectPlatform
+    public static boolean getEmptyRule(Player player) {
+        throw new AssertionError();
+    }
 }

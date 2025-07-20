@@ -31,6 +31,10 @@ subprojects {
         // for more information about repositories.
 
         maven {
+            name = "Illusive Soulworks maven"
+            url = "https://maven.theillusivec4.top/"
+        }
+        maven {
             name = "TerraformersMC"
             url = "https://maven.terraformersmc.com/"
         }
@@ -39,23 +43,34 @@ subprojects {
             url = 'https://maven.ladysnake.org/releases'
         }
         maven {
-            name = "Curios"
-            url = uri("https://maven.theillusivec4.top/")
+            // location of the maven that hosts JEI files since January 2023
+            name = "Jared's maven"
+            url = "https://maven.blamejared.com/"
         }
-
         maven {
-            url "https://www.cursemaven.com"
+            // location of a maven mirror for JEI files, as a fallback
+            name = "ModMaven"
+            url = "https://modmaven.dev"
         }
 
         maven { url 'https://maven.wispforest.io/releases' }
         maven { url 'https://maven.su5ed.dev/releases' }
         maven { url 'https://maven.fabricmc.net' }
+
+        maven {
+            url "https://www.cursemaven.com"
+        }
     }
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
 
+        modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:$project.rei_version"
+        modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin:$project.rei_version"
+        modCompileOnly "dev.emi:emi-xplat-intermediary:${project.emi_version}"
+        compileOnly("mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}")
+//        modImplementation("io.wispforest:accessories-common:$project.accessories_version")
     }
 
     java {

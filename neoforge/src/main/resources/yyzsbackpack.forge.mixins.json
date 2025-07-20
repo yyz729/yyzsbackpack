@@ -3,14 +3,20 @@
   "minVersion": "0.8",
   "package": "com.yyz.yyzsbackpack.neoforge.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.yyz.yyzsbackpack.mixin.ConditionalMixinPlugin",
+  "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
-    "AccessoriesMenuMixin",
-    "CuriosContainerMixin",
-    "CurioSlotMixin"
+    "compat.accessories.AccessoriesBasedSlotMixin",
+    "compat.accessories.AccessoriesMenuMixin",
+    "compat.ae2.AEBaseMenuMixin",
+    "compat.curios.CuriosContainerMixin",
+    "compat.curios.CurioSlotMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
+    "compat.inventoryfree.InventoryEnforcerMixin",
+    "compat.itemindicator.InventorySlotsIndicatorMixin"
   ],
   "client": [
-    "CuriosScreenMixin"
+    "compat.ae2.AEBaseScreenMixin",
+    "compat.curios.CuriosScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

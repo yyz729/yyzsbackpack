@@ -15,6 +15,13 @@ public class BackpackPlatform {
         throw new AssertionError();
     }
 
-
-
+    @ExpectPlatform
+    public static Path getConfigDirectory() {
+        // Just throw an error, the content should get replaced at runtime.
+        throw new AssertionError();
+    }
+    @ExpectPlatform
+    public static boolean isFabric() {
+        throw new AssertionError();
+    }
 }

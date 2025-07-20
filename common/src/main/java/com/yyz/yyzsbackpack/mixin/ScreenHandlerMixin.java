@@ -1,18 +1,16 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.api.BackPackSlot;
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.base.BackPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackCondition;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
+public abstract class ScreenHandlerMixin implements BackpackCondition {
 
     @Shadow public abstract ItemStack getCarried();
 
@@ -38,16 +36,25 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Unique
     private boolean shouldRenderBackpack = false;
-
+    @Unique
+    private boolean renderTipBackpack = false;
     @Override
     public boolean shouldRenderBackpack() {
-        return this.shouldRenderBackpack;
+        return this.shouldRenderBackpack && !renderTipBackpack();
     }
-
 
     @Override
     public void setRenderBackpack(boolean shouldRenderBackpack) {
         this.shouldRenderBackpack = shouldRenderBackpack;
+    }
+    @Override
+    public boolean renderTipBackpack() {
+        return this.renderTipBackpack;
+    }
+
+    @Override
+    public void setRenderTipBackpack(boolean renderTipBackpack) {
+        this.renderTipBackpack = renderTipBackpack;
     }
 
     @Unique
@@ -62,12 +69,12 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Override
     public int getBackpackXOffset() {
-        return backpackXOffset;
+        return backpackXOffset + Backpack.getConfig().backpack_offsetX;
     }
 
     @Override
     public int getBackpackYOffset() {
-        return backpackYOffset;
+        return backpackYOffset + Backpack.getConfig().backpack_offsetY;
     }
 
     @Override
@@ -78,12 +85,12 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
 
     @Override
     public int getEquippackXOffset() {
-        return equippackXOffset;
+        return equippackXOffset + Backpack.getConfig().slot_offsetX;
     }
 
     @Override
     public int getEquippackYOffset() {
-        return equippackYOffset;
+        return equippackYOffset + Backpack.getConfig().slot_offsetY;
     }
 
     @Override
@@ -92,17 +99,16 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
         this.equippackYOffset = y;
     }
 
-
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
 
-        if (slotIndex < 0 || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem) return;
+        if (slotIndex < 0 || slotIndex >= this.slots.size() || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem || !Backpack.getConfig().quick_swap) return;
 
         if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
         ItemStack back = BackpackHelper.getEquipped(player).copy();
         ItemStack stack = getCarried().copy();
         if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
-        BackpackManager.saveBackpackContents(player.getInventory(), back);
+        BackpackManager.saveBackpackContents(player.getInventory(), back, true);
         BackpackManager.restoreBackpackContents(player.getInventory(), stack);
         Container container = BackpackHelper.getContainer(player);
         container.setItem(BackpackHelper.getIndex(player), stack);
@@ -135,7 +141,7 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
             }
 
             // 如果是原版槽位，转移到背包
-            if (i >= 9 && i < 45) { // 物品栏和快捷栏槽位
+            else  { // 物品栏和快捷栏槽位
                 for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
                      !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
                      itemStack = this.quickMoveToBackpack(player, i)) {
@@ -151,12 +157,26 @@ public abstract class ScreenHandlerMixin implements BackpackRenderCondition {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
 
+
+        // 动态获取快捷栏索引范围
+        int hotbarStart = -1;
+        int hotbarEnd = -1;
+        for (int idx = 0; idx < this.slots.size(); idx++) {
+            Slot s = this.slots.get(idx);
+            if (s.container instanceof Inventory &&
+                    s.getContainerSlot() >= 0 &&
+                    s.getContainerSlot() < 9) {
+                if (hotbarStart == -1) hotbarStart = idx;
+                hotbarEnd = idx + 1; // 结束索引是exclusive的
+            }
+        }
+
         if (slot != null && slot.hasItem()) {
             ItemStack slotStack = slot.getItem();
             itemStack = slotStack.copy();
 
             // 尝试移动到快捷栏 (36-44)
-            if (!this.moveItemStackTo(slotStack, 36, 45, false)) {
+            if (!this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
                 return ItemStack.EMPTY;
             }
 

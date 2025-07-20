@@ -40,9 +40,13 @@ dependencies {
 
     modImplementation "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version"
     compileOnly "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version:api"
-
-    modImplementation   ("curse.maven:jei-238222:6614392")
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:$rootProject.rei_version"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:$rootProject.rei_version"
+    modImplementation files('libs/durabilityviewer-1.11.0-neoforge-1.21.1.jar')
     modImplementation "curse.maven:accessories-938917:6549393"
+    modImplementation files('libs/hotbarslotcycling-neoforge-21.1.1.jar')
+    implementation "curse.maven:applied-energistics-2-223794:6626602"
+    modImplementation "curse.maven:inventory-free-406383:5596749"
 }
 
 processResources {

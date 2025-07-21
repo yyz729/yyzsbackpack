@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AbstractContainerMenu.class,priority = 999)
@@ -125,7 +127,7 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
 
     @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
     private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
-        // 只处理 PICKUP 类型的右键点击 + Shift
+
         if (clickType == ClickType.QUICK_MOVE && j == 1) {
             if (i < 0) {
                 ci.cancel();
@@ -158,7 +160,10 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
             }
         }
     }
-
+    @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
+    private int adjustOffhandSlotPositionHotbar(int original) {
+        return 40 + 9 * 6 + 1 ;
+    }
 
     @Unique
     private ItemStack quickMoveToHotbar(Player player, int slotIndex) {

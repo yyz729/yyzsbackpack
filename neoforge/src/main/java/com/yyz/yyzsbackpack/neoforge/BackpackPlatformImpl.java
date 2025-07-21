@@ -17,5 +17,7 @@ public class BackpackPlatformImpl {
     public static Path getConfigDirectory() {
         return FMLPaths.CONFIGDIR.get();
     }
-
+    public static boolean isFabric() {
+        return false;
+    }
 }

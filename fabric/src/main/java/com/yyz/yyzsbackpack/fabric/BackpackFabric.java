@@ -31,8 +31,8 @@ import java.util.function.Function;
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
-    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOODEN, props), new Item.Properties().stacksTo(1));
-    public static final BackpackItem STONE_BACKPACK = (BackpackItem) register("stone_backpack", props -> new BackpackItem(BackpackMaterial.STONE, props), new Item.Properties().stacksTo(1));
+//    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOODEN, props), new Item.Properties().stacksTo(1));
+//    public static final BackpackItem STONE_BACKPACK = (BackpackItem) register("stone_backpack", props -> new BackpackItem(BackpackMaterial.STONE, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem IRON_BACKPACK = (BackpackItem) register("iron_backpack", props -> new BackpackItem(BackpackMaterial.IRON, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem GOLD_BACKPACK = (BackpackItem) register("gold_backpack", props -> new BackpackItem(BackpackMaterial.GOLD, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem DIAMOND_BACKPACK = (BackpackItem) register("diamond_backpack", props -> new BackpackItem(BackpackMaterial.DIAMOND, props), new Item.Properties().stacksTo(1));
@@ -42,8 +42,8 @@ public final class BackpackFabric implements ModInitializer {
             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
             .displayItems((context, entries) -> {
                 // 按顺序添加所有背包到物品组
-                entries.accept(WOOLEN_BACKPACK);
-                entries.accept(STONE_BACKPACK);
+//                entries.accept(WOOLEN_BACKPACK);
+//                entries.accept(STONE_BACKPACK);
                 entries.accept(IRON_BACKPACK);
                 entries.accept(GOLD_BACKPACK);
                 entries.accept(DIAMOND_BACKPACK);

@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.mixin;
 
 
 import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -16,11 +17,12 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return !BackpackHelper.isModLoaded("trinkets");
         }
 
+
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.ItemEntityMixin")) {
-            return !BackpackHelper.isModLoaded("collective");
+            return !BackpackHelper.isModLoaded("collective") || !BackpackPlatform.isFabric();
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.collective.ItemEntityMixin")) {
-            return BackpackHelper.isModLoaded("collective");
+            return BackpackHelper.isModLoaded("collective") && BackpackPlatform.isFabric();
         }
 
 

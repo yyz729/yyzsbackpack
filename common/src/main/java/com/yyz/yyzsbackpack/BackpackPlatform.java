@@ -19,6 +19,9 @@ public class BackpackPlatform {
         // Just throw an error, the content should get replaced at runtime.
         throw new AssertionError();
     }
-
+    @ExpectPlatform
+    public static boolean isFabric() {
+        throw new AssertionError();
+    }
 
 }

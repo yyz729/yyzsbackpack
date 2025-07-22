@@ -260,10 +260,19 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Unique
     private int type;
 
+    @Inject(method = "keyPressed", at = @At("HEAD"))
+    private void onKeyPressed(int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_R) && menu.getCarried().isEmpty()) {
+            if (hoveredSlot != null) {
+                slotClicked(hoveredSlot, hoveredSlot.index, 2, ClickType.QUICK_MOVE);
+            }
+        }
+    }
+
     // 检测Shift键按下
     @Inject(method = "mouseClicked", at = @At("HEAD"))
     private void onKeyPressed(double d, double e, int i, CallbackInfoReturnable<Boolean> cir) {
-        if (Screen.hasShiftDown()) {
+        if (Screen.hasShiftDown() && menu.getCarried().isEmpty()) {
             shiftPressed = true;
             type = i;
         }
@@ -272,7 +281,7 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     // 检测Shift键释放
     @Inject(method = "mouseReleased", at = @At("HEAD"))
     private void onKeyReleased(double d, double e, int i, CallbackInfoReturnable<Boolean> cir) {
-        if (d == InputConstants.KEY_LSHIFT || d == InputConstants.KEY_RSHIFT) {
+        if (shiftPressed) {
             shiftPressed = false;
             lastShiftHoveredSlot = null; // 重置记录
         }

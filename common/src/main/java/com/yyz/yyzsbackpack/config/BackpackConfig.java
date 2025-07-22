@@ -12,16 +12,16 @@ public class BackpackConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public boolean quick_swap = true;//是否启用快速切换背包
-    public boolean force_slot = false;//是否强制使用自带的背包装备槽而不使用饰品栏
-    public boolean render_model = true;//是是否渲染背包模型
-    public boolean container_item = false;//是否禁止container物品（比如潜影盒）放入背包
-    public int slot_offsetX = 0;//自带的背包装备槽的坐标
-    public int slot_offsetY = 0;//自带的背包装备槽的坐标
-    public int backpack_offsetX = 0;//背包内部空间的坐标
-    public int backpack_offsetY = 0;//背包内部空间的坐标
-    public String tip_key = "shift";//修饰键alt,ctrl,none
-    public Set<String> container_item_list = new HashSet<>(Set.of(//额外的container物品
+    public boolean quickSwapEnabled = true;//是否启用快速切换背包
+    public boolean useDedicatedSlot = false;//是否强制使用自带的背包装备槽而不使用饰品栏
+    public boolean renderModelEnabled = true;//是是否渲染背包模型
+    public boolean restrictContainerItems = false;//是否禁止container物品（比如潜影盒）放入背包
+    public int slotPositionX = 0;//自带的背包装备槽的坐标
+    public int slotPositionY = 0;//自带的背包装备槽的坐标
+    public int backpackGuiX = 0;//背包内部空间的坐标
+    public int backpackGuiY = 0;//背包内部空间的坐标
+    public String tooltipModifier = "shift";//修饰键alt,ctrl,none
+    public Set<String> restrictedItems = new HashSet<>(Set.of(//额外的container物品
             "namespace:item_id"
     ));
 

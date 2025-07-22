@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.fabric.mixin.compat.collective;
 
 import com.natamus.collective.fabric.callbacks.CollectivePlayerEvents;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,9 +20,9 @@ public class ItemEntityMixin {
 		((CollectivePlayerEvents.Player_Picked_Up_Item)CollectivePlayerEvents.ON_ITEM_PICKED_UP.invoker()).onItemPickedUp(player.level(), player, stack);
 
 		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
-			return !BackpackManager.disableBackpack(stack.getItem())
-					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item))
-					&& instance.getFreeSlot() < BackpackManager.getBackpackSize(instance.player)
+			return !BackpackHelper.isItemBlacklisted(stack.getItem())
+					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems))
+					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)
 					&& instance.add(stack);
 		}else {
 			return instance.add(stack);

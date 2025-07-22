@@ -44,8 +44,6 @@ public final class BackpackNeoForge {
                     .icon(() -> new ItemStack(BackpackNeoForge.GOLD_BACKPACK.get()))
                     .title(Component.translatable("itemGroup.yyzsbackpack.title"))
                     .displayItems((context, entries) -> {
-                        entries.accept(BackpackNeoForge.WOOLEN_BACKPACK.get());
-                        entries.accept(BackpackNeoForge.STONE_BACKPACK.get());
                         entries.accept(BackpackNeoForge.IRON_BACKPACK.get());
                         entries.accept(BackpackNeoForge.GOLD_BACKPACK.get());
                         entries.accept(BackpackNeoForge.DIAMOND_BACKPACK.get());
@@ -78,17 +76,6 @@ public final class BackpackNeoForge {
             new Item.Properties().stacksTo(1)
     );
 
-    public static final DeferredItem<Item> STONE_BACKPACK = ITEMS.registerItem(
-            "stone_backpack",
-            props -> new BackpackItem(BackpackMaterial.STONE, props),
-            new Item.Properties().stacksTo(1)
-    );
-
-    public static final DeferredItem<Item> WOOLEN_BACKPACK = ITEMS.registerItem(
-            "woolen_backpack",
-            props -> new BackpackItem(BackpackMaterial.WOODEN, props),
-            new Item.Properties().stacksTo(1)
-    );
 
     // 数据组件注册（使用Supplier）
     public static final Supplier<DataComponentType<List<ItemStack>>> BACKPACK_ITEMS_COMPONENT = DATA_COMPONENT.registerComponentType(

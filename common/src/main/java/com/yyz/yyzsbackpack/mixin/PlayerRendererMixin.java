@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerRenderer.class)
-public abstract class PlayerEntitRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
+public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerRenderState, PlayerModel> {
 
 
-    public PlayerEntitRendererMixin(EntityRendererProvider.Context context, PlayerModel entityModel, float f) {
+    public PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel entityModel, float f) {
         super(context, entityModel, f);
     }
 

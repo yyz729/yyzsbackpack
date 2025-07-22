@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackRenderState;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.model.PlayerModel;
@@ -74,12 +74,12 @@ public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, Play
 
     private boolean shouldRender(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        return BackpackHelper.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_model;
+        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().renderModelEnabled;
     }
 
     private ResourceLocation getTexture(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        if(BackpackHelper.getEquipped(player).getItem() instanceof BackpackItem backpackItem){
+        if(BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem backpackItem){
             return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/"+backpackItem.getBackpackType().getType()+"_backpack.png");
 
         }

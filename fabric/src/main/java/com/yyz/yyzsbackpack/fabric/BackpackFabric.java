@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.fabric;
 
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import dev.emi.trinkets.api.SlotReference;
@@ -75,7 +75,7 @@ public final class BackpackFabric implements ModInitializer {
         Backpack.init();
     }
     public static ItemStack getEquipped(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets") && !Backpack.getConfig().force_slot) {
+        if (BackpackPlatform.isModLoaded("trinkets") && !Backpack.getConfig().useDedicatedSlot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查是否为 BackpackItem
@@ -90,7 +90,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static Container getContainer(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets")&& !Backpack.getConfig().force_slot) {
+        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().useDedicatedSlot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查 BackpackItem
@@ -107,7 +107,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static int getIndex(Player player) {
-        if (BackpackHelper.isModLoaded("trinkets")&& !Backpack.getConfig().force_slot) {
+        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().useDedicatedSlot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查 BackpackItem

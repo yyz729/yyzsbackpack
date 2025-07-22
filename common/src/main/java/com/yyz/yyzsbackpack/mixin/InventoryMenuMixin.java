@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryMenu.class)
-public abstract class PlayerScreenHandlerMixin extends AbstractCraftingMenu {
+public abstract class InventoryMenuMixin extends AbstractCraftingMenu {
 
 
-    public PlayerScreenHandlerMixin(MenuType<?> menuType, int i, int j, int k) {
+    public InventoryMenuMixin(MenuType<?> menuType, int i, int j, int k) {
         super(menuType, i, j, k);
     }
 
@@ -33,8 +33,7 @@ public abstract class PlayerScreenHandlerMixin extends AbstractCraftingMenu {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addSlots(Inventory inventory, boolean onServer, Player owner, CallbackInfo info) {
-        BackpackManager.addEquipmentSlot(this,inventory);
-
+        SlotManager.addBackpackEquipSlot(this,inventory);
     }
 
 }

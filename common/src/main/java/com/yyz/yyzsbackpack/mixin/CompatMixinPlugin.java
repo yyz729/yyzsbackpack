@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
 
-import com.yyz.yyzsbackpack.BackpackHelper;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -14,27 +13,27 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.CreativeInventoryScreenMixin")) {
-            return !BackpackHelper.isModLoaded("trinkets");
+            return !BackpackPlatform.isModLoaded("trinkets");
         }
 
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.mixin.ItemEntityMixin")) {
-            return !BackpackHelper.isModLoaded("collective") || !BackpackPlatform.isFabric();
+            return !BackpackPlatform.isModLoaded("collective") || !BackpackPlatform.isFabric();
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.collective.ItemEntityMixin")) {
-            return BackpackHelper.isModLoaded("collective") && BackpackPlatform.isFabric();
+            return BackpackPlatform.isModLoaded("collective") && BackpackPlatform.isFabric();
         }
 
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.trinkets.SurvivalTrinketSlotMixin")) {
-            return BackpackHelper.isModLoaded("trinkets") ;
+            return BackpackPlatform.isModLoaded("trinkets") ;
         }
 
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.hotbarslotcycling.HotbarCyclingProviderMixin")) {
-            return BackpackHelper.isModLoaded("hotbarslotcycling") ;
+            return BackpackPlatform.isModLoaded("hotbarslotcycling") ;
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.neoforge.mixin.hotbarslotcycling.HotbarCyclingProviderMixin")) {
-            return BackpackHelper.isModLoaded("hotbarslotcycling") ;
+            return BackpackPlatform.isModLoaded("hotbarslotcycling") ;
         }
 
         return true;

@@ -8,18 +8,18 @@
     "EquipmentSlotMixin",
     "ItemEntityMixin",
     "NonNullListMixin",
-    "PlayerInventoryMixin",
-    "PlayerScreenHandlerMixin",
-    "ScreenHandlerMixin",
-    "ServerPlayerEntityMixin"
+    "InventoryMixin",
+    "InventoryMenuMixin",
+    "AbstractContainerMenuMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "CreativeInventoryScreenMixin",
-    "HandledScreenMixin",
-    "PlayerEntitRendererMixin",
+    "AbstractContainerScreenMixin",
+    "PlayerRendererMixin",
     "PlayerRenderStateMixin",
     "screen.AbstractRecipeBookScreenMixin",
-    "screen.InventoryRenderConditionMixin"
+    "screen.InventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

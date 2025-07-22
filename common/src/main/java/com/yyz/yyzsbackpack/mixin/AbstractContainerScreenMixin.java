@@ -2,14 +2,14 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
-import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.BackpackPlatform;
-import com.yyz.yyzsbackpack.base.BackPackSlot;
-import com.yyz.yyzsbackpack.base.BackpackCondition;
-import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
-import com.yyz.yyzsbackpack.base.EquipPackSlot;
+import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.base.BackpackScreen;
+import com.yyz.yyzsbackpack.client.BackpackRenderer;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -36,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(AbstractContainerScreen.class)
-public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extends Screen implements BackpackExclusionZoneProvider {
+public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> extends Screen implements BackpackScreen {
     // 基础GUI字段
     @Shadow protected int imageWidth;
     @Shadow protected int imageHeight;
@@ -55,18 +54,18 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Unique
     private Inventory inventory;
     @Unique
-    private boolean shouldRenderBackpackExtension = false;
+    private boolean shouldRenderBackpack = false;
     @Unique
     private boolean previousBackpackState = false;
 
-    protected HandledScreenMixin(Component title) {
+    protected AbstractContainerScreenMixin(Component title) {
         super(title);
 
     }
 
     @Inject(method = "renderBackground", at = @At("RETURN"))
     private void onRenderBackground(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        BackpackManager.renderBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpackExtension, (BackpackCondition) this.menu);
+        BackpackRenderer.renderEquippedBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpack, (BackpackMenu) this.menu);
     }
 
     @ModifyConstant(method = "checkHotbarMouseClicked", constant = @Constant(intValue = 40))
@@ -81,9 +80,9 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Inject(method = "renderContents", at = @At("HEAD"))
     private void checkBackpackStateChange(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        boolean currentState = BackpackManager.shouldRenderBackpackExtension(menu, inventory);
+        boolean currentState = BackpackHelper.shouldRenderBackpack(menu, inventory);
         if (currentState != previousBackpackState) {
-            shouldRenderBackpackExtension = currentState;
+            shouldRenderBackpack = currentState;
             previousBackpackState = currentState;
             rebuildWidgets();
         }
@@ -91,19 +90,19 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
 
     @Redirect(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseClicked(AbstractContainerScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
+        return menu instanceof BackpackMenu ? BackpackHelper.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpack, (BackpackMenu) this.menu ) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
     @Redirect(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseReleased(AbstractContainerScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
-        return menu instanceof BackpackCondition ? BackpackManager.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpackExtension, (BackpackCondition) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
+        return menu instanceof BackpackMenu ? BackpackHelper.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpack, (BackpackMenu) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initializeFields(AbstractContainerMenu abstractContainerMenu, Inventory inventory, Component component, CallbackInfo ci) {
         this.inventory = inventory;
-        this.shouldRenderBackpackExtension = BackpackManager.shouldRenderBackpackExtension(menu, this.inventory);
-        this.previousBackpackState = shouldRenderBackpackExtension;
+        this.shouldRenderBackpack = BackpackHelper.shouldRenderBackpack(menu, this.inventory);
+        this.previousBackpackState = shouldRenderBackpack;
     }
 
 
@@ -114,13 +113,13 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             return; // 跳过创造模式界面
         }
 
-        if (menu instanceof BackpackCondition) {
+        if (menu instanceof BackpackMenu) {
 
             int baseHeight = imageHeight;
             // 查找第一个BackPackSlot类型的槽位索引
             int backpackSlotStartIndex = -1;
             for (int i = 0; i < menu.slots.size(); i++) {
-                if (menu.slots.get(i) instanceof BackPackSlot) {
+                if (menu.slots.get(i) instanceof BackpackStorageSlot) {
                     backpackSlotStartIndex = i;
                     break; // 找到第一个立即退出
                 }
@@ -131,20 +130,20 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
             }
 
             // 获取当前偏移值
-            int xOffset = ((BackpackCondition) menu).getBackpackXOffset();
-            int yOffset = ((BackpackCondition) menu).getBackpackYOffset();
+            int xOffset = ((BackpackMenu) menu).getBackpackGuiX();
+            int yOffset = ((BackpackMenu) menu).getBackpackGuiY();
 
             // 获取当前偏移值
-            int xOffset1 = ((BackpackCondition) menu).getEquippackXOffset();
-            int yOffset1 = ((BackpackCondition) menu).getEquippackYOffset();
+            int xOffset1 = ((BackpackMenu) menu).getBackpackEquipSlotX();
+            int yOffset1 = ((BackpackMenu) menu).getBackpackEquipSlotY();
 
             // 动态更新槽位位置
-            BackpackManager.updateBackpackSlotsPosition(
+            SlotManager.repositionBackpackInventorySlots(
                     menu, backpackSlotStartIndex,
                     baseHeight, xOffset, yOffset
             );
             // 动态更新装备槽位置
-            BackpackManager.updateEquipmentSlotPosition(
+            SlotManager.repositionBackpackEquipSlot(
                     menu,
                     baseHeight,
                     xOffset1,
@@ -156,9 +155,9 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     private void renderBackpackContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
 
 
-        ((BackpackCondition)menu).setRenderTipBackpack(false);
+        ((BackpackMenu)menu).setPreviewVisible(false);
         boolean requireKey;
-        switch (Backpack.getConfig().tip_key.toLowerCase()) {
+        switch (Backpack.getConfig().tooltipModifier.toLowerCase()) {
             case "shift" -> requireKey = hasShiftDown();
             case "alt" -> requireKey = hasAltDown();
             case "ctrl" -> requireKey = hasControlDown();
@@ -178,8 +177,8 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         ItemStack backpackStack = this.hoveredSlot.getItem();
 
         if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) return;
-        BackpackManager.renderBackpackBackground1(guiGraphics,backpackStack, leftPos, topPos, imageWidth, imageHeight, (BackpackCondition) this.menu);
-        ((BackpackCondition)menu).setRenderTipBackpack(true);
+        BackpackRenderer.renderPreviewBackpackBackground(guiGraphics,backpackStack, leftPos, topPos, imageWidth, imageHeight, (BackpackMenu) this.menu);
+        ((BackpackMenu)menu).setPreviewVisible(true);
         // 从数据组件读取背包内容
 
         List<ItemStack> backpackItems = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
@@ -214,16 +213,16 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
     @Override
     public List<Rect2i> getBackpackExclusionZones() { // 修改返回类型为 Rect2i
         // 获取偏移值
-        int xOffset = ((BackpackCondition) menu).getBackpackXOffset();
-        int yOffset = ((BackpackCondition) menu).getBackpackYOffset();
+        int xOffset = ((BackpackMenu) menu).getBackpackGuiX();
+        int yOffset = ((BackpackMenu) menu).getBackpackGuiY();
 
-        if (!shouldRenderBackpackExtension) {
+        if (!shouldRenderBackpack) {
             return Collections.emptyList();
         }
 
         // 渲染背包时的完整计算
         int columns = 0;
-        ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
+        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
         if (backpackStack.getItem() instanceof BackpackItem backpack) {
             columns = backpack.getBackpackType().getColumns();
         }

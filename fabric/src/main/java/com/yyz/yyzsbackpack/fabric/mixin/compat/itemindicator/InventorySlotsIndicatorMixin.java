@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.fabric.mixin.compat.itemindicator;
 
-import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import de.guntram.mcmod.durabilityviewer.itemindicator.InventorySlotsIndicator;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,7 +49,7 @@ public class InventorySlotsIndicatorMixin {
     @Unique
     private int getEffectiveInventorySize(Inventory inventory) {
         // 获取玩家当前装备的背包
-        ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
+        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
 
         // 如果有背包且是自定义背包类型
         if (!backpackStack.isEmpty() && backpackStack.getItem() instanceof BackpackItem backpackItem) {

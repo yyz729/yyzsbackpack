@@ -1,13 +1,10 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
-import com.yyz.yyzsbackpack.BackpackManager;
-import com.yyz.yyzsbackpack.base.BackPackSlot;
-import com.yyz.yyzsbackpack.base.BackpackCondition;
-import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.BackpackSorter;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -17,11 +14,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerMenu.class)
-public abstract class ScreenHandlerMixin implements BackpackCondition {
+public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Shadow public abstract ItemStack getCarried();
 
@@ -35,84 +34,77 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
     @Shadow protected abstract boolean moveItemStackTo(ItemStack itemStack, int i, int j, boolean bl);
 
     @Unique
-    private boolean shouldRenderBackpack = false;
+    private boolean isBackpackVisible = false;
     @Unique
-    private boolean renderTipBackpack = false;
+    private boolean isPreviewVisible = false;
     @Override
-    public boolean shouldRenderBackpack() {
-        return this.shouldRenderBackpack && !renderTipBackpack();
+    public boolean isBackpackVisible() {
+        return this.isBackpackVisible && !isPreviewVisible();
     }
 
     @Override
-    public void setRenderBackpack(boolean shouldRenderBackpack) {
-        this.shouldRenderBackpack = shouldRenderBackpack;
+    public void setBackpackVisible(boolean shouldRenderBackpack) {
+        this.isBackpackVisible = shouldRenderBackpack;
     }
     @Override
-    public boolean renderTipBackpack() {
-        return this.renderTipBackpack;
+    public boolean isPreviewVisible() {
+        return this.isPreviewVisible;
     }
 
     @Override
-    public void setRenderTipBackpack(boolean renderTipBackpack) {
-        this.renderTipBackpack = renderTipBackpack;
+    public void setPreviewVisible(boolean renderTipBackpack) {
+        this.isPreviewVisible = renderTipBackpack;
     }
-
-    @Unique
-    private int backpackXOffset = 0;
-    @Unique
-    private int backpackYOffset = 0;
 
     @Unique
-    private int equippackXOffset = 0;
+    private int BackpackGuiX = 0;
     @Unique
-    private int equippackYOffset = 0;
+    private int BackpackGuiY = 0;
+
+    @Unique
+    private int BackpackEquipSlotX = 0;
+    @Unique
+    private int BackpackEquipSlotY = 0;
 
     @Override
-    public int getBackpackXOffset() {
-        return backpackXOffset + Backpack.getConfig().backpack_offsetX;
+    public int getBackpackGuiX() {
+        return BackpackGuiX + Backpack.getConfig().backpackGuiX;
     }
 
     @Override
-    public int getBackpackYOffset() {
-        return backpackYOffset + Backpack.getConfig().backpack_offsetY;
+    public int getBackpackGuiY() {
+        return BackpackGuiY + Backpack.getConfig().backpackGuiY;
     }
 
     @Override
-    public void setBackpackOffset(int x, int y) {
-        this.backpackXOffset = x;
-        this.backpackYOffset = y;
+    public void setBackpackGuiPos(int x, int y) {
+        this.BackpackGuiX = x;
+        this.BackpackGuiY = y;
     }
 
     @Override
-    public int getEquippackXOffset() {
-        return equippackXOffset + Backpack.getConfig().slot_offsetX;
+    public int getBackpackEquipSlotX() {
+        return BackpackEquipSlotX + Backpack.getConfig().slotPositionX;
     }
 
     @Override
-    public int getEquippackYOffset() {
-        return equippackYOffset + Backpack.getConfig().slot_offsetY;
+    public int getBackpackEquipSlotY() {
+        return BackpackEquipSlotY + Backpack.getConfig().slotPositionY;
     }
 
     @Override
-    public void setEquippackOffset(int x, int y) {
-        this.equippackXOffset = x;
-        this.equippackYOffset = y;
+    public void setBackpackEquipSlotPos(int x, int y) {
+        this.BackpackEquipSlotX = x;
+        this.BackpackEquipSlotY = y;
+    }
+    @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
+    private int adjustOffhandSlotPositionHotbar(int original) {
+        return 40 + 9 * 6 + 1 ;
     }
 
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
-
-        if (slotIndex < 0 || slotIndex >= this.slots.size() || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem || !Backpack.getConfig().quick_swap) return;
-
-        if(!(getSlot(slotIndex) instanceof BackPackSlot)) return;
-        ItemStack back = BackpackHelper.getEquipped(player).copy();
-        ItemStack stack = getCarried().copy();
-        if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
-        BackpackManager.saveBackpackContents(player.getInventory(), back, true);
-        BackpackManager.restoreBackpackContents(player.getInventory(), stack);
-        Container container = BackpackHelper.getContainer(player);
-        container.setItem(BackpackHelper.getIndex(player), stack);
-        setCarried(back);
+        BackpackSorter.handleBackpackSwap((AbstractContainerMenu) (Object) this, this.slots, this.getCarried(), slotIndex, button, actionType, player);
     }
 
     @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
@@ -131,7 +123,7 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
             }
 
             // 如果是背包槽位，转移到快捷栏
-            if (slot instanceof BackPackSlot) {
+            if (slot instanceof BackpackStorageSlot) {
                 for (ItemStack itemStack = this.quickMoveToHotbar(player, i);
                      !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
                      itemStack = this.quickMoveToHotbar(player, i)) {
@@ -147,6 +139,33 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
                      itemStack = this.quickMoveToBackpack(player, i)) {
                 }
                 ci.cancel();
+            }
+        }
+        else if (clickType == ClickType.QUICK_MOVE && j == 2) {
+            Slot hoveredSlot = (Slot) this.slots.get(i);
+
+            // 动态识别玩家物品栏槽位
+            boolean isInventorySlot = false;
+            if (hoveredSlot.container instanceof Inventory) {
+                int slotIndexInPlayerInv = hoveredSlot.getContainerSlot();
+                // 主物品栏范围：9-35 (不包括快捷栏0-8和护甲36-39)
+                if (slotIndexInPlayerInv >= 9 && slotIndexInPlayerInv < 36) {
+                    isInventorySlot = true;
+                }
+            }
+
+            boolean isBackpackSlot = hoveredSlot instanceof BackpackStorageSlot;
+            boolean isContainerSlot = !isInventorySlot && !isBackpackSlot &&
+                    hoveredSlot.container != player.getInventory();
+
+            if (!isInventorySlot && !isBackpackSlot && !isContainerSlot) return;
+
+            if (isInventorySlot) {
+                BackpackSorter.sortInventorySlots(player,this.slots);
+            } else if (isBackpackSlot) {
+                BackpackSorter.sortBackpackSlots(player,this.slots);
+            } else {
+                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,this.slots);
             }
         }
     }
@@ -203,7 +222,7 @@ public abstract class ScreenHandlerMixin implements BackpackCondition {
             // 查找背包槽位起始索引
             int backpackStart = -1;
             for (int i = 0; i < this.slots.size(); i++) {
-                if (this.slots.get(i) instanceof BackPackSlot) {
+                if (this.slots.get(i) instanceof BackpackStorageSlot) {
                     backpackStart = i;
                     break;
                 }

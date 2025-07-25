@@ -2,13 +2,14 @@ package com.yyz.yyzsbackpack.neoforge;
 
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
+import moonfather.workshop_for_handsome_adventurer.ModWorkshop;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -20,9 +21,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import ru.astemir.keepinventory.ConfigurableKeepInventory;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
@@ -47,9 +48,6 @@ public final class BackpackNeoForge {
                     .icon(() -> new ItemStack(BackpackNeoForge.GOLD_BACKPACK.get()))
                     .title(Component.translatable("itemGroup.yyzsbackpack.title"))
                     .displayItems((context, entries) -> {
-                        // 按材质等级从低到高排序
-                        entries.accept(BackpackNeoForge.WOOLEN_BACKPACK.get());
-                        entries.accept(BackpackNeoForge.STONE_BACKPACK.get());
                         entries.accept(BackpackNeoForge.IRON_BACKPACK.get());
                         entries.accept(BackpackNeoForge.GOLD_BACKPACK.get());
                         entries.accept(BackpackNeoForge.DIAMOND_BACKPACK.get());
@@ -70,11 +68,6 @@ public final class BackpackNeoForge {
     public static final DeferredHolder<Item, Item> IRON_BACKPACK = ITEMS.register("iron_backpack",
             () -> new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1)));
 
-    public static final DeferredHolder<Item, Item> STONE_BACKPACK = ITEMS.register("stone_backpack",
-            () -> new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1)));
-
-    public static final DeferredHolder<Item, Item> WOOLEN_BACKPACK = ITEMS.register("woolen_backpack",
-            () -> new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1)));
 
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> BACKPACK_ITEMS_COMPONENT = DATA_COMPONENT.registerComponentType(
@@ -93,8 +86,8 @@ public final class BackpackNeoForge {
     }
 
     public static ItemStack getEquipped(Player player) {
-        if(!Backpack.getConfig().force_slot) {
-            if (BackpackHelper.isModLoaded("curios")) {
+        if(!Backpack.getConfig().useDedicatedSlot) {
+            if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
                 if (curiosHandler.isPresent()) {
@@ -107,7 +100,7 @@ public final class BackpackNeoForge {
                 }
             }
 
-            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+            if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("curios")) {
                 AccessoriesCapability capability = AccessoriesCapability.get(player);
                 if (capability != null) {
                     Map<String, AccessoriesContainer> containers = capability.getContainers();
@@ -127,8 +120,8 @@ public final class BackpackNeoForge {
     }
 
     public static Container getContainer(Player player) {
-        if(!Backpack.getConfig().force_slot) {
-            if (BackpackHelper.isModLoaded("curios")) {
+        if(!Backpack.getConfig().useDedicatedSlot) {
+            if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
                 if (curiosHandler.isPresent()) {
@@ -148,7 +141,7 @@ public final class BackpackNeoForge {
                 }
             }
 
-            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+            if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("curios")) {
                 AccessoriesCapability capability = AccessoriesCapability.get(player);
                 if (capability != null) {
                     Map<String, AccessoriesContainer> containers = capability.getContainers();
@@ -168,8 +161,8 @@ public final class BackpackNeoForge {
     }
 
     public static int getIndex(Player player) {
-        if(!Backpack.getConfig().force_slot) {
-            if (BackpackHelper.isModLoaded("curios")) {
+        if(!Backpack.getConfig().useDedicatedSlot) {
+            if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
                 if (curiosHandler.isPresent()) {
@@ -185,7 +178,7 @@ public final class BackpackNeoForge {
                 }
             }
 
-            if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("curios")) {
+            if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("curios")) {
                 Container container = getContainer(player);
                 if (container instanceof AccessoriesContainerAdapter) {
                     return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
@@ -196,7 +189,7 @@ public final class BackpackNeoForge {
     }
 
     public static boolean getEmptyRule(Player player) {
-        if(BackpackHelper.isModLoaded("curios")) {
+        if(BackpackPlatform.isModLoaded("curios")) {
             if (!player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && CuriosConfig.SERVER.keepCurios.get() == CuriosConfig.KeepCurios.ON) {
                 return false;
             }

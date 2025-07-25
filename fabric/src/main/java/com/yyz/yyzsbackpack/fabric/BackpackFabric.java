@@ -2,12 +2,13 @@ package com.yyz.yyzsbackpack.fabric;
 
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
+import dev.lyki.CustomInventoryOpacity;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
@@ -33,8 +34,7 @@ import java.util.Map;
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
-    public static final BackpackItem WOOLEN_BACKPACK = new BackpackItem(BackpackMaterial.WOODEN, new Item.Properties().stacksTo(1));
-    public static final BackpackItem STONE_BACKPACK = new BackpackItem(BackpackMaterial.STONE, new Item.Properties().stacksTo(1));
+
     public static final BackpackItem IRON_BACKPACK = new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1));
     public static final BackpackItem GOLD_BACKPACK = new BackpackItem(BackpackMaterial.GOLD, new Item.Properties().stacksTo(1));
     public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem(BackpackMaterial.DIAMOND, new Item.Properties().stacksTo(1));
@@ -44,9 +44,7 @@ public final class BackpackFabric implements ModInitializer {
             .icon(() -> new ItemStack(GOLD_BACKPACK))
             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
             .displayItems((context, entries) -> {
-                // 按顺序添加所有背包到物品组
-                entries.accept(WOOLEN_BACKPACK);
-                entries.accept(STONE_BACKPACK);
+
                 entries.accept(IRON_BACKPACK);
                 entries.accept(GOLD_BACKPACK);
                 entries.accept(DIAMOND_BACKPACK);
@@ -59,9 +57,7 @@ public final class BackpackFabric implements ModInitializer {
                     .build();
 
     public static void register(){
-        // 注册所有背包物品
-        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "woolen_backpack"), WOOLEN_BACKPACK);
-        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stone_backpack"), STONE_BACKPACK);
+
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "iron_backpack"), IRON_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "gold_backpack"), GOLD_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "diamond_backpack"), DIAMOND_BACKPACK);
@@ -89,8 +85,8 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static ItemStack getEquipped(Player player) {
-        if(!Backpack.getConfig().force_slot){
-            if (BackpackHelper.isModLoaded("trinkets")) {
+        if(!Backpack.getConfig().useDedicatedSlot){
+            if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {
                             // 使用 Predicate 检查是否为 BackpackItem
@@ -102,7 +98,7 @@ public final class BackpackFabric implements ModInitializer {
                         .orElse(ItemStack.EMPTY);
             }
 
-            else if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("trinkets")) {
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
                 AccessoriesCapability capability = AccessoriesCapability.get(player);
                 if (capability != null) {
                     Map<String, AccessoriesContainer> containers = capability.getContainers();
@@ -123,8 +119,8 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static Container getContainer(Player player) {
-        if(!Backpack.getConfig().force_slot) {
-            if (BackpackHelper.isModLoaded("trinkets")) {
+        if(!Backpack.getConfig().useDedicatedSlot) {
+            if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {
                             // 使用 Predicate 检查 BackpackItem
@@ -138,7 +134,7 @@ public final class BackpackFabric implements ModInitializer {
                         .orElse(player.getInventory());
             }
 
-            else if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("trinkets")) {
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
                 AccessoriesCapability capability = AccessoriesCapability.get(player);
                 if (capability != null) {
                     Map<String, AccessoriesContainer> containers = capability.getContainers();
@@ -158,8 +154,8 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static int getIndex(Player player) {
-        if(!Backpack.getConfig().force_slot) {
-            if (BackpackHelper.isModLoaded("trinkets")) {
+        if(!Backpack.getConfig().useDedicatedSlot) {
+            if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {
                             // 使用 Predicate 检查 BackpackItem
@@ -173,7 +169,7 @@ public final class BackpackFabric implements ModInitializer {
                         .orElse(36+54);
             }
 
-            else if (BackpackHelper.isModLoaded("accessories") && !BackpackHelper.isModLoaded("trinkets")) {
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
                 Container container = getContainer(player);
                 if (container instanceof AccessoriesContainerAdapter) {
                     return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();

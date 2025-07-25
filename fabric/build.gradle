@@ -35,6 +35,8 @@ dependencies {
     modImplementation "curse.maven:accessories-938917:6549399"
     modImplementation files('libs/durabilityviewer-1.21-1.11.0.jar')
     modImplementation files('libs/hotbarslotcycling-fabric-21.1.1.jar')
+    modImplementation files('libs/hardcover-3.0.0+1.21.jar')
+    modImplementation files('libs/custominventoryopacity-1.21.1-1.0.0.jar')
     modImplementation "curse.maven:collective-342584:6780733"
 
 }

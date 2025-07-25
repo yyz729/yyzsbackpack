@@ -45,8 +45,15 @@ dependencies {
     modImplementation files('libs/durabilityviewer-1.11.0-neoforge-1.21.1.jar')
     modImplementation "curse.maven:accessories-938917:6549393"
     modImplementation files('libs/hotbarslotcycling-neoforge-21.1.1.jar')
+    modImplementation files('libs/workshop_for_handsome_adventurer--mc1.21.1--neoforge--1.33.1.jar')
     implementation "curse.maven:applied-energistics-2-223794:6626602"
     modImplementation "curse.maven:inventory-free-406383:5596749"
+//    implementation "curse.maven:apotheosis-313970:6545942"
+    modImplementation "curse.maven:apothic-attributes-898963:6751650"
+//    implementation("de.mari_023:ae2wtlib_api:19.2.3")
+//    runtimeOnly("de.mari_023:ae2wtlib:19.2.3")
+    implementation "curse.maven:applied-energistics-2-wireless-terminals-459929:6437277"
+    implementation "curse.maven:configurable-keepinventory-960027:6596286"
 }
 
 processResources {

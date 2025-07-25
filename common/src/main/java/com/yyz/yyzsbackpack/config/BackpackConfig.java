@@ -12,16 +12,16 @@ public class BackpackConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public boolean quick_swap = true;
-    public boolean force_slot = false;
-    public boolean render_model = true;
-    public boolean container_item = false;
-    public int slot_offsetX = 0;
-    public int slot_offsetY = 0;
-    public int backpack_offsetX = 0;
-    public int backpack_offsetY = 0;
-    public String tip_key = "shift";//alt,ctrl,none
-    public Set<String> container_item_list = new HashSet<>(Set.of(
+    public boolean quickSwapEnabled = true;
+    public boolean useDedicatedSlot = false;
+    public boolean renderModelEnabled = true;
+    public boolean restrictContainerItems = false;
+    public int slotPositionX = 0;
+    public int slotPositionY = 0;
+    public int backpackGuiX = 0;
+    public int backpackGuiY = 0;
+    public String tooltipModifier = "shift";//alt,ctrl,none
+    public Set<String> restrictedItems = new HashSet<>(Set.of(
             "namespace:item_id"
     ));
 

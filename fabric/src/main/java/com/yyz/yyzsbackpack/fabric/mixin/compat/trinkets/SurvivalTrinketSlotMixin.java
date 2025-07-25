@@ -1,8 +1,8 @@
 package com.yyz.yyzsbackpack.fabric.mixin.compat.trinkets;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackStorage;
 import dev.emi.trinkets.SurvivalTrinketSlot;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
@@ -25,8 +25,8 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
+        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().useDedicatedSlot) {
+            BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -34,7 +34,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
         // 获取 TrinketInventory 实例
-        if (this.container instanceof TrinketInventory trinketInv && !Backpack.getConfig().force_slot) {
+        if (this.container instanceof TrinketInventory trinketInv && !Backpack.getConfig().useDedicatedSlot) {
             // 通过 TrinketComponent 获取实体
             TrinketComponent comp = trinketInv.getComponent();
             LivingEntity entity = comp.getEntity();
@@ -45,13 +45,13 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
 
                 ItemStack oldBackpackStack = this.getItem();
                 if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.saveBackpackContents(inventory, oldBackpackStack, true);
+                    BackpackStorage.saveBackpackContents(inventory, oldBackpackStack, true);
                 }
 
                 super.setByPlayer(newBackpackStack);
 
                 if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-                    BackpackManager.restoreBackpackContents(inventory, newBackpackStack);
+                    BackpackStorage.restoreBackpackContents(inventory, newBackpackStack);
                 }
                 return; // 提前返回
             }

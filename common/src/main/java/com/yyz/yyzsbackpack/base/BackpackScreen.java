@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;
 
-public interface BackpackExclusionZoneProvider {
+public interface BackpackScreen {
     /**
      * 获取背包的排除区域列表
      */

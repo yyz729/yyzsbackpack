@@ -8,13 +8,18 @@
     "compat.accessories.AccessoriesBasedSlotMixin",
     "compat.accessories.AccessoriesMenuMixin",
     "compat.ae2.AEBaseMenuMixin",
+    "compat.ae2wireless.ArmorSlotMixin",
+    "compat.ae2wireless.WCTMenuMixin",
+    "compat.ae2wireless.WrappedPlayerInventoryMixin",
     "compat.curios.CuriosContainerMixin",
     "compat.curios.CurioSlotMixin",
     "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
     "compat.inventoryfree.InventoryEnforcerMixin",
-    "compat.itemindicator.InventorySlotsIndicatorMixin"
+    "compat.itemindicator.InventorySlotsIndicatorMixin",
+    "compat.wfha.SimpleTableMenuMixin"
   ],
   "client": [
+    "compat.apothic_attributes.InventoryRenderMixin",
     "compat.ae2.AEBaseScreenMixin",
     "compat.curios.CuriosScreenMixin"
   ],

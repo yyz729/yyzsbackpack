@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.compat.rei;
 
-import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackScreen;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.screen.ExclusionZones;
@@ -14,7 +14,7 @@ public class BackpackClientREIPlugin implements REIClientPlugin {
     @Override
     public void registerExclusionZones(ExclusionZones zones) {
         zones.register(AbstractContainerScreen.class, screen -> {
-            if (screen instanceof BackpackExclusionZoneProvider provider) {
+            if (screen instanceof BackpackScreen provider) {
                 // 将 Rect2i 转换为 REI 的 Rectangle
                 return provider.getBackpackExclusionZones().stream()
                         .map(rect -> new Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()))

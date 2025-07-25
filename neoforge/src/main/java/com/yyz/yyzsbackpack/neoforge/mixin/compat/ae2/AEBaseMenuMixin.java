@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.neoforge.mixin.compat.ae2;
 
 import appeng.menu.AEBaseMenu;
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,7 +26,7 @@ public abstract class AEBaseMenuMixin extends AbstractContainerMenu {
     }
     @Inject(method = "<init>", at = @At("RETURN"),remap = false)
     private void addSlots(MenuType<?> menuType, int id, Inventory inventory, Object host, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
+        SlotManager.addBackpackInventorySlots(this,inventory);
     }
 
 }

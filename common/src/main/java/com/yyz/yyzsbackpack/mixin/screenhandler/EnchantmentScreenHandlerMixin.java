@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
-import com.yyz.yyzsbackpack.BackpackManager;
-
+import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -23,6 +23,7 @@ public abstract class EnchantmentScreenHandlerMixin extends AbstractContainerMen
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V", at = @At("RETURN"))
     private void addSlots(int i, Inventory inventory, ContainerLevelAccess containerLevelAccess, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
+        SlotManager.addBackpackInventorySlots(this,inventory);
+        ((BackpackMenu)this).setBackpackVisible(true);
     }
 }

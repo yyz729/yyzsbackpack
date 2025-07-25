@@ -38,7 +38,7 @@
   "accessWidener": "yyzsbackpack.accesswidener",
   "depends": {
     "fabricloader": ">=0.16.14",
-    "minecraft": "1.21.1",
+    "minecraft": ">=1.21 <=1.21.1",
     "java": ">=21",
     "fabric-api": "*"
   },

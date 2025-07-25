@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.compat.jei;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -48,7 +48,7 @@ public class BackpackJeiPlugin implements IModPlugin {
     private static class BackpackGuiHandler implements IGuiContainerHandler<AbstractContainerScreen<?>> {
         @Override
         public List<Rect2i> getGuiExtraAreas(AbstractContainerScreen<?> screen) {
-            if (screen instanceof BackpackExclusionZoneProvider provider) {
+            if (screen instanceof BackpackScreen provider) {
                 return provider.getBackpackExclusionZones(); // 直接返回 Rect2i
             }
             return Collections.emptyList();

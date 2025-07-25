@@ -1,20 +1,20 @@
 package com.yyz.yyzsbackpack.base;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackHelper;
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class BackPackSlot extends Slot {
+public class BackpackStorageSlot extends Slot {
     private final AbstractContainerMenu menu;
     private final int columnIndex;
     private final Inventory inventory;
 
-    public BackPackSlot(AbstractContainerMenu menu, Inventory inventory, int index, int columnIndex, int j, int k) {
+    public BackpackStorageSlot(AbstractContainerMenu menu, Inventory inventory, int index, int columnIndex, int j, int k) {
         super(inventory, index, j, k);
         this.menu = menu;
         this.columnIndex = columnIndex;
@@ -23,7 +23,7 @@ public class BackPackSlot extends Slot {
 
     @Override
     public boolean isActive() {
-        ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
+        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
         if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) {
             return false;
         }
@@ -33,7 +33,7 @@ public class BackPackSlot extends Slot {
             return false;
         }
 
-        if(!(((BackpackCondition)menu).shouldRenderBackpack())){
+        if(!(((BackpackMenu)menu).isBackpackVisible())){
             return false;
         }
 
@@ -41,7 +41,7 @@ public class BackPackSlot extends Slot {
     }
     @Override
     public boolean mayPlace(ItemStack stack) {
-        ItemStack backpackStack = BackpackHelper.getEquipped(inventory.player);
+        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
         boolean canPlace = !(stack.getItem() instanceof BackpackItem) &&
                 backpackStack.getItem() instanceof BackpackItem &&
                 super.mayPlace(stack);
@@ -53,11 +53,11 @@ public class BackPackSlot extends Slot {
                 return false;
             }
         }
-        if(BackpackManager.disableBackpack(stack.getItem())){
+        if(BackpackHelper.isItemBlacklisted(stack.getItem())){
             return false;
         }
 
-        if(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().container_item){
+        if(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems){
             return false;
         }
         return canPlace;

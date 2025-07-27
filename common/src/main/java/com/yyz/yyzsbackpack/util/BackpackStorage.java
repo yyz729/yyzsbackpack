@@ -55,4 +55,32 @@ public class BackpackStorage {
         // 移除数据组件
         backpackStack.remove(BackpackPlatform.getBackpackItemsComponent());
     }
+
+
+    public static int countNonEmptyBackpacks(Container playerInventory) {
+        int nonEmptyBackpackCount = 0;
+
+        // 遍历玩家物品栏所有槽位（通常0-35是主物品栏+快捷栏）
+        for (int slot = 0; slot < playerInventory.getContainerSize(); slot++) {
+            ItemStack stack = playerInventory.getItem(slot);
+
+            // 检查是否是背包物品
+            if (stack.getItem() instanceof BackpackItem) {
+                // 获取背包的存储数据组件
+                List<ItemStack> backpackItems = stack.get(BackpackPlatform.getBackpackItemsComponent());
+
+                // 检查背包是否有存储内容
+                if (backpackItems != null) {
+                    // 遍历背包内所有物品槽位
+                    for (ItemStack content : backpackItems) {
+                        if (!content.isEmpty()) {
+                            nonEmptyBackpackCount++; // 发现非空物品，计数+1
+                            break; // 跳出内部循环，继续检查下一个背包
+                        }
+                    }
+                }
+            }
+        }
+        return nonEmptyBackpackCount;
+    }
 }

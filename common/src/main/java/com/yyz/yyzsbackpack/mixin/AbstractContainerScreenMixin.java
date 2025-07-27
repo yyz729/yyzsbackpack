@@ -66,6 +66,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Inject(method = "renderBackground", at = @At("RETURN"))
     private void onRenderBackground(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         BackpackRenderer.renderEquippedBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpack, (BackpackMenu) this.menu);
+        BackpackRenderer.renderBackpackPreview(context,minecraft,menu,hoveredSlot,leftPos, topPos, imageWidth, imageHeight);
     }
 
     @ModifyConstant(method = "checkHotbarMouseClicked", constant = @Constant(intValue = 40))
@@ -108,106 +109,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Inject(method = "renderContents", at = @At("HEAD"))
     private void updateBackpackSlotsPositionBeforeRender(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        Screen screen = (Screen)(Object)this;
-        if (screen instanceof CreativeModeInventoryScreen) {
-            return; // 跳过创造模式界面
-        }
-
-        if (menu instanceof BackpackMenu) {
-
-            int baseHeight = imageHeight;
-            // 查找第一个BackPackSlot类型的槽位索引
-            int backpackSlotStartIndex = -1;
-            for (int i = 0; i < menu.slots.size(); i++) {
-                if (menu.slots.get(i) instanceof BackpackStorageSlot) {
-                    backpackSlotStartIndex = i;
-                    break; // 找到第一个立即退出
-                }
-            }
-            // 未找到背包槽位则直接返回
-            if (backpackSlotStartIndex == -1) {
-                return;
-            }
-
-            // 获取当前偏移值
-            int xOffset = ((BackpackMenu) menu).getBackpackGuiX();
-            int yOffset = ((BackpackMenu) menu).getBackpackGuiY();
-
-            // 获取当前偏移值
-            int xOffset1 = ((BackpackMenu) menu).getBackpackEquipSlotX();
-            int yOffset1 = ((BackpackMenu) menu).getBackpackEquipSlotY();
-
-            // 动态更新槽位位置
-            SlotManager.repositionBackpackInventorySlots(
-                    menu, backpackSlotStartIndex,
-                    baseHeight, xOffset, yOffset
-            );
-            // 动态更新装备槽位置
-            SlotManager.repositionBackpackEquipSlot(
-                    menu,
-                    baseHeight,
-                    xOffset1,
-                    yOffset1
-            );
-        }
-    }
-    @Inject(method = "renderBackground", at = @At("RETURN"))
-    private void renderBackpackContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-
-
-        ((BackpackMenu)menu).setPreviewVisible(false);
-        boolean requireKey;
-        switch (Backpack.getConfig().tooltipModifier.toLowerCase()) {
-            case "shift" -> requireKey = hasShiftDown();
-            case "alt" -> requireKey = hasAltDown();
-            case "ctrl" -> requireKey = hasControlDown();
-            case "none" -> requireKey = true; // 不需要按键
-            default -> {
-                // 无效配置时使用默认值（shift）
-                if (!hasShiftDown()) return;
-                return;
-            }
-        }
-
-        // 如果配置要求按键但未按下，则返回
-        if (!requireKey) return;
-
-        if(this.hoveredSlot == null || !this.menu.getCarried().isEmpty()) return;
-
-        ItemStack backpackStack = this.hoveredSlot.getItem();
-
-        if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) return;
-        BackpackRenderer.renderPreviewBackpackBackground(guiGraphics,backpackStack, leftPos, topPos, imageWidth, imageHeight, (BackpackMenu) this.menu);
-        ((BackpackMenu)menu).setPreviewVisible(true);
-        // 从数据组件读取背包内容
-
-        List<ItemStack> backpackItems = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
-        if (backpackItems == null) return;
-
-        // 使用您的位置计算逻辑
-        int baseHeight = this.imageHeight;
-        int columns = backpackItem.getBackpackType().getColumns();
-        int rows = 9; // 固定9行
-
-        int startX = leftPos-25; // 基础X偏移
-        int startY = topPos + (baseHeight - 166) / 2 + 3; // 基础Y位置
-
-
-        for (int column = 0; column < columns; column++) {
-            for (int row = 0; row < rows; row++) {
-                int slotIndex = column * rows + row;
-                if (slotIndex >= backpackItems.size()) continue;
-
-                // 计算每个物品的位置
-                int x = startX - column * 18;
-                int y = startY + row * 18;
-                ItemStack stack = backpackItems.get(slotIndex);
-                // 绘制物品图标
-                guiGraphics.renderItem(stack, x, y);
-                // 绘制物品数量
-                guiGraphics.renderItemDecorations(minecraft.font, stack, x, y);
-            }
-        }
+        SlotManager.updateBackpackSlotPositions((Screen)(Object)this,menu,imageHeight);
     }
 
     @Override

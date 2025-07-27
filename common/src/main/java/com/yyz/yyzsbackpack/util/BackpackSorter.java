@@ -14,7 +14,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.*;
 
@@ -130,7 +129,7 @@ public class BackpackSorter {
         if (slotIndex < 0 || slotIndex >= slots.size() ||
                 actionType != ClickType.PICKUP ||
                 slots.get(slotIndex).getItem().getItem() instanceof BackpackItem ||
-                !Backpack.getConfig().quickSwapEnabled) return;
+                !Backpack.getConfig().quick_swap_backpack) return;
 
         if (!(menu.getSlot(slotIndex) instanceof BackpackStorageSlot)) return;
 
@@ -145,5 +144,82 @@ public class BackpackSorter {
         Container container = BackpackPlatform.getContainer(player);
         container.setItem(BackpackPlatform.getIndex(player), stack);
         menu.setCarried(back);
+    }
+
+
+    public static ItemStack quickMoveToHotbar(AbstractContainerMenu menu, Player player, int slotIndex, NonNullList<Slot> slots) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = slots.get(slotIndex);
+
+
+        // 动态获取快捷栏索引范围
+        int hotbarStart = -1;
+        int hotbarEnd = -1;
+        for (int idx = 0; idx < slots.size(); idx++) {
+            Slot s = slots.get(idx);
+            if (s.container instanceof Inventory &&
+                    s.getContainerSlot() >= 0 &&
+                    s.getContainerSlot() < 9) {
+                if (hotbarStart == -1) hotbarStart = idx;
+                hotbarEnd = idx + 1; // 结束索引是exclusive的
+            }
+        }
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 尝试移动到快捷栏 (36-44)
+            if (!menu.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
+    }
+
+
+    public static ItemStack quickMoveToBackpack(AbstractContainerMenu menu, Player player, int slotIndex, NonNullList<Slot> slots) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = slots.get(slotIndex);
+
+        if (slot != null && slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemStack = slotStack.copy();
+
+            // 查找背包槽位起始索引
+            int backpackStart = -1;
+            for (int i = 0; i < slots.size(); i++) {
+                if (slots.get(i) instanceof BackpackStorageSlot) {
+                    backpackStart = i;
+                    break;
+                }
+            }
+
+            if (backpackStart == -1) {
+                return ItemStack.EMPTY;
+            }
+
+            // 尝试移动到背包槽位
+            if (!menu.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (slotStack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            slot.onTake(player, slotStack);
+        }
+        return itemStack;
     }
 }

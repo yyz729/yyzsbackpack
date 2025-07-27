@@ -38,7 +38,7 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
     compileOnly files('libs/hotbarslotcycling-neoforge-21.6.0.jar')
-    implementation "curse.maven:jei-238222:6756169"
+    compileOnly "curse.maven:jei-238222:6756169"
 }
 
 processResources {

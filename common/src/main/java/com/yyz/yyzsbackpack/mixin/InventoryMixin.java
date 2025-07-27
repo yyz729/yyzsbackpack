@@ -24,10 +24,6 @@ public abstract class InventoryMixin {
 	@Final
 	public Player player;
 
-	@Shadow
-	@Final
-	public NonNullList<ItemStack> items;
-
 
 	@Shadow public abstract int getSlotWithRemainingSpace(ItemStack itemStack);
 
@@ -42,13 +38,14 @@ public abstract class InventoryMixin {
 		return size + 9 * 6 + 1;
 	}
 
-	@ModifyConstant(
-			method = "<clinit>", // 目标为静态初始化块
-			constant = @Constant(intValue = 40) // 匹配常量值40
-	)
+	@ModifyConstant(method = "<clinit>", constant = @Constant(intValue = 40))
 	private static int modifyOffhandSlotConstant(int original) {
+		return 95;
+	}
 
-		return 95; // 将40改为95
+	@ModifyConstant(method = "getSlotWithRemainingSpace", constant = @Constant(intValue = 40))
+	private int modifyOffhandSlotConstant1(int constant) {
+		return 95;
 	}
 
 	@Redirect(method = "getFreeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
@@ -83,7 +80,7 @@ public abstract class InventoryMixin {
 
 				if (i != -1 && i < BackpackHelper.getBackpackSize(player)) {
 					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
-					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems))) {
+					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))) {
 						this.player.drop(itemStack, false); // 直接掉落物品
 						return;
 					}

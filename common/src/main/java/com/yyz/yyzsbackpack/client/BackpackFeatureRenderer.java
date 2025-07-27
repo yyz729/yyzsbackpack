@@ -3,7 +3,6 @@ package com.yyz.yyzsbackpack.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackRenderState;
@@ -74,7 +73,7 @@ public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, Play
 
     private boolean shouldRender(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().renderModelEnabled;
+        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model;
     }
 
     private ResourceLocation getTexture(Player player) {
@@ -89,12 +88,8 @@ public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, Play
 
     private void renderShield(PoseStack matrices, MultiBufferSource vertexConsumers, Player player, int light) {
         matrices.pushPose();
+        this.getParentModel().body.translateAndRotate(matrices);
         matrices.scale(0.8f,0.8f,0.8f);
-        if (player.isCrouching()) {
-            matrices.translate(0.0F, 0.3F, 0.0F);
-            matrices.mulPose(Axis.XP.rotationDegrees(30.0F));
-        }
-        // 设置渲染参数
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entitySolid(getTexture(player)));
         this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY);
 

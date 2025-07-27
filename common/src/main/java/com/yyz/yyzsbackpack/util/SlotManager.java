@@ -1,8 +1,11 @@
 package com.yyz.yyzsbackpack.util;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackEquipSlot;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -59,10 +62,60 @@ public class SlotManager {
     }
 
     public static void addBackpackEquipSlot(AbstractContainerMenu screenHandler, Container inventory) {
-        if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().useDedicatedSlot) return;
+        if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().use_dedicated_slot) return;
         screenHandler.addSlot(new BackpackEquipSlot(inventory, 36+54, 8 + 69 ,  8 + 18 * 2));
     }
 
+    public static void updateBackpackSlotPositions(Screen screen,AbstractContainerMenu menu, int imageHeight) {
 
+
+        // 跳过创造模式界面
+        if (screen instanceof CreativeModeInventoryScreen) {
+            return;
+        }
+
+        if (menu instanceof BackpackMenu) {
+            int baseHeight = imageHeight;
+
+            // 查找第一个背包存储槽位的索引
+            int backpackSlotStartIndex = -1;
+            for (int i = 0; i < menu.slots.size(); i++) {
+                if (menu.slots.get(i) instanceof BackpackStorageSlot) {
+                    backpackSlotStartIndex = i;
+                    break;
+                }
+            }
+
+            // 未找到有效槽位则终止操作
+            if (backpackSlotStartIndex == -1) {
+                return;
+            }
+
+            // 获取背包槽位偏移量
+            int xOffset = ((BackpackMenu) menu).getBackpackGuiX();
+            int yOffset = ((BackpackMenu) menu).getBackpackGuiY();
+
+            // 获取装备槽位偏移量
+            int equipXOffset = ((BackpackMenu) menu).getBackpackEquipSlotX();
+            int equipYOffset = ((BackpackMenu) menu).getBackpackEquipSlotY();
+
+            // 更新背包物品槽位位置
+            SlotManager.repositionBackpackInventorySlots(
+                    menu,
+                    backpackSlotStartIndex,
+                    baseHeight,
+                    xOffset,
+                    yOffset
+            );
+
+            // 更新装备槽位位置
+            SlotManager.repositionBackpackEquipSlot(
+                    menu,
+                    baseHeight,
+                    equipXOffset,
+                    equipYOffset
+            );
+        }
+    }
 
 }

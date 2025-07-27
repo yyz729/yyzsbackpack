@@ -1,12 +1,9 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
-import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
-import com.yyz.yyzsbackpack.util.BackpackStorage;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
@@ -32,12 +29,6 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     @Shadow public abstract ItemStack getCarried();
 
     @Shadow @Final public NonNullList<Slot> slots;
-
-    @Shadow public abstract void setCarried(ItemStack stack);
-
-    @Shadow public abstract Slot getSlot(int i);
-
-    @Shadow protected abstract boolean moveItemStackTo(ItemStack arg, int m, int n, boolean bl);
 
     @Unique
     private boolean isBackpackVisible = false;
@@ -73,12 +64,12 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Override
     public int getBackpackGuiX() {
-        return BackpackGuiX + Backpack.getConfig().backpackGuiX;
+        return BackpackGuiX + Backpack.getConfig().backpack_gui_x;
     }
 
     @Override
     public int getBackpackGuiY() {
-        return BackpackGuiY + Backpack.getConfig().backpackGuiY;
+        return BackpackGuiY + Backpack.getConfig().backpack_gui_y;
     }
 
     @Override
@@ -89,12 +80,12 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Override
     public int getBackpackEquipSlotX() {
-        return BackpackEquipSlotX + Backpack.getConfig().slotPositionX;
+        return BackpackEquipSlotX + Backpack.getConfig().slot_position_x;
     }
 
     @Override
     public int getBackpackEquipSlotY() {
-        return BackpackEquipSlotY + Backpack.getConfig().slotPositionY;
+        return BackpackEquipSlotY + Backpack.getConfig().slot_position_y;
     }
 
     @Override
@@ -114,23 +105,7 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
-        BackpackSorter.handleBackpackSwap(
-                (AbstractContainerMenu) (Object) this,
-                this.slots,
-                this.getCarried(),
-                slotIndex, button, actionType, player
-        );
-//        if (slotIndex < 0 || slotIndex >= this.slots.size() || actionType != ClickType.PICKUP || slots.get(slotIndex).getItem().getItem() instanceof BackpackItem || !Backpack.getConfig().quickSwapEnabled) return;
-//
-//        if(!(getSlot(slotIndex) instanceof BackpackStorageSlot)) return;
-//        ItemStack back = BackpackPlatform.getEquipped(player).copy();
-//        ItemStack stack = getCarried().copy();
-//        if (!(back.getItem() instanceof BackpackItem) || !(stack.getItem() instanceof BackpackItem)) return;
-//        BackpackStorage.saveBackpackContents(player.getInventory(), back, true);
-//        BackpackStorage.restoreBackpackContents(player.getInventory(), stack);
-//        Container container = BackpackPlatform.getContainer(player);
-//        container.setItem(BackpackPlatform.getIndex(player), stack);
-//        setCarried(back);
+        BackpackSorter.handleBackpackSwap((AbstractContainerMenu) (Object) this, this.slots, this.getCarried(), slotIndex, button, actionType, player);
     }
 
     @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
@@ -150,19 +125,18 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
             // 如果是背包槽位，转移到快捷栏
             if (slot instanceof BackpackStorageSlot) {
-                for (ItemStack itemStack = this.quickMoveToHotbar(player, i);
+                for (ItemStack itemStack = BackpackSorter.quickMoveToHotbar((AbstractContainerMenu)(Object)this,player, i,slots);
                      !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-                     itemStack = this.quickMoveToHotbar(player, i)) {
+                     itemStack = BackpackSorter.quickMoveToHotbar((AbstractContainerMenu)(Object)this,player, i,slots)) {
                 }
                 ci.cancel();
-                return;
             }
 
             // 如果是原版槽位，转移到背包
             else  { // 物品栏和快捷栏槽位
-                for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
+                for (ItemStack itemStack = BackpackSorter.quickMoveToBackpack((AbstractContainerMenu)(Object)this,player, i,slots);
                      !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-                     itemStack = this.quickMoveToBackpack(player, i)) {
+                     itemStack = BackpackSorter.quickMoveToBackpack((AbstractContainerMenu)(Object)this,player, i,slots)) {
                 }
                 ci.cancel();
             }
@@ -200,82 +174,82 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         return 40 + 9 * 6 + 1 ;
     }
 
-    @Unique
-    private ItemStack quickMoveToHotbar(Player player, int slotIndex) {
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIndex);
-
-
-        // 动态获取快捷栏索引范围
-        int hotbarStart = -1;
-        int hotbarEnd = -1;
-        for (int idx = 0; idx < this.slots.size(); idx++) {
-            Slot s = this.slots.get(idx);
-            if (s.container instanceof Inventory &&
-                    s.getContainerSlot() >= 0 &&
-                    s.getContainerSlot() < 9) {
-                if (hotbarStart == -1) hotbarStart = idx;
-                hotbarEnd = idx + 1; // 结束索引是exclusive的
-            }
-        }
-
-        if (slot != null && slot.hasItem()) {
-            ItemStack slotStack = slot.getItem();
-            itemStack = slotStack.copy();
-
-            // 尝试移动到快捷栏 (36-44)
-            if (!this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (slotStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            slot.onTake(player, slotStack);
-        }
-        return itemStack;
-    }
-
-    @Unique
-    private ItemStack quickMoveToBackpack(Player player, int slotIndex) {
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIndex);
-
-        if (slot != null && slot.hasItem()) {
-            ItemStack slotStack = slot.getItem();
-            itemStack = slotStack.copy();
-
-            // 查找背包槽位起始索引
-            int backpackStart = -1;
-            for (int i = 0; i < this.slots.size(); i++) {
-                if (this.slots.get(i) instanceof BackpackStorageSlot) {
-                    backpackStart = i;
-                    break;
-                }
-            }
-
-            if (backpackStart == -1) {
-                return ItemStack.EMPTY;
-            }
-
-            // 尝试移动到背包槽位
-            if (!this.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (slotStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            slot.onTake(player, slotStack);
-        }
-        return itemStack;
-    }
+//    @Unique
+//    private ItemStack quickMoveToHotbar(Player player, int slotIndex) {
+//        ItemStack itemStack = ItemStack.EMPTY;
+//        Slot slot = this.slots.get(slotIndex);
+//
+//
+//        // 动态获取快捷栏索引范围
+//        int hotbarStart = -1;
+//        int hotbarEnd = -1;
+//        for (int idx = 0; idx < this.slots.size(); idx++) {
+//            Slot s = this.slots.get(idx);
+//            if (s.container instanceof Inventory &&
+//                    s.getContainerSlot() >= 0 &&
+//                    s.getContainerSlot() < 9) {
+//                if (hotbarStart == -1) hotbarStart = idx;
+//                hotbarEnd = idx + 1; // 结束索引是exclusive的
+//            }
+//        }
+//
+//        if (slot != null && slot.hasItem()) {
+//            ItemStack slotStack = slot.getItem();
+//            itemStack = slotStack.copy();
+//
+//            // 尝试移动到快捷栏 (36-44)
+//            if (!this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
+//                return ItemStack.EMPTY;
+//            }
+//
+//            if (slotStack.isEmpty()) {
+//                slot.set(ItemStack.EMPTY);
+//            } else {
+//                slot.setChanged();
+//            }
+//
+//            slot.onTake(player, slotStack);
+//        }
+//        return itemStack;
+//    }
+//
+//    @Unique
+//    private ItemStack quickMoveToBackpack(Player player, int slotIndex) {
+//        ItemStack itemStack = ItemStack.EMPTY;
+//        Slot slot = this.slots.get(slotIndex);
+//
+//        if (slot != null && slot.hasItem()) {
+//            ItemStack slotStack = slot.getItem();
+//            itemStack = slotStack.copy();
+//
+//            // 查找背包槽位起始索引
+//            int backpackStart = -1;
+//            for (int i = 0; i < this.slots.size(); i++) {
+//                if (this.slots.get(i) instanceof BackpackStorageSlot) {
+//                    backpackStart = i;
+//                    break;
+//                }
+//            }
+//
+//            if (backpackStart == -1) {
+//                return ItemStack.EMPTY;
+//            }
+//
+//            // 尝试移动到背包槽位
+//            if (!this.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
+//                return ItemStack.EMPTY;
+//            }
+//
+//            if (slotStack.isEmpty()) {
+//                slot.set(ItemStack.EMPTY);
+//            } else {
+//                slot.setChanged();
+//            }
+//
+//            slot.onTake(player, slotStack);
+//        }
+//        return itemStack;
+//    }
 
 
 

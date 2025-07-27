@@ -16,33 +16,33 @@ import java.util.Set;
 
 public class BackpackCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("yyzsbackpackconfig")
+        dispatcher.register(Commands.literal("yyzsbackpack")
                 .requires(source -> source.hasPermission(2)) // 需要OP权限
                 .then(Commands.literal("set")
-                        .then(Commands.literal("quick_swap_enabled")
+                        .then(Commands.literal("quick_swap_backpack")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
-                                        .executes(ctx -> setBoolean(ctx, "quickSwapEnabled"))))
+                                        .executes(ctx -> setBoolean(ctx, "quick_swap_backpack"))))
                         .then(Commands.literal("use_dedicated_slot")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
-                                        .executes(ctx -> setBoolean(ctx, "useDedicatedSlot"))))
-                        .then(Commands.literal("render_model_enabled")
+                                        .executes(ctx -> setBoolean(ctx, "use_dedicated_slot"))))
+                        .then(Commands.literal("render_backpack_model")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
-                                        .executes(ctx -> setBoolean(ctx, "renderModelEnabled"))))
+                                        .executes(ctx -> setBoolean(ctx, "render_backpack_model"))))
                         .then(Commands.literal("restrict_container_items")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
-                                        .executes(ctx -> setBoolean(ctx, "restrictContainerItems"))))
+                                        .executes(ctx -> setBoolean(ctx, "restrict_container_items"))))
                         .then(Commands.literal("slot_position_x")
                                 .then(Commands.argument("value", IntegerArgumentType.integer())
-                                        .executes(ctx -> setInt(ctx, "slotPositionX"))))
+                                        .executes(ctx -> setInt(ctx, "slot_position_x"))))
                         .then(Commands.literal("slot_position_y")
                                 .then(Commands.argument("value", IntegerArgumentType.integer())
-                                        .executes(ctx -> setInt(ctx, "slotPositionY"))))
+                                        .executes(ctx -> setInt(ctx, "slot_position_y"))))
                         .then(Commands.literal("backpack_gui_x")
                                 .then(Commands.argument("value", IntegerArgumentType.integer())
-                                        .executes(ctx -> setInt(ctx, "backpackGuiX"))))
+                                        .executes(ctx -> setInt(ctx, "backpack_gui_x"))))
                         .then(Commands.literal("backpack_gui_y")
                                 .then(Commands.argument("value", IntegerArgumentType.integer())
-                                        .executes(ctx -> setInt(ctx, "backpackGuiY"))))
+                                        .executes(ctx -> setInt(ctx, "backpack_gui_y"))))
                         .then(Commands.literal("tooltip_modifier")
                                 .then(Commands.argument("value", StringArgumentType.string())
                                         .executes(BackpackCommand::setTipKey)))
@@ -51,10 +51,10 @@ public class BackpackCommand {
                                         .then(Commands.argument("item", StringArgumentType.string())
                                                 .executes(BackpackCommand::addItem)))
                                 .then(Commands.literal("remove")
-                                                .then(Commands.argument("item", StringArgumentType.string())
-                                                        .executes(BackpackCommand::removeItem)))
+                                        .then(Commands.argument("item", StringArgumentType.string())
+                                                .executes(BackpackCommand::removeItem)))
                                 .then(Commands.literal("clear")
-                                                        .executes(BackpackCommand::clearItems)))
+                                        .executes(BackpackCommand::clearItems)))
                         .then(Commands.literal("reload")
                                 .executes(BackpackCommand::reloadConfig))
                 )
@@ -87,9 +87,9 @@ public class BackpackCommand {
             ctx.getSource().sendFailure(Component.literal("Invalid value! Must be: shift, alt, ctrl, none"));
             return 0;
         }
-        setProperty("tooltipModifier", value);
+        setProperty("tooltip_modifier", value);
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Set tooltipModifier to " + value),
+            () -> Component.literal("Set tooltip_modifier to " + value),
             true
         );
         return Command.SINGLE_SUCCESS;
@@ -108,7 +108,7 @@ public class BackpackCommand {
     private static int addItem(CommandContext<CommandSourceStack> ctx) {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
-        if (config.restrictedItems.add(item)) {
+        if (config.restricted_items.add(item)) {
             config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                 () -> Component.literal("Added item: " + item), 
@@ -123,7 +123,7 @@ public class BackpackCommand {
     private static int removeItem(CommandContext<CommandSourceStack> ctx) {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
-        if (config.restrictedItems.remove(item)) {
+        if (config.restricted_items.remove(item)) {
             config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                 () -> Component.literal("Removed item: " + item), 
@@ -137,7 +137,7 @@ public class BackpackCommand {
 
     private static int clearItems(CommandContext<CommandSourceStack> ctx) {
         BackpackConfig config = Backpack.getConfig();
-        config.restrictedItems.clear();
+        config.restricted_items.clear();
         config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
             () -> Component.literal("Cleared all container items"), 

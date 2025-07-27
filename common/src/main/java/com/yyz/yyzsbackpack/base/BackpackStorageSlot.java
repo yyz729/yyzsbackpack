@@ -57,7 +57,7 @@ public class BackpackStorageSlot extends Slot {
             return false;
         }
 
-        if(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems){
+        if(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items){
             return false;
         }
 

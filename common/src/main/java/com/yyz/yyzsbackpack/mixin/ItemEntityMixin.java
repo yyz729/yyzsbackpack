@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(value = ItemEntity.class)
+@Mixin(value = ItemEntity.class,priority = 999)
 public class ItemEntityMixin {
 
     @Redirect(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"))
 	private boolean modifyFindSlotMatchingItem(Inventory instance, ItemStack stack) {
 		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
 			return !BackpackHelper.isItemBlacklisted(stack.getItem())
-					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems))
+					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))
 					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)
 					&& instance.add(stack);
 		}else {

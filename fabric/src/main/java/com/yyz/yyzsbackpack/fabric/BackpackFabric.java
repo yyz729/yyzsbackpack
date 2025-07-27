@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import com.yyz.yyzsbackpack.item.BackpackMaterial;
+import com.yyz.yyzsbackpack.item.BackpackMaterials;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ModInitializer;
@@ -33,10 +33,10 @@ import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 public final class BackpackFabric implements ModInitializer {
 //    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOODEN, props), new Item.Properties().stacksTo(1));
 //    public static final BackpackItem STONE_BACKPACK = (BackpackItem) register("stone_backpack", props -> new BackpackItem(BackpackMaterial.STONE, props), new Item.Properties().stacksTo(1));
-    public static final BackpackItem IRON_BACKPACK = (BackpackItem) register("iron_backpack", props -> new BackpackItem(BackpackMaterial.IRON, props), new Item.Properties().stacksTo(1));
-    public static final BackpackItem GOLD_BACKPACK = (BackpackItem) register("gold_backpack", props -> new BackpackItem(BackpackMaterial.GOLD, props), new Item.Properties().stacksTo(1));
-    public static final BackpackItem DIAMOND_BACKPACK = (BackpackItem) register("diamond_backpack", props -> new BackpackItem(BackpackMaterial.DIAMOND, props), new Item.Properties().stacksTo(1));
-    public static final BackpackItem NETHERITE_BACKPACK = (BackpackItem) register("netherite_backpack", props -> new BackpackItem(BackpackMaterial.NETHERITE, props), new Item.Properties().stacksTo(1).fireResistant());
+    public static final BackpackItem IRON_BACKPACK = (BackpackItem) register("iron_backpack", props -> new BackpackItem(BackpackMaterials.IRON, props), new Item.Properties().stacksTo(1));
+    public static final BackpackItem GOLD_BACKPACK = (BackpackItem) register("gold_backpack", props -> new BackpackItem(BackpackMaterials.GOLD, props), new Item.Properties().stacksTo(1));
+    public static final BackpackItem DIAMOND_BACKPACK = (BackpackItem) register("diamond_backpack", props -> new BackpackItem(BackpackMaterials.DIAMOND, props), new Item.Properties().stacksTo(1));
+    public static final BackpackItem NETHERITE_BACKPACK = (BackpackItem) register("netherite_backpack", props -> new BackpackItem(BackpackMaterials.NETHERITE, props), new Item.Properties().stacksTo(1).fireResistant());
     public static final CreativeModeTab GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(GOLD_BACKPACK))
             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
@@ -75,7 +75,7 @@ public final class BackpackFabric implements ModInitializer {
         Backpack.init();
     }
     public static ItemStack getEquipped(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets") && !Backpack.getConfig().useDedicatedSlot) {
+        if (BackpackPlatform.isModLoaded("trinkets") && !Backpack.getConfig().use_dedicated_slot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查是否为 BackpackItem
@@ -90,7 +90,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static Container getContainer(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().useDedicatedSlot) {
+        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().use_dedicated_slot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查 BackpackItem
@@ -107,7 +107,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static int getIndex(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().useDedicatedSlot) {
+        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().use_dedicated_slot) {
             return TrinketsApi.getTrinketComponent(player)
                     .map(trinketComponent -> {
                         // 使用 Predicate 检查 BackpackItem

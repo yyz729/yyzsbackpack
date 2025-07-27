@@ -5,8 +5,11 @@ import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -14,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,7 +68,20 @@ public class BackpackHelper {
 
     public static boolean isItemBlacklisted(Item item) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
-        return convertStringSetToIdentifierSet(Backpack.getConfig().restrictedItems).contains(id);
+        return convertStringSetToIdentifierSet(Backpack.getConfig().restricted_items).contains(id);
+    }
+
+
+    public static Holder<MobEffect> getEffectHolder(String effectId) {
+        ResourceLocation location = ResourceLocation.tryParse(effectId);
+        if (location == null) {
+            return null;
+        }
+        Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(
+                ResourceKey.create(BuiltInRegistries.MOB_EFFECT.key(), location)
+        );
+        return holder.orElse(null);
+
     }
 
     // 点击范围判断 - 添加偏移值支持

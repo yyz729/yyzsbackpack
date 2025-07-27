@@ -1,17 +1,18 @@
 package com.yyz.yyzsbackpack.item;
 
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 public class BackpackItem extends Item {
-    private final BackpackMaterial backpackMaterialType;
+    private final BackpackMaterial backpackMaterialsType;
 
-    public BackpackItem(BackpackMaterial backpackMaterial, Properties settings) {
+    public BackpackItem(BackpackMaterial backpackMaterials, Properties settings) {
         super(settings);
-        this.backpackMaterialType = backpackMaterial;
+        this.backpackMaterialsType = backpackMaterials;
     }
 
     public BackpackMaterial getBackpackType() {
-        return backpackMaterialType;
+        return backpackMaterialsType;
     }
 }

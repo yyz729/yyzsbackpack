@@ -3,7 +3,7 @@ package com.yyz.yyzsbackpack.neoforge;
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import com.yyz.yyzsbackpack.item.BackpackMaterial;
+import com.yyz.yyzsbackpack.item.BackpackMaterials;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -13,10 +13,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -54,25 +52,25 @@ public final class BackpackNeoForge {
     // 背包物品注册（使用DeferredItem）
     public static final DeferredItem<Item> NETHERITE_BACKPACK = ITEMS.registerItem(
             "netherite_backpack",
-            props -> new BackpackItem(BackpackMaterial.NETHERITE, props),
+            props -> new BackpackItem(BackpackMaterials.NETHERITE, props),
             new Item.Properties().stacksTo(1).fireResistant()
     );
 
     public static final DeferredItem<Item> DIAMOND_BACKPACK = ITEMS.registerItem(
             "diamond_backpack",
-            props -> new BackpackItem(BackpackMaterial.DIAMOND, props),
+            props -> new BackpackItem(BackpackMaterials.DIAMOND, props),
             new Item.Properties().stacksTo(1)
     );
 
     public static final DeferredItem<Item> GOLD_BACKPACK = ITEMS.registerItem(
             "gold_backpack",
-            props -> new BackpackItem(BackpackMaterial.GOLD, props),
+            props -> new BackpackItem(BackpackMaterials.GOLD, props),
             new Item.Properties().stacksTo(1)
     );
 
     public static final DeferredItem<Item> IRON_BACKPACK = ITEMS.registerItem(
             "iron_backpack",
-            props -> new BackpackItem(BackpackMaterial.IRON, props),
+            props -> new BackpackItem(BackpackMaterials.IRON, props),
             new Item.Properties().stacksTo(1)
     );
 

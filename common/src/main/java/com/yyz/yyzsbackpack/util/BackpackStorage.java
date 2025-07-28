@@ -1,8 +1,16 @@
 package com.yyz.yyzsbackpack.util;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.config.BackpackEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -60,7 +68,7 @@ public class BackpackStorage {
     public static int countNonEmptyBackpacks(Container playerInventory) {
         int nonEmptyBackpackCount = 0;
 
-        // 遍历玩家物品栏所有槽位（通常0-35是主物品栏+快捷栏）
+        // 遍历玩家物品栏所有槽位
         for (int slot = 0; slot < playerInventory.getContainerSize(); slot++) {
             ItemStack stack = playerInventory.getItem(slot);
 
@@ -82,5 +90,86 @@ public class BackpackStorage {
             }
         }
         return nonEmptyBackpackCount;
+    }
+
+
+
+    public static void updateEffectsByBackpackCount(Player player, List<Holder<MobEffect>> lastAppliedEffects){
+        int backpackCount = BackpackStorage.countNonEmptyBackpacks(player.getInventory());
+
+        // 1. 移除不再需要的老效果
+        for (Holder<MobEffect> effect : new ArrayList<>(lastAppliedEffects)) {
+            player.removeEffect(effect);
+            lastAppliedEffects.remove(effect);
+        }
+
+        // 2. 检查条件并应用新效果
+        if (backpackCount > 0 && Backpack.getConfig().backpack_multi_effects.size() >= backpackCount) {
+            BackpackEffect effect = Backpack.getConfig().backpack_multi_effects.get(backpackCount - 1);
+            Holder<MobEffect> effectType = BackpackHelper.getEffectHolder(effect.effectType);
+            if(effectType == null) return;
+            // 创建并应用效果
+            player.addEffect(new MobEffectInstance(effectType, -1, effect.amplifier), player);
+
+            // 记录本次添加的效果
+            if (!lastAppliedEffects.contains(effectType)) {
+                lastAppliedEffects.add(effectType);
+            }
+        }
+    }
+
+    /**
+     * 饰品栏加载时将装备在背包槽的背包移回玩家主背包
+     */
+    public static void returnBackpackFromAccessorySlot(Player player) {
+        if (player.level().isClientSide) return;
+
+        Inventory inventory = player.getInventory();
+        final int ACCESSORY_SLOT = 36 + 54; // 背包槽位置
+        ItemStack accessoryItem = inventory.getItem(ACCESSORY_SLOT);
+
+        if (accessoryItem.getItem() instanceof BackpackItem
+                && BackpackHelper.isTrinketModLoaded()
+                && !Backpack.getConfig().use_dedicated_slot) {
+
+            // 保存背包NBT数据
+            BackpackStorage.saveBackpackContents(inventory, accessoryItem, true);
+
+            // 清空背包槽
+            inventory.setItem(ACCESSORY_SLOT, ItemStack.EMPTY);
+
+            // 尝试移回主背包
+            if (!inventory.add(accessoryItem)) {
+                player.drop(accessoryItem, false); // 优化掉落方法
+            }
+        }
+    }
+
+    /**
+     * 玩家死亡时保存当前装备的背包内容
+     */
+    public static void saveEquippedBackpackOnDeath(ServerPlayer player) {
+        ItemStack equippedBackpack = BackpackPlatform.getEquipped(player);
+
+        if (equippedBackpack.getItem() instanceof BackpackItem) {
+            // 根据配置规则保存背包内容
+            BackpackStorage.saveBackpackContents(
+                    player.getInventory(),
+                    equippedBackpack,
+                    BackpackPlatform.getEmptyRule(player)
+            );
+        }
+    }
+
+    /**
+     * 为玩家恢复非空背包的内容
+     */
+    public static void restoreNonEmptyBackpack(Player player) {
+        ItemStack equippedBackpack = BackpackPlatform.getEquipped(player);
+
+        // 检查背包是否包含物品组件
+        if (equippedBackpack.has(BackpackPlatform.getBackpackItemsComponent())) {
+            BackpackStorage.restoreBackpackContents(player.getInventory(), equippedBackpack);
+        }
     }
 }

@@ -10,6 +10,7 @@ public class BackpackItem extends Item {
     public BackpackItem(BackpackMaterial backpackMaterials, Properties settings) {
         super(settings);
         this.backpackMaterialsType = backpackMaterials;
+
     }
 
     public BackpackMaterial getBackpackType() {

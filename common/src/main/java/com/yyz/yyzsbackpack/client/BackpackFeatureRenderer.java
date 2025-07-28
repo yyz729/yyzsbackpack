@@ -79,11 +79,9 @@ public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, Play
     private ResourceLocation getTexture(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
         if(BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem backpackItem){
-            return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/"+backpackItem.getBackpackType().getType()+"_backpack.png");
-
+            return backpackItem.getBackpackType().getModelTexture();
         }
         return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/gold_backpack.png");
-
     }
 
     private void renderShield(PoseStack matrices, MultiBufferSource vertexConsumers, Player player, int light) {

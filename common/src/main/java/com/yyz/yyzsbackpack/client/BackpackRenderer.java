@@ -21,11 +21,10 @@ import java.util.List;
 
 public class BackpackRenderer {
     public static final ResourceLocation BACKPACK_TEXTURE = ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack.png");
-    public static final ResourceLocation SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/slot.png");
 
     public static void renderEquipSlotBackground(InventoryMenu menu, GuiGraphics guiGraphics, int x, int y){
         if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().use_dedicated_slot) return;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED,SLOT_TEXTURE,  x + ((BackpackMenu)menu).getBackpackEquipSlotX(),  y+ ((BackpackMenu)menu).getBackpackEquipSlotY(), 0, 0, 18, 18, 18, 18);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/slot.png"),  x + ((BackpackMenu)menu).getBackpackEquipSlotX(),  y+ ((BackpackMenu)menu).getBackpackEquipSlotY(), 0, 0, 18, 18, 18, 18);
 
     }
 
@@ -39,17 +38,21 @@ public class BackpackRenderer {
         if (!shouldRenderBackpack) return;
 
         int columns = 0;
+        ResourceLocation texture = null;
         ItemStack stack = BackpackPlatform.getEquipped(inventory.player);
         if (stack.getItem() instanceof BackpackItem backpackItem) {
             columns = backpackItem.getBackpackType().getColumns();
+            texture = backpackItem.getBackpackType().getGuiTexture();
         }
+
+        if(texture == null) return;
 
         int width = 14 + columns * 18;
         // 应用偏移值
         int left = x - 14 - columns * 18 - 1 + renderCondition.getBackpackGuiX();
         int top = y + (backgroundHeight - 174) / 2 + renderCondition.getBackpackGuiY();
         int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
-        context.blit(RenderPipelines.GUI_TEXTURED, BACKPACK_TEXTURE, left, top, u, 0, width, 174, 462, 174);
+        context.blit(RenderPipelines.GUI_TEXTURED, texture, left, top, 0, 0, width, 174, width, 174);
     }
 
     public static void renderBackpackPreview(GuiGraphics guiGraphics, Minecraft minecraft, AbstractContainerMenu menu, @Nullable Slot hoveredSlot, int leftPos, int topPos, int imageWidth, int imageHeight){

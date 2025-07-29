@@ -94,20 +94,25 @@ public class BackpackStorage {
 
 
 
-    public static void updateEffectsByBackpackCount(Player player, List<Holder<MobEffect>> lastAppliedEffects){
+    public static void updateEffectsByBackpackCount(Player player, List<Holder<MobEffect>> lastAppliedEffects) {
         int backpackCount = BackpackStorage.countNonEmptyBackpacks(player.getInventory());
 
-        // 1. 移除不再需要的老效果
+        // 移除不再需要的老效果
         for (Holder<MobEffect> effect : new ArrayList<>(lastAppliedEffects)) {
             player.removeEffect(effect);
             lastAppliedEffects.remove(effect);
         }
 
-        // 2. 检查条件并应用新效果
-        if (backpackCount > 0 && Backpack.getConfig().backpack_multi_effects.size() >= backpackCount) {
-            BackpackEffect effect = Backpack.getConfig().backpack_multi_effects.get(backpackCount - 1);
+        // 检查条件并应用新效果
+        List<BackpackEffect> effects = Backpack.getConfig().backpack_multi_effects;
+        if (backpackCount > 0 && !effects.isEmpty()) {
+            // 计算效果索引：如果背包数量超过效果列表长度，则使用最后一个效果
+            int effectIndex = Math.min(backpackCount, effects.size()) - 1;
+
+            BackpackEffect effect = effects.get(effectIndex);
             Holder<MobEffect> effectType = BackpackHelper.getEffectHolder(effect.effectType);
-            if(effectType == null) return;
+            if (effectType == null) return;
+
             // 创建并应用效果
             player.addEffect(new MobEffectInstance(effectType, -1, effect.amplifier), player);
 

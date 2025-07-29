@@ -23,6 +23,11 @@ public enum BackpackMaterials implements BackpackMaterial{
     }
 
     @Override
+    public int getSize() {
+        return columns * 9;
+    }
+
+    @Override
     public int getColumns() {
         return columns;
     }

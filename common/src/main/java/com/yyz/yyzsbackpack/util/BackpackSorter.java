@@ -208,7 +208,7 @@ public class BackpackSorter {
             }
 
             // 尝试移动到背包槽位
-            if (!menu.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
+            if (!menu.moveItemStackTo(slotStack, backpackStart, backpackStart + BackpackHelper.getMaxBackpackSize(), false)) {
                 return ItemStack.EMPTY;
             }
 

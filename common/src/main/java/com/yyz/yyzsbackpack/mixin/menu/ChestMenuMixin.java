@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.menu;
 
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -16,6 +17,6 @@ public abstract class ChestMenuMixin extends AbstractContainerMenu {
 
     @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",ordinal = 0), index = 2)
     private int injected(int x) {
-        return x - 54;
+        return x - BackpackHelper.getMaxBackpackSize();
     }
 }

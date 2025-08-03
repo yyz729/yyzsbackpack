@@ -130,7 +130,7 @@ public class BackpackStorage {
         if (player.level().isClientSide) return;
 
         Inventory inventory = player.getInventory();
-        final int ACCESSORY_SLOT = 36 + 54; // 背包槽位置
+        final int ACCESSORY_SLOT = 36 + BackpackHelper.getMaxBackpackSize(); // 背包槽位置
         ItemStack accessoryItem = inventory.getItem(ACCESSORY_SLOT);
 
         if (accessoryItem.getItem() instanceof BackpackItem

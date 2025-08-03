@@ -71,12 +71,12 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @ModifyConstant(method = "checkHotbarMouseClicked", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPosition(int original) {
-        return 40 + 9 * 6 + 1;
+        return 40 + BackpackHelper.getSlotIndexOffset();
     }
 
     @ModifyConstant(method = "checkHotbarKeyPressed", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {
-        return 40 + 9 * 6 + 1;
+        return 40 + BackpackHelper.getSlotIndexOffset();
     }
 
     @Inject(method = "renderContents", at = @At("HEAD"))

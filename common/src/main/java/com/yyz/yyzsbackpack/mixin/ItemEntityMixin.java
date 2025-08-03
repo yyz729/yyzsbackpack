@@ -14,7 +14,7 @@ public class ItemEntityMixin {
 
     @Redirect(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"))
 	private boolean modifyFindSlotMatchingItem(Inventory instance, ItemStack stack) {
-		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
+		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36 + BackpackHelper.getMaxBackpackSize()) {
 			return !BackpackHelper.isItemBlacklisted(stack.getItem())
 					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))
 					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)

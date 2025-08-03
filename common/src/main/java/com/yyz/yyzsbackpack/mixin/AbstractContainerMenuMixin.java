@@ -3,6 +3,7 @@ package com.yyz.yyzsbackpack.mixin;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.core.NonNullList;
@@ -171,7 +172,7 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     }
     @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {
-        return 40 + 9 * 6 + 1 ;
+        return 40 + BackpackHelper.getSlotIndexOffset();
     }
 
 }

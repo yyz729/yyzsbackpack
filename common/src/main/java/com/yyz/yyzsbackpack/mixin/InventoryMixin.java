@@ -19,11 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = Inventory.class)
 public abstract class InventoryMixin {
 
-
-	@Shadow
-	@Final
-	public Player player;
-
+	@Shadow @Final public Player player;
 
 	@Shadow public abstract int getSlotWithRemainingSpace(ItemStack itemStack);
 
@@ -35,17 +31,17 @@ public abstract class InventoryMixin {
 
 	@ModifyArg(method = "<init>", index = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/core/NonNullList;withSize(ILjava/lang/Object;)Lnet/minecraft/core/NonNullList;"))
 	private int modifyMainSize(int size) {
-		return size + 9 * 6 + 1;
+		return size + BackpackHelper.getSlotIndexOffset();
 	}
 
 	@ModifyConstant(method = "<clinit>", constant = @Constant(intValue = 40))
 	private static int modifyOffhandSlotConstant(int original) {
-		return 95;
+		return original + BackpackHelper.getSlotIndexOffset();
 	}
 
 	@ModifyConstant(method = "getSlotWithRemainingSpace", constant = @Constant(intValue = 40))
 	private int modifyOffhandSlotConstant1(int constant) {
-		return 95;
+		return constant + BackpackHelper.getSlotIndexOffset();
 	}
 
 	@Redirect(method = "getFreeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
@@ -80,7 +76,7 @@ public abstract class InventoryMixin {
 
 				if (i != -1 && i < BackpackHelper.getBackpackSize(player)) {
 					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
-					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))) {
+					if (i >= 36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))) {
 						this.player.drop(itemStack, false); // 直接掉落物品
 						return;
 					}

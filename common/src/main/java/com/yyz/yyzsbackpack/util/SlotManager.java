@@ -63,7 +63,7 @@ public class SlotManager {
 
     public static void addBackpackEquipSlot(AbstractContainerMenu screenHandler, Container inventory) {
         if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().use_dedicated_slot) return;
-        screenHandler.addSlot(new BackpackEquipSlot(inventory, 36+54, 8 + 69 ,  8 + 18 * 2));
+        screenHandler.addSlot(new BackpackEquipSlot(inventory, 36 + BackpackHelper.getMaxBackpackSize(), 8 + 69 ,  8 + 18 * 2));
     }
 
     public static void updateBackpackSlotPositions(Screen screen,AbstractContainerMenu menu, int imageHeight) {

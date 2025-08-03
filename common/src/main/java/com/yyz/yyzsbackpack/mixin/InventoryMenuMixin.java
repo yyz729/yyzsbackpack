@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -23,12 +24,12 @@ public abstract class InventoryMenuMixin extends AbstractCraftingMenu {
 
     @ModifyConstant(method = "<init>", constant = @Constant(intValue = 39))
     private int armorIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @ModifyConstant(method = "<init>", constant = @Constant(intValue = 40))
     private int offhandIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

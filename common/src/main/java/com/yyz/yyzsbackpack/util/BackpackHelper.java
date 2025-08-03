@@ -29,6 +29,15 @@ public class BackpackHelper {
                 BackpackPlatform.isModLoaded("accessories");
     }
 
+    public static int getMaxBackpackSize(){
+        return 54;
+    }
+
+    public static int getSlotIndexOffset(){
+        return getMaxBackpackSize() + 1;
+    }
+
+
     public static boolean shouldRenderBackpack(AbstractContainerMenu menu, Inventory inventory) {
 
         // 检查玩家是否有背包

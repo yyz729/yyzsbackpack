@@ -6,15 +6,26 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class BackpackCommand {
+
+    private static final String[] MODIFIER_SUGGESTIONS = new String[]{"shift", "alt", "ctrl", "none"};
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("yyzsbackpack")
                 .requires(source -> source.hasPermission(2)) // 需要OP权限
@@ -45,13 +56,21 @@ public class BackpackCommand {
                                         .executes(ctx -> setInt(ctx, "backpack_gui_y"))))
                         .then(Commands.literal("tooltip_modifier")
                                 .then(Commands.argument("value", StringArgumentType.string())
+                                        .suggests((context, builder) ->
+                                                SharedSuggestionProvider.suggest(MODIFIER_SUGGESTIONS, builder))
                                         .executes(BackpackCommand::setTipKey)))
                         .then(Commands.literal("restricted_items")
                                 .then(Commands.literal("add")
                                         .then(Commands.argument("item", StringArgumentType.string())
+                                                // 添加物品建议
+                                                .suggests((context, builder) ->
+                                                        suggestAllItems(context.getSource(), builder))
                                                 .executes(BackpackCommand::addItem)))
                                 .then(Commands.literal("remove")
                                         .then(Commands.argument("item", StringArgumentType.string())
+                                                // 添加已配置物品建议
+                                                .suggests((context, builder) ->
+                                                        suggestConfiguredItems(context.getSource(), builder))
                                                 .executes(BackpackCommand::removeItem)))
                                 .then(Commands.literal("clear")
                                         .executes(BackpackCommand::clearItems)))
@@ -154,4 +173,63 @@ public class BackpackCommand {
         );
         return Command.SINGLE_SUCCESS;
     }
+
+
+    // 提供所有注册物品的建议
+    private static CompletableFuture<Suggestions> suggestAllItems(
+            CommandSourceStack source, SuggestionsBuilder builder) {
+        // 获取所有已注册物品ID
+        Iterable<ResourceLocation> itemIds = BuiltInRegistries.ITEM.keySet();
+
+        // 创建带引号的建议列表
+        List<String> quotedSuggestions = new ArrayList<>();
+        for (ResourceLocation id : itemIds) {
+            quotedSuggestions.add("\"" + id.toString() + "\"");
+        }
+
+        return SharedSuggestionProvider.suggest(
+                quotedSuggestions,
+                builder.createOffset(builder.getStart()));
+    }
+
+    // 提供已配置物品的建议
+    private static CompletableFuture<Suggestions> suggestConfiguredItems(
+            CommandSourceStack source, SuggestionsBuilder builder) {
+        // 获取配置中的限制物品列表
+        Set<String> configuredItems = Backpack.getConfig().restricted_items;
+
+        // 创建带引号的建议列表
+        List<String> quotedSuggestions = new ArrayList<>();
+        for (String item : configuredItems) {
+            quotedSuggestions.add("\"" + item + "\"");
+        }
+
+        return SharedSuggestionProvider.suggest(
+                quotedSuggestions,
+                builder.createOffset(builder.getStart()));
+    }
+
+//    // 提供所有注册物品的建议
+//    private static CompletableFuture<Suggestions> suggestAllItems(
+//            CommandSourceStack source, SuggestionsBuilder builder) {
+//        // 获取所有已注册物品
+//        Iterable<ResourceLocation> itemIds = BuiltInRegistries.ITEM.keySet();
+//
+//        // 将物品ID转换为字符串建议
+//        return SharedSuggestionProvider.suggestResource(
+//                itemIds,
+//                builder.createOffset(builder.getStart()));
+//    }
+//
+//    // 提供已配置物品的建议
+//    private static CompletableFuture<Suggestions> suggestConfiguredItems(
+//            CommandSourceStack source, SuggestionsBuilder builder) {
+//        // 获取配置中的限制物品列表
+//        Set<String> configuredItems = Backpack.getConfig().restricted_items;
+//
+//        // 直接建议配置中的物品ID
+//        return SharedSuggestionProvider.suggest(
+//                configuredItems,
+//                builder.createOffset(builder.getStart()));
+//    }
 }

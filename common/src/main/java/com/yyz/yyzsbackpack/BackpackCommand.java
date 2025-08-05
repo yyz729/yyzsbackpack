@@ -9,6 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.config.BackpackEffect;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -29,7 +30,7 @@ public class BackpackCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("yyzsbackpack")
                 .requires(source -> source.hasPermission(2)) // 需要OP权限
-                .then(Commands.literal("set")
+                .then(Commands.literal("config")
                         .then(Commands.literal("quick_swap_backpack")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> setBoolean(ctx, "quick_swap_backpack"))))
@@ -74,6 +75,35 @@ public class BackpackCommand {
                                                 .executes(BackpackCommand::removeItem)))
                                 .then(Commands.literal("clear")
                                         .executes(BackpackCommand::clearItems)))
+                        .then(Commands.literal("backpack_multi_effects")
+                                .then(Commands.literal("set")
+                                        .then(Commands.argument("tier", IntegerArgumentType.integer(0))
+                                                .then(Commands.argument("effect", StringArgumentType.string())
+                                                        .suggests(BackpackCommand::suggestEffectTypes)
+                                                        .then(Commands.argument("level", IntegerArgumentType.integer(0))
+                                                                .executes(BackpackCommand::setEffect)
+                                                        )
+                                                )
+                                        )
+                                )
+                                .then(Commands.literal("add")
+                                        .then(Commands.argument("effect", StringArgumentType.string())
+                                                .suggests(BackpackCommand::suggestEffectTypes)
+                                                .then(Commands.argument("level", IntegerArgumentType.integer(0))
+                                                        .executes(BackpackCommand::addEffect)
+                                                )
+                                        )
+                                )
+                                .then(Commands.literal("remove")
+                                        .then(Commands.argument("tier", IntegerArgumentType.integer(0))
+                                                .suggests(BackpackCommand::suggestEffectTiers)
+                                                .executes(BackpackCommand::removeEffect)
+                                        ))
+                                .then(Commands.literal("clear")
+                                        .executes(BackpackCommand::clearEffects)
+                                )
+
+                        )
                         .then(Commands.literal("reload")
                                 .executes(BackpackCommand::reloadConfig))
                 )
@@ -84,8 +114,8 @@ public class BackpackCommand {
         boolean value = BoolArgumentType.getBool(ctx, "value");
         setProperty(property, value);
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Set " + property + " to " + value), 
-            true
+                () -> Component.translatable("command.yyzsbackpack.set.boolean", property, String.valueOf(value)),
+                true
         );
         return Command.SINGLE_SUCCESS;
     }
@@ -94,8 +124,8 @@ public class BackpackCommand {
         int value = IntegerArgumentType.getInteger(ctx, "value");
         setProperty(property, value);
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Set " + property + " to " + value), 
-            true
+                () -> Component.translatable("command.yyzsbackpack.set.integer", property, value),
+                true
         );
         return Command.SINGLE_SUCCESS;
     }
@@ -103,13 +133,13 @@ public class BackpackCommand {
     private static int setTipKey(CommandContext<CommandSourceStack> ctx) {
         String value = StringArgumentType.getString(ctx, "value");
         if (!Set.of("shift", "alt", "ctrl", "none").contains(value)) {
-            ctx.getSource().sendFailure(Component.literal("Invalid value! Must be: shift, alt, ctrl, none"));
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.set.tooltip_modifier.invalid"));
             return 0;
         }
         setProperty("tooltip_modifier", value);
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Set tooltip_modifier to " + value),
-            true
+                () -> Component.translatable("command.yyzsbackpack.set.tooltip_modifier", value),
+                true
         );
         return Command.SINGLE_SUCCESS;
     }
@@ -130,12 +160,12 @@ public class BackpackCommand {
         if (config.restricted_items.add(item)) {
             config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
-                () -> Component.literal("Added item: " + item), 
-                true
+                    () -> Component.translatable("command.yyzsbackpack.restricted_items.add", item),
+                    true
             );
             return Command.SINGLE_SUCCESS;
         }
-        ctx.getSource().sendFailure(Component.literal("Item already exists!"));
+        ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.restricted_items.exists"));
         return 0;
     }
 
@@ -145,12 +175,12 @@ public class BackpackCommand {
         if (config.restricted_items.remove(item)) {
             config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
-                () -> Component.literal("Removed item: " + item), 
-                true
+                    () -> Component.translatable("command.yyzsbackpack.restricted_items.remove", item),
+                    true
             );
             return Command.SINGLE_SUCCESS;
         }
-        ctx.getSource().sendFailure(Component.literal("Item not found!"));
+        ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.restricted_items.not_found"));
         return 0;
     }
 
@@ -159,8 +189,8 @@ public class BackpackCommand {
         config.restricted_items.clear();
         config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Cleared all container items"), 
-            true
+                () -> Component.translatable("command.yyzsbackpack.restricted_items.clear"),
+                true
         );
         return Command.SINGLE_SUCCESS;
     }
@@ -168,8 +198,8 @@ public class BackpackCommand {
     private static int reloadConfig(CommandContext<CommandSourceStack> ctx) {
         Backpack.init(); // 重新加载配置
         ctx.getSource().sendSuccess(
-            () -> Component.literal("Reloaded backpack config"), 
-            true
+                () -> Component.translatable("command.yyzsbackpack.reload"),
+                true
         );
         return Command.SINGLE_SUCCESS;
     }
@@ -209,27 +239,100 @@ public class BackpackCommand {
                 builder.createOffset(builder.getStart()));
     }
 
-//    // 提供所有注册物品的建议
-//    private static CompletableFuture<Suggestions> suggestAllItems(
-//            CommandSourceStack source, SuggestionsBuilder builder) {
-//        // 获取所有已注册物品
-//        Iterable<ResourceLocation> itemIds = BuiltInRegistries.ITEM.keySet();
-//
-//        // 将物品ID转换为字符串建议
-//        return SharedSuggestionProvider.suggestResource(
-//                itemIds,
-//                builder.createOffset(builder.getStart()));
-//    }
-//
-//    // 提供已配置物品的建议
-//    private static CompletableFuture<Suggestions> suggestConfiguredItems(
-//            CommandSourceStack source, SuggestionsBuilder builder) {
-//        // 获取配置中的限制物品列表
-//        Set<String> configuredItems = Backpack.getConfig().restricted_items;
-//
-//        // 直接建议配置中的物品ID
-//        return SharedSuggestionProvider.suggest(
-//                configuredItems,
-//                builder.createOffset(builder.getStart()));
-//    }
+    private static int setEffect(CommandContext<CommandSourceStack> ctx) {
+        int tier = IntegerArgumentType.getInteger(ctx, "tier");
+        String effect = StringArgumentType.getString(ctx, "effect");
+        int level = IntegerArgumentType.getInteger(ctx, "level");
+
+        BackpackConfig config = Backpack.getConfig();
+        List<BackpackEffect> effects = config.backpack_multi_effects;
+
+        // 扩展列表到所需层级
+        while (effects.size() <= tier) {
+            effects.add(new BackpackEffect("none", 0));
+        }
+
+        // 设置效果
+        BackpackEffect be = effects.get(tier);
+        be.effectType = effect;
+        be.amplifier = level;
+
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(
+                () -> Component.translatable("command.yyzsbackpack.effect.set", tier, effect, level),
+                true
+        );
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int addEffect(CommandContext<CommandSourceStack> ctx) {
+        String effect = StringArgumentType.getString(ctx, "effect");
+        int level = IntegerArgumentType.getInteger(ctx, "level");
+
+        BackpackConfig config = Backpack.getConfig();
+        config.backpack_multi_effects.add(new BackpackEffect(effect, level));
+
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(
+                () -> Component.translatable("command.yyzsbackpack.effect.add", effect, level),
+                true
+        );
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int removeEffect(CommandContext<CommandSourceStack> ctx) {
+        int tier = IntegerArgumentType.getInteger(ctx, "tier");
+        BackpackConfig config = Backpack.getConfig();
+        List<BackpackEffect> effects = config.backpack_multi_effects;
+
+        if (tier >= effects.size()) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.effect.invalid_tier", effects.size() - 1));
+            return 0;
+        }
+
+        effects.remove(tier);
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(
+                () -> Component.translatable("command.yyzsbackpack.effect.remove", tier),
+                true
+        );
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int clearEffects(CommandContext<CommandSourceStack> ctx) {
+        BackpackConfig config = Backpack.getConfig();
+        config.backpack_multi_effects.clear();
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(
+                () -> Component.translatable("command.yyzsbackpack.effect.clear"),
+                true
+        );
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static CompletableFuture<Suggestions> suggestEffectTypes(
+            CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        List<String> suggestions = new ArrayList<>();
+        suggestions.add("\"none\"");
+
+        // 获取所有注册的效果ID，并添加引号
+        BuiltInRegistries.MOB_EFFECT.keySet().forEach(id ->
+                suggestions.add("\"" + id.toString() + "\"")
+        );
+
+        return SharedSuggestionProvider.suggest(suggestions, builder);
+    }
+
+    private static CompletableFuture<Suggestions> suggestEffectTiers(
+            CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        BackpackConfig config = Backpack.getConfig();
+        List<String> tiers = new ArrayList<>();
+
+        for (int i = 0; i < config.backpack_multi_effects.size(); i++) {
+            tiers.add(String.valueOf(i));
+        }
+
+        return SharedSuggestionProvider.suggest(tiers, builder);
+    }
+
 }

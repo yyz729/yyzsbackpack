@@ -4,5 +4,21 @@
   "item.yyzsbackpack.diamond_backpack": "钻石背包",
   "item.yyzsbackpack.netherite_backpack": "下界合金背包",
 
-  "itemGroup.yyzsbackpack.title": "yyz的背包"
+  "itemGroup.yyzsbackpack.title": "yyz的背包",
+
+  "command.yyzsbackpack.set.boolean": "已将 %s 设置为 %s",
+  "command.yyzsbackpack.set.integer": "已将 %s 设置为 %s",
+  "command.yyzsbackpack.set.tooltip_modifier": "已将工具提示修饰键设置为 %s",
+  "command.yyzsbackpack.set.tooltip_modifier.invalid": "无效值！必须为: shift, alt, ctrl 或 none",
+  "command.yyzsbackpack.restricted_items.add": "已添加限制物品: %s",
+  "command.yyzsbackpack.restricted_items.exists": "物品已存在！",
+  "command.yyzsbackpack.restricted_items.remove": "已移除限制物品: %s",
+  "command.yyzsbackpack.restricted_items.not_found": "未找到该物品！",
+  "command.yyzsbackpack.restricted_items.clear": "已清除所有容器限制物品",
+  "command.yyzsbackpack.reload": "已重新加载背包配置",
+  "command.yyzsbackpack.effect.set": "已设置 %s 级效果: %s %s",
+  "command.yyzsbackpack.effect.add": "已添加效果: %s %s",
+  "command.yyzsbackpack.effect.remove": "已移除 %s 级效果",
+  "command.yyzsbackpack.effect.invalid_tier": "无效等级！最高等级为 %s",
+  "command.yyzsbackpack.effect.clear": "已清除所有背包效果"
 }

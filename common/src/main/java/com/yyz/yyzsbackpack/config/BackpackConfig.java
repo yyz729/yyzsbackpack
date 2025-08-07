@@ -2,9 +2,7 @@ package com.yyz.yyzsbackpack.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.network.chat.Component;
 
-import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -87,6 +85,7 @@ public class BackpackConfig {
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
     public String tooltip_modifier = "shift";
+    public String backpack_model_style = "detailed";
     public Set<String> restricted_items = new HashSet<>();
 
     public List<BackpackEffect> backpack_multi_effects = new ArrayList<>();

@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
@@ -221,5 +222,65 @@ public class BackpackSorter {
             slot.onTake(player, slotStack);
         }
         return itemStack;
+    }
+
+    public static void quickMoveTo(AbstractContainerMenu menu, NonNullList<Slot> slots, int i, int j, ClickType clickType, Player player, CallbackInfo ci){
+        if (clickType == ClickType.QUICK_MOVE && j == 1) {
+            if (i < 0) {
+                ci.cancel();
+                return;
+            }
+
+            Slot slot = (Slot)slots.get(i);
+            if (!slot.mayPickup(player)) {
+                ci.cancel();
+                return;
+            }
+
+            // 如果是背包槽位，转移到快捷栏
+            if (slot instanceof BackpackStorageSlot) {
+                for (ItemStack itemStack = BackpackSorter.quickMoveToHotbar(menu,player, i,slots);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = BackpackSorter.quickMoveToHotbar(menu,player, i,slots)) {
+                }
+                ci.cancel();
+            }
+
+            // 如果是原版槽位，转移到背包
+            else  { // 物品栏和快捷栏槽位
+                for (ItemStack itemStack = BackpackSorter.quickMoveToBackpack(menu,player, i,slots);
+                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
+                     itemStack = BackpackSorter.quickMoveToBackpack(menu,player, i,slots)) {
+                }
+                ci.cancel();
+            }
+        }
+        else if (clickType == ClickType.QUICK_MOVE && j == 2) {
+            Slot hoveredSlot = (Slot) slots.get(i);
+
+            // 动态识别玩家物品栏槽位
+            boolean isInventorySlot = false;
+            if (hoveredSlot.container instanceof Inventory) {
+                int slotIndexInPlayerInv = hoveredSlot.getContainerSlot();
+                // 主物品栏范围：9-35 (不包括快捷栏0-8和护甲36-39)
+                if (slotIndexInPlayerInv >= 9 && slotIndexInPlayerInv < 36) {
+                    isInventorySlot = true;
+                }
+            }
+
+            boolean isBackpackSlot = hoveredSlot instanceof BackpackStorageSlot;
+            boolean isContainerSlot = !isInventorySlot && !isBackpackSlot &&
+                    hoveredSlot.container != player.getInventory();
+
+            if (!isInventorySlot && !isBackpackSlot && !isContainerSlot) return;
+
+            if (isInventorySlot) {
+                BackpackSorter.sortInventorySlots(player,slots);
+            } else if (isBackpackSlot) {
+                BackpackSorter.sortBackpackSlots(player,slots);
+            } else {
+                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,slots);
+            }
+        }
     }
 }

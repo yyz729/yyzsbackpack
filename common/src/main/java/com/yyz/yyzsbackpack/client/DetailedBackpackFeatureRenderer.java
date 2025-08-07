@@ -26,13 +26,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.component.DyedItemColor;
 
 
-public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, PlayerModel> {
+public class DetailedBackpackFeatureRenderer extends RenderLayer<PlayerRenderState, PlayerModel> {
 
     private final ModelPart backpack;
     private final ModelPart backpack_overlay;
 
 
-    public BackpackFeatureRenderer(RenderLayerParent<PlayerRenderState, PlayerModel> renderLayerParent) {
+    public DetailedBackpackFeatureRenderer(RenderLayerParent<PlayerRenderState, PlayerModel> renderLayerParent) {
         super(renderLayerParent);
         this.backpack = createBackpackModel();
         this.backpack_overlay =  createBackpackOverlayModel();
@@ -79,7 +79,7 @@ public class BackpackFeatureRenderer extends RenderLayer<PlayerRenderState, Play
 
 
     private boolean shouldRender(Player player) {
-        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model;
+        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model && Backpack.getConfig().backpack_model_style.equals("detailed");
     }
     private ResourceLocation getTexture(Player player) {
         return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/backpack.png");

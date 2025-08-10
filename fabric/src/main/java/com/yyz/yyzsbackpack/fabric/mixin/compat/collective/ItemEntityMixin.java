@@ -19,7 +19,7 @@ public class ItemEntityMixin {
 		Player player = instance.player;
 		((CollectivePlayerEvents.Player_Picked_Up_Item)CollectivePlayerEvents.ON_ITEM_PICKED_UP.invoker()).onItemPickedUp(player.level(), player, stack);
 
-		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
+		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+ BackpackHelper.getMaxBackpackSize()) {
 			return !BackpackHelper.isItemBlacklisted(stack.getItem())
 					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))
 					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)

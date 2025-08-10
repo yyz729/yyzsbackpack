@@ -109,7 +109,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Inject(method = "renderContents", at = @At("HEAD"))
     private void updateBackpackSlotsPositionBeforeRender(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        SlotManager.updateBackpackSlotPositions((Screen)(Object)this,menu,imageHeight);
+        SlotManager.updateBackpackSlotPositions((Screen)(Object)this,menu,inventory,imageHeight);
     }
 
     @Override

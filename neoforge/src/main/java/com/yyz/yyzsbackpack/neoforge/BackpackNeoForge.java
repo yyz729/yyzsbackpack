@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterials;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ public final class BackpackNeoForge {
         DATA_COMPONENT.register(modEventBus);
         Backpack.init();
     }
+
 
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Backpack.MOD_ID);
@@ -82,7 +84,7 @@ public final class BackpackNeoForge {
     );
 
     public static ItemStack getEquipped(Player player) {
-        return player.getInventory().getItem(36+54);
+        return player.getInventory().getItem(36+ BackpackHelper.getMaxBackpackSize());
     }
 
     public static Container getContainer(Player player) {
@@ -90,6 +92,6 @@ public final class BackpackNeoForge {
     }
 
     public static int getIndex(Player player) {
-        return 36+54;
+        return 36+BackpackHelper.getMaxBackpackSize();
     }
 }

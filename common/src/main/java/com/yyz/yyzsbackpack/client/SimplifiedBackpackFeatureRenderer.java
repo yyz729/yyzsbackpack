@@ -23,26 +23,37 @@ import net.minecraft.world.item.component.DyedItemColor;
 
 public class SimplifiedBackpackFeatureRenderer extends RenderLayer<PlayerRenderState, PlayerModel> {
     private final ModelPart backpack;
+    private final ModelPart backpack_overlay;
 
     public SimplifiedBackpackFeatureRenderer(RenderLayerParent<PlayerRenderState, PlayerModel> renderLayerParent) {
         super(renderLayerParent);
-        this.backpack = createBodyLayer();
+        this.backpack = createBackpackModel();
+        this.backpack_overlay =  createBackpackOverlayModel();
     }
 
-    public static ModelPart createBodyLayer() {
+    private ModelPart createBackpackModel() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
         PartDefinition leather_backpack = partdefinition.addOrReplaceChild("leather_backpack", CubeListBuilder.create().texOffs(0, 8).addBox(-4.0F, -8.0F, -3.0F, 8.0F, 8.0F, 4.0F, new CubeDeformation(0.0F))
                 .texOffs(26, 8).mirror().addBox(-4.0F, -8.0F, 1.0F, 2.0F, 11.0F, 5.0F, new CubeDeformation(0.1F)).mirror(false)
                 .texOffs(26, 8).mirror().addBox(2.0F, -8.0F, 1.0F, 2.0F, 11.0F, 5.0F, new CubeDeformation(0.1F)).mirror(false)
-                .texOffs(4, 0).addBox(-4.0F, 0.0F, -3.0F, 8.0F, 3.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 7.75F, 3.5F, 0.0F, 3.1416F, 0.0F));
+                .texOffs(4, 0).addBox(-4.0F, 0.0F, -3.0F, 8.0F, 3.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 7.75F, 4.0F, 0.0F, 3.1416F, 0.0F));
 
         PartDefinition top = leather_backpack.addOrReplaceChild("top", CubeListBuilder.create().texOffs(0, 20).addBox(-4.0F, -1.0F, -4.0F, 9.0F, 5.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, -7.5F, 0.5F));
 
-        PartDefinition cube_r1 = top.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(4, 29).addBox(-4.5F, -2.0F, 0.0F, 9.0F, 4.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 5.9829F, -3.7389F, 0.1309F, 0.0F, 0.0F));
-
         return meshdefinition.getRoot().bake(64, 64).getChild("leather_backpack");
+    }
+
+    private ModelPart createBackpackOverlayModel() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        PartDefinition leather_backpack_overlay = partdefinition.addOrReplaceChild("leather_backpack_overlay", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+
+        PartDefinition cube_r2 = leather_backpack_overlay.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(4, 29).addBox(-4.5F, -2.0F, 0.0F, 9.0F, 4.0F, 0.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -17.75F, 7.25F, 0.1309F, 3.1416F, 0.0F));
+
+        return meshdefinition.getRoot().bake(64, 64).getChild("leather_backpack_overlay");
     }
 
     @Override
@@ -60,8 +71,11 @@ public class SimplifiedBackpackFeatureRenderer extends RenderLayer<PlayerRenderS
             matrices.pushPose();
             this.getParentModel().body.translateAndRotate(matrices);
 
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/leather_backpack1.png")));
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/leather_backpack.png")));
             this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY,j);
+
+            VertexConsumer overlay_vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/leather_backpack_overlay.png")));
+            this.backpack_overlay.render(matrices, overlay_vertexConsumer, light, OverlayTexture.NO_OVERLAY);
 
             matrices.popPose();
         }

@@ -30,6 +30,7 @@ public class BackpackConfig {
         addComment("backpack_gui_x", "X position of backpack GUI");
         addComment("backpack_gui_y", "Y position of backpack GUI");
         addComment("tooltip_modifier", "Backpack preview modifier key (alt, ctrl, none)");
+        addComment("backpack_model_style", "detailed/simplified");
 
         // Multi-line comments
         addComment("restricted_items",
@@ -85,7 +86,7 @@ public class BackpackConfig {
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
     public String tooltip_modifier = "shift";
-    public String backpack_model_style = "detailed";
+    public String backpack_model_style = "detailed";//simplified
     public Set<String> restricted_items = new HashSet<>();
 
     public List<BackpackEffect> backpack_multi_effects = new ArrayList<>();

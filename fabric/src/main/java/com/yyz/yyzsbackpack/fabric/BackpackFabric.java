@@ -5,11 +5,14 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterials;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,8 +34,7 @@ import java.util.function.Function;
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
-//    public static final BackpackItem WOOLEN_BACKPACK = (BackpackItem) register("woolen_backpack", props -> new BackpackItem(BackpackMaterial.WOODEN, props), new Item.Properties().stacksTo(1));
-//    public static final BackpackItem STONE_BACKPACK = (BackpackItem) register("stone_backpack", props -> new BackpackItem(BackpackMaterial.STONE, props), new Item.Properties().stacksTo(1));
+
     public static final BackpackItem IRON_BACKPACK = (BackpackItem) register("iron_backpack", props -> new BackpackItem(BackpackMaterials.IRON, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem GOLD_BACKPACK = (BackpackItem) register("gold_backpack", props -> new BackpackItem(BackpackMaterials.GOLD, props), new Item.Properties().stacksTo(1));
     public static final BackpackItem DIAMOND_BACKPACK = (BackpackItem) register("diamond_backpack", props -> new BackpackItem(BackpackMaterials.DIAMOND, props), new Item.Properties().stacksTo(1));
@@ -41,9 +43,6 @@ public final class BackpackFabric implements ModInitializer {
             .icon(() -> new ItemStack(GOLD_BACKPACK))
             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
             .displayItems((context, entries) -> {
-                // 按顺序添加所有背包到物品组
-//                entries.accept(WOOLEN_BACKPACK);
-//                entries.accept(STONE_BACKPACK);
                 entries.accept(IRON_BACKPACK);
                 entries.accept(GOLD_BACKPACK);
                 entries.accept(DIAMOND_BACKPACK);
@@ -73,6 +72,7 @@ public final class BackpackFabric implements ModInitializer {
     public void onInitialize() {
         register();
         Backpack.init();
+
     }
     public static ItemStack getEquipped(Player player) {
         if (BackpackPlatform.isModLoaded("trinkets") && !Backpack.getConfig().use_dedicated_slot) {
@@ -86,7 +86,7 @@ public final class BackpackFabric implements ModInitializer {
                     })
                     .orElse(ItemStack.EMPTY);
         }
-        return player.getInventory().getItem(36+54);
+        return player.getInventory().getItem(36+ BackpackHelper.getMaxBackpackSize());
     }
 
     public static Container getContainer(Player player) {
@@ -116,10 +116,10 @@ public final class BackpackFabric implements ModInitializer {
                         );
                         return !list.isEmpty()
                                 ? list.get(0).getA().index()  // 返回槽位索引
-                                : 36+54;                         // 未找到时返回默认值
+                                : 36+BackpackHelper.getMaxBackpackSize();                         // 未找到时返回默认值
                     })
-                    .orElse(36+54);
+                    .orElse(36+BackpackHelper.getMaxBackpackSize());
         }
-        return 36+54;
+        return 36+BackpackHelper.getMaxBackpackSize();
     }
 }

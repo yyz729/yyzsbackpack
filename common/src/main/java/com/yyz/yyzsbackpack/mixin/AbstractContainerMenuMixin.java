@@ -114,63 +114,6 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
         BackpackSorter.quickMoveTo((AbstractContainerMenu)(Object)this,slots,i,j,clickType,player,ci);
 
-//        if (clickType == ClickType.QUICK_MOVE && j == 1) {
-//            if (i < 0) {
-//                ci.cancel();
-//                return;
-//            }
-//
-//            Slot slot = (Slot)this.slots.get(i);
-//            if (!slot.mayPickup(player)) {
-//                ci.cancel();
-//                return;
-//            }
-//
-//            // 如果是背包槽位，转移到快捷栏
-//            if (slot instanceof BackpackStorageSlot) {
-//                for (ItemStack itemStack = BackpackSorter.quickMoveToHotbar((AbstractContainerMenu)(Object)this,player, i,slots);
-//                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-//                     itemStack = BackpackSorter.quickMoveToHotbar((AbstractContainerMenu)(Object)this,player, i,slots)) {
-//                }
-//                ci.cancel();
-//            }
-//
-//            // 如果是原版槽位，转移到背包
-//            else  { // 物品栏和快捷栏槽位
-//                for (ItemStack itemStack = BackpackSorter.quickMoveToBackpack((AbstractContainerMenu)(Object)this,player, i,slots);
-//                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-//                     itemStack = BackpackSorter.quickMoveToBackpack((AbstractContainerMenu)(Object)this,player, i,slots)) {
-//                }
-//                ci.cancel();
-//            }
-//        }
-//        else if (clickType == ClickType.QUICK_MOVE && j == 2) {
-//            Slot hoveredSlot = (Slot) this.slots.get(i);
-//
-//            // 动态识别玩家物品栏槽位
-//            boolean isInventorySlot = false;
-//            if (hoveredSlot.container instanceof Inventory) {
-//                int slotIndexInPlayerInv = hoveredSlot.getContainerSlot();
-//                // 主物品栏范围：9-35 (不包括快捷栏0-8和护甲36-39)
-//                if (slotIndexInPlayerInv >= 9 && slotIndexInPlayerInv < 36) {
-//                    isInventorySlot = true;
-//                }
-//            }
-//
-//            boolean isBackpackSlot = hoveredSlot instanceof BackpackStorageSlot;
-//            boolean isContainerSlot = !isInventorySlot && !isBackpackSlot &&
-//                    hoveredSlot.container != player.getInventory();
-//
-//            if (!isInventorySlot && !isBackpackSlot && !isContainerSlot) return;
-//
-//            if (isInventorySlot) {
-//                BackpackSorter.sortInventorySlots(player,this.slots);
-//            } else if (isBackpackSlot) {
-//                BackpackSorter.sortBackpackSlots(player,this.slots);
-//            } else {
-//                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,this.slots);
-//            }
-//        }
     }
     @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {

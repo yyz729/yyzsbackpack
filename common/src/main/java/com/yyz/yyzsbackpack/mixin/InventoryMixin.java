@@ -49,6 +49,7 @@ public abstract class InventoryMixin {
 		return BackpackHelper.getBackpackSize(player);
 	}
 
+
 	@Redirect(method = "findSlotMatchingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
 	private int modifyFindSlotMatchingItem(NonNullList<ItemStack> instance) {
 		return BackpackHelper.getBackpackSize(player);

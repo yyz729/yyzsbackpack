@@ -36,6 +36,7 @@ dependencies {
     modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
     modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
     modCompileOnly files('libs/hotbarslotcycling-fabric-21.6.0.jar')
+    modCompileOnly files('libs/reinforced-core-4.0.7+1.21.8.jar')
 
     modCompileOnly "curse.maven:inventory-profiles-next-495267:6616906"
     modCompileOnly "curse.maven:libipn-679177:6616850"

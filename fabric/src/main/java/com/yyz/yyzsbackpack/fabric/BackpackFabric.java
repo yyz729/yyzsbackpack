@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.fabric;
 
+import atonkish.reinfcore.ReinforcedCoreMod;
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;

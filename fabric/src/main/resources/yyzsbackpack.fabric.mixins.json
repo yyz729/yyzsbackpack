@@ -6,10 +6,12 @@
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
     "compat.collective.ItemEntityMixin",
+    "compat.reinforced.ReinforcedStorageScreenHandlerMixin",
     "hotbarslotcycling.HotbarCyclingProviderMixin",
     "trinkets.SurvivalTrinketSlotMixin"
   ],
   "client": [
+    "compat.reinforced.ReinforcedStorageScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

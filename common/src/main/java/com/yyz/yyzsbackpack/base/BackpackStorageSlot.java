@@ -11,14 +11,15 @@ import net.minecraft.world.item.ItemStack;
 
 public class BackpackStorageSlot extends Slot {
     private final AbstractContainerMenu menu;
-    private final int columnIndex;
+//    private final int columnIndex;
     private final Inventory inventory;
-
-    public BackpackStorageSlot(AbstractContainerMenu menu, Inventory inventory, int index, int columnIndex, int j, int k) {
+    private final int slotIndex;
+    public BackpackStorageSlot(AbstractContainerMenu menu, Inventory inventory, int index,  int j, int k) {
         super(inventory, index, j, k);
         this.menu = menu;
-        this.columnIndex = columnIndex;
+//        this.columnIndex = columnIndex;
         this.inventory = inventory;
+        this.slotIndex = index;
     }
 
     @Override
@@ -28,11 +29,15 @@ public class BackpackStorageSlot extends Slot {
             return false;
         }
 
-        int columns = backpackItem.getBackpackType().getColumns();
-        if (columnIndex >= columns) {
+//        int columns = backpackItem.getBackpackType().getColumns();
+//        if (columnIndex >= columns) {
+//            return false;
+//        }
+
+        int size = backpackItem.getBackpackType().getSize();
+        if(slotIndex >= size + 36){
             return false;
         }
-
         if(!(((BackpackMenu)menu).isBackpackVisible())){
             return false;
         }
@@ -46,12 +51,17 @@ public class BackpackStorageSlot extends Slot {
                 backpackStack.getItem() instanceof BackpackItem &&
                 super.mayPlace(stack);
 
-        // 添加列数检查（仅添加这一部分）
+        // 添加列数检查
         if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
-            int columns = backpackItem.getBackpackType().getColumns();
-            if (columnIndex >= columns) {
+            int size = backpackItem.getBackpackType().getSize();
+            if(slotIndex >= size + 36){
                 return false;
             }
+
+//            int columns = backpackItem.getBackpackType().getColumns();
+//            if (columnIndex >= columns) {
+//                return false;
+//            }
         }
         if(BackpackHelper.isItemBlacklisted(stack.getItem())){
             return false;

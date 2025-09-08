@@ -34,6 +34,14 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackPlatform.isModLoaded("hotbarslotcycling") ;
         }
 
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.reinforced.ReinforcedStorageScreenHandlerMixin")) {
+            return BackpackPlatform.isModLoaded("reinfcore");
+        }
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.reinforced.ReinforcedStorageScreenMixin")) {
+            return BackpackPlatform.isModLoaded("reinfcore");
+        }
+
+
         return true;
 
     }

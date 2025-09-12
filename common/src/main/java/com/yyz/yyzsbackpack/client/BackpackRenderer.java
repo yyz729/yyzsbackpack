@@ -8,13 +8,17 @@ import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.model.geom.builders.MaterialDefinition;
+import net.minecraft.client.renderer.MaterialMapper;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,6 +31,11 @@ public class BackpackRenderer {
 
     }
 
+//    private static final Material[] SPRITE_IDS = new Material[]{
+//            new Material(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "block/furnace_front_on")),
+//            new Material(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "block/furnace_top"))
+//    };
+
     // 背景渲染方法 - 添加偏移值支持
     public static void renderEquippedBackpackBackground(GuiGraphics context, int x, int y,
                                                         int backgroundWidth, int backgroundHeight,
@@ -36,22 +45,28 @@ public class BackpackRenderer {
 
         if (!shouldRenderBackpack) return;
 
-        int columns = 0;
+//        int columns = 0;
+        int width = 256;
+        int height = 256;
         ResourceLocation texture = null;
         ItemStack stack = BackpackPlatform.getEquipped(inventory.player);
         if (stack.getItem() instanceof BackpackItem backpackItem) {
-            columns = backpackItem.getBackpackType().getColumns();
+//            columns = backpackItem.getBackpackType().getColumns();
             texture = backpackItem.getBackpackType().getGuiTexture();
+            width = backpackItem.getBackpackType().guiWidth();
+            height = backpackItem.getBackpackType().guiHeight();
         }
 
         if(texture == null) return;
 
-        int width = 14 + columns * 18;
+
         // 应用偏移值
-        int left = x - 14 - columns * 18 - 1 + renderCondition.getBackpackGuiX();
-        int top = y + (backgroundHeight - 174) / 2 + renderCondition.getBackpackGuiY();
-        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
-        context.blit(RenderPipelines.GUI_TEXTURED, texture, left, top, 0, 0, width, 174, width, 174);
+        int left = x - width - 1 + renderCondition.getBackpackGuiX();
+        int top = y + (backgroundHeight - height) / 2 + renderCondition.getBackpackGuiY();
+//        context.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, k, 64, 236, this.windowHeight() + 16);
+//        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
+//        context.blitSprite(RenderPipelines.GUI_TEXTURED, ResourceLocation.withDefaultNamespace("social_interactions/background"), left, top, 0, 0, width, height, width, height);
+        context.blit(RenderPipelines.GUI_TEXTURED, texture, left, top, 0, 0, width, height, width, height);
     }
 
     public static void renderBackpackPreview(GuiGraphics guiGraphics, Minecraft minecraft, AbstractContainerMenu menu, @Nullable Slot hoveredSlot, int leftPos, int topPos, int imageWidth, int imageHeight){
@@ -84,23 +99,23 @@ public class BackpackRenderer {
         List<ItemStack> backpackItems = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
         if (backpackItems == null) return;
 
-        // 使用您的位置计算逻辑
+        // 使用与实际槽位布局相同的计算逻辑
         int baseHeight = imageHeight;
         int columns = backpackItem.getBackpackType().getColumns();
-        int rows = 9; // 固定9行
+        int rows = backpackItem.getBackpackType().getRows(); // 使用实际行数而非固定9行
 
-        int startX = leftPos-25; // 基础X偏移
-        int startY = topPos + (baseHeight - 166) / 2 + 3; // 基础Y位置
+        // 与实际槽位布局相同的坐标计算
+        int startX = -25 - (columns-1)*18; // 基础X偏移
+        int startY = (baseHeight - 166) / 2 + 3; // 基础Y位置
 
-
-        for (int column = 0; column < columns; column++) {
-            for (int row = 0; row < rows; row++) {
-                int slotIndex = column * rows + row;
+        for (int row = 0; row < rows; row++) {  // 外层循环行
+            for (int column = 0; column < columns; column++) {  // 内层循环列
+                int slotIndex = row * columns + column; // 行优先顺序
                 if (slotIndex >= backpackItems.size()) continue;
 
-                // 计算每个物品的位置
-                int x = startX - column * 18;
-                int y = startY + row * 18;
+                // 计算每个物品的位置（与实际槽位相同的计算方式）
+                int x = leftPos + startX + column * 18;
+                int y = topPos + startY + row * 18;
                 ItemStack stack = backpackItems.get(slotIndex);
                 // 绘制物品图标
                 guiGraphics.renderItem(stack, x, y);
@@ -116,20 +131,25 @@ public class BackpackRenderer {
 
 
 
-        int columns = 0;
+//        int columns = 0;
+        int width = 256;
+        int height = 256;
         ResourceLocation texture = null;
         if (stack.getItem() instanceof BackpackItem backpackItem) {
-            columns = backpackItem.getBackpackType().getColumns();
+//            columns = backpackItem.getBackpackType().getColumns();
             texture = backpackItem.getBackpackType().getGuiTexture();
+            width = backpackItem.getBackpackType().guiWidth();
+            height = backpackItem.getBackpackType().guiHeight();
         }
 
         if(texture == null) return;
 
-        int width = 14 + columns * 18;
+//        int width = 14 + columns * 18;
         // 应用偏移值
-        int left = x - 14 - columns * 18 - 1 + renderCondition.getBackpackGuiX();
+        int left = x  - width - 1 + renderCondition.getBackpackGuiX();
         int top = y + (backgroundHeight - 174) / 2 + renderCondition.getBackpackGuiY();
-        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
-        context.blit(RenderPipelines.GUI_TEXTURED,texture, left, top, 0, 0, width, 174, width, 174);
+//        int u = 14 * (columns - 1) + 18 * (columns - 1) * columns / 2;
+//        context.blit(RenderPipelines.GUI_TEXTURED,texture, left, top, 0, 0, width, 174, width, 174);
+        context.blit(RenderPipelines.GUI_TEXTURED, texture, left, top, 0, 0, width, height, width, height);
     }
 }

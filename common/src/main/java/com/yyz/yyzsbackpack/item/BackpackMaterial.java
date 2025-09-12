@@ -8,6 +8,9 @@ public interface BackpackMaterial {
     int getRows();
     String getType();
 
+    int guiWidth();
+    int guiHeight();
+
     ResourceLocation getGuiTexture();
 
     ResourceLocation getModelTexture();

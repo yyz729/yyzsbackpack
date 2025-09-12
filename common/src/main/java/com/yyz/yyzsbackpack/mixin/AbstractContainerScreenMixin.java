@@ -124,14 +124,19 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
         // 渲染背包时的完整计算
         int columns = 0;
-        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
-        if (backpackStack.getItem() instanceof BackpackItem backpack) {
-            columns = backpack.getBackpackType().getColumns();
-        }
 
         // 基础尺寸
-        int baseWidth = 14 + columns * 18;
-        int height = 174;
+        int baseWidth = 256;//14 + columns * 18;
+        int height = 256;
+
+        ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
+        if (backpackStack.getItem() instanceof BackpackItem backpack) {
+//            columns = backpack.getBackpackType().getColumns();
+            baseWidth = backpack.getBackpackType().guiWidth();
+            height = backpack.getBackpackType().guiHeight();
+        }
+
+
 
         // 计算位置
         int x = leftPos - baseWidth - 1 + xOffset;

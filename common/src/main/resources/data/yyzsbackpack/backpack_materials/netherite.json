@@ -1,0 +1,10 @@
+{
+  "type": "netherite",
+  "size": 54,
+  "columns": 6,
+  "rows": 9,
+  "width": 122,
+  "height": 174,
+  "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
+  "modelTexture": "yyzsbackpack:textures/backpack/netherite_backpack.png"
+}

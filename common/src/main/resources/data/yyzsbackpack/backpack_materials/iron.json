@@ -1,0 +1,10 @@
+{
+  "type": "iron",
+  "size": 18,
+  "columns": 2,
+  "rows": 9,
+  "width": 50,
+  "height": 174,
+  "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
+  "modelTexture": "yyzsbackpack:textures/backpack/iron_backpack.png"
+}

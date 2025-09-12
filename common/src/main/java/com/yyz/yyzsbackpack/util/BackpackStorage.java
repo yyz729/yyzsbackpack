@@ -20,8 +20,9 @@ public class BackpackStorage {
     // 保存背包内容到数据组件
     public static void saveBackpackContents(Container inventory, ItemStack backpackStack, boolean b) {
         BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
-        int columns = backpackItem.getBackpackType().getColumns();
-        int numSlots = columns * 9;
+//        int columns = backpackItem.getBackpackType().getColumns();
+        int numSlots = backpackItem.getBackpackType().getSize();
+                //columns * 9;
 
         // 创建固定大小的列表（所有槽位，包括空）
         List<ItemStack> items = new ArrayList<>(numSlots);
@@ -48,8 +49,9 @@ public class BackpackStorage {
         if (items == null) return;
 
         BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
-        int columns = backpackItem.getBackpackType().getColumns();
-        int numSlots = columns * 9;
+//        int columns = backpackItem.getBackpackType().getColumns();
+        int numSlots = backpackItem.getBackpackType().getSize();
+                //columns * 9;
 
         // 恢复物品到对应槽位
         for (int i = 0; i < Math.min(items.size(), numSlots); i++) {

@@ -30,7 +30,7 @@ public class BackpackHelper {
     }
 
     public static int getMaxBackpackSize(){
-        return 54;
+        return Backpack.getConfig().backpack_max_size;
     }
 
     public static int getSlotIndexOffset(){
@@ -56,7 +56,7 @@ public class BackpackHelper {
         ItemStack backpackStack = BackpackPlatform.getEquipped(player);
         if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
             // 基础槽位数 + 背包列数 * 9
-            return 36 + backpackItem.getBackpackType().getColumns() * 9;
+            return 36 + backpackItem.getBackpackType().getSize();
         }
         return 36; // 没有背包时返回基础槽位数
     }
@@ -105,20 +105,22 @@ public class BackpackHelper {
         boolean inBackpackArea = false;
 
         if (shouldRenderBackpackExtension) {
-            int columns = 0;
+            int width = 256;
+            int height = 256;
             ItemStack backpackStack = BackpackPlatform.getEquipped(inventory.player);
             if (backpackStack.getItem() instanceof BackpackItem backpack) {
-                columns = backpack.getBackpackType().getColumns();
+                width = backpack.getBackpackType().guiWidth();
+                height = backpack.getBackpackType().guiHeight();
             }
 
-            int backpackWidth = 14 + columns * 18;
+//            int backpackWidth = width;
             // 应用偏移值
-            int backpackX = left - backpackWidth - 1 + renderCondition.getBackpackGuiX();
-            int backpackY = top + (backgroundHeight - 174) / 2 + renderCondition.getBackpackGuiY();
-            int backpackHeight = 174;
+            int backpackX = left - width - 1 + renderCondition.getBackpackGuiX();
+            int backpackY = top + (backgroundHeight - height) / 2 + renderCondition.getBackpackGuiY();
+            int backpackHeight = height;
 
             inBackpackArea = mouseX >= backpackX &&
-                    mouseX < backpackX + backpackWidth &&
+                    mouseX < backpackX + width &&
                     mouseY >= backpackY &&
                     mouseY < backpackY + backpackHeight;
         }

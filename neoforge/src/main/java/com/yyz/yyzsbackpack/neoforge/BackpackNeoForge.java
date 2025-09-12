@@ -3,7 +3,6 @@ package com.yyz.yyzsbackpack.neoforge;
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import com.yyz.yyzsbackpack.item.BackpackMaterials;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -54,25 +53,25 @@ public final class BackpackNeoForge {
     // 背包物品注册（使用DeferredItem）
     public static final DeferredItem<Item> NETHERITE_BACKPACK = ITEMS.registerItem(
             "netherite_backpack",
-            props -> new BackpackItem(BackpackMaterials.NETHERITE, props),
+            props -> new BackpackItem("iron", props),
             new Item.Properties().stacksTo(1).fireResistant()
     );
 
     public static final DeferredItem<Item> DIAMOND_BACKPACK = ITEMS.registerItem(
             "diamond_backpack",
-            props -> new BackpackItem(BackpackMaterials.DIAMOND, props),
+            props -> new BackpackItem("iron", props),
             new Item.Properties().stacksTo(1)
     );
 
     public static final DeferredItem<Item> GOLD_BACKPACK = ITEMS.registerItem(
             "gold_backpack",
-            props -> new BackpackItem(BackpackMaterials.GOLD, props),
+            props -> new BackpackItem("iron", props),
             new Item.Properties().stacksTo(1)
     );
 
     public static final DeferredItem<Item> IRON_BACKPACK = ITEMS.registerItem(
             "iron_backpack",
-            props -> new BackpackItem(BackpackMaterials.IRON, props),
+            props -> new BackpackItem("iron", props),
             new Item.Properties().stacksTo(1)
     );
 

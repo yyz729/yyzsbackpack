@@ -1,23 +1,21 @@
 package com.yyz.yyzsbackpack.item;
 
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 public class BackpackItem extends Item {
-    private final BackpackMaterial backpackMaterialsType;
+    private final String string;
 
-    public BackpackItem(BackpackMaterial backpackMaterials, Properties settings) {
+    public BackpackItem(String iron, Properties settings) {
         super(settings);
-        this.backpackMaterialsType = backpackMaterials;
+        this.string = iron;
 
     }
 
 
     public BackpackMaterial getBackpackType() {
-        return backpackMaterialsType;
+//        return backpackMaterialsType;
+        return BackpackMaterialManager.getMaterial(string);
     }
 }

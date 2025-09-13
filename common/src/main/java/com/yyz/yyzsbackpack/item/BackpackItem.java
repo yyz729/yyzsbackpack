@@ -15,7 +15,6 @@ public class BackpackItem extends Item {
 
 
     public BackpackMaterial getBackpackType() {
-//        return backpackMaterialsType;
         return BackpackMaterialManager.getMaterial(string);
     }
 }

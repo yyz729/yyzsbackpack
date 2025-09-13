@@ -2,7 +2,6 @@ package com.yyz.yyzsbackpack.fabric;
 
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.fabric.data.BackpackMaterialManagerFabric;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
@@ -11,7 +10,6 @@ import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,7 +17,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +51,6 @@ public final class BackpackFabric implements ModInitializer {
                     .persistent(Codec.list(ItemStack.OPTIONAL_CODEC))
                     .build();
 
-    public static final BackpackMaterialManagerFabric MATERIAL_MANAGER = new BackpackMaterialManagerFabric();
     public static void register(){
 
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"), BACKPACK_ITEMS_COMPONENT);
@@ -62,19 +58,17 @@ public final class BackpackFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, env) -> {
             Backpack.registerCommands(dispatcher);
         });
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(MATERIAL_MANAGER);
-//        PlayerBlockBreakEvents.AFTER.register((level, player, blockPos, blockState, blockEntity) -> {
-//            System.out.println("test:"+BackpackMaterialManager.getMaterial("iron").getSize());
-//        });
     }
 
     public static Item register(String path, Function<Item.Properties, Item> factory, Item.Properties settings) {
+
         final ResourceKey<Item> registryKey = ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, path));
         return Items.registerItem(registryKey, factory, settings);
     }
 
     @Override
     public void onInitialize() {
+
         register();
         Backpack.init();
 

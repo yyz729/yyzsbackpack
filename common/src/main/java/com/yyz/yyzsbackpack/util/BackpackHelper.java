@@ -3,6 +3,7 @@ package com.yyz.yyzsbackpack.util;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
@@ -30,7 +31,8 @@ public class BackpackHelper {
     }
 
     public static int getMaxBackpackSize(){
-        return Backpack.getConfig().backpack_max_size;
+//        return Backpack.getConfig().backpack_max_size;
+        return BackpackMaterialManager.getMaxSize();
     }
 
     public static int getSlotIndexOffset(){

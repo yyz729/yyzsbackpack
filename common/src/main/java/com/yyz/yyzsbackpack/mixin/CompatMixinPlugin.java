@@ -49,7 +49,7 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackPlatform.isModLoaded("curios");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.neoforge.mixin.compat.curios.CurioSlotMixin")) {
-            return BackpackPlatform.isModLoaded("curios") ;
+            return BackpackPlatform.isModLoaded("curios");
         }
         if (mixinClassName.equals(" com.yyz.yyzsbackpack.neoforge.mixin.compat.itemindicator.InventorySlotsIndicatorMixin")) {
             return BackpackPlatform.isModLoaded("durabilityviewer");

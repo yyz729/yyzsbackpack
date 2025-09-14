@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack;
 
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.yyz.yyzsbackpack.command.BackpackCommand;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import net.minecraft.commands.CommandSourceStack;
 
@@ -14,7 +15,8 @@ public class Backpack{
     private static BackpackConfig config;
 
     public static void init() {
-        config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
+
     }
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         BackpackCommand.register(dispatcher);

@@ -3,7 +3,6 @@ package com.yyz.yyzsbackpack.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
@@ -70,7 +69,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
 
     private boolean shouldRender(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().renderModelEnabled;
+        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model;
     }
 
     private ResourceLocation getTexture(Player player) {

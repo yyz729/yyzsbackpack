@@ -8,13 +8,13 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
-import dev.lyki.CustomInventoryOpacity;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,6 +26,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.DyedItemColor;
 
 
 import java.util.List;
@@ -71,6 +73,8 @@ public final class BackpackFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, env) -> {
             Backpack.registerCommands(dispatcher);
         });
+
+
     }
 
     @Override
@@ -85,7 +89,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static ItemStack getEquipped(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot){
+        if(!Backpack.getConfig().use_dedicated_slot){
             if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {
@@ -119,7 +123,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static Container getContainer(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {
@@ -154,7 +158,7 @@ public final class BackpackFabric implements ModInitializer {
     }
 
     public static int getIndex(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (BackpackPlatform.isModLoaded("trinkets")) {
                 return TrinketsApi.getTrinketComponent(player)
                         .map(trinketComponent -> {

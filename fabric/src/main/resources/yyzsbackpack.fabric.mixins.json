@@ -13,6 +13,7 @@
     "compat.trinkets.SurvivalTrinketSlotMixin"
   ],
   "client": [
+    "ItemColorsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

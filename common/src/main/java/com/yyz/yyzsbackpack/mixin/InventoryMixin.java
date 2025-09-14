@@ -78,7 +78,7 @@ public abstract class InventoryMixin {
 
 				if (i != -1 && i < BackpackHelper.getBackpackSize(player)) {
 					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
-					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems))) {
+					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))) {
 						this.player.drop(itemStack, false); // 直接掉落物品
 						return;
 					}

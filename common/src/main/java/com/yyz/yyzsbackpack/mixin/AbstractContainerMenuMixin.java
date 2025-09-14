@@ -68,12 +68,12 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Override
     public int getBackpackGuiX() {
-        return BackpackGuiX + Backpack.getConfig().backpackGuiX;
+        return BackpackGuiX + Backpack.getConfig().backpack_gui_x;
     }
 
     @Override
     public int getBackpackGuiY() {
-        return BackpackGuiY + Backpack.getConfig().backpackGuiY;
+        return BackpackGuiY + Backpack.getConfig().backpack_gui_y;
     }
 
     @Override
@@ -84,12 +84,12 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Override
     public int getBackpackEquipSlotX() {
-        return BackpackEquipSlotX + Backpack.getConfig().slotPositionX;
+        return BackpackEquipSlotX + Backpack.getConfig().slot_position_x;
     }
 
     @Override
     public int getBackpackEquipSlotY() {
-        return BackpackEquipSlotY + Backpack.getConfig().slotPositionY;
+        return BackpackEquipSlotY + Backpack.getConfig().slot_position_y;
     }
 
     @Override

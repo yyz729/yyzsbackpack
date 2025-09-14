@@ -21,7 +21,7 @@ public class ItemEntityMixin {
 
 		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
 			return !BackpackHelper.isItemBlacklisted(stack.getItem())
-					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrictContainerItems))
+					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))
 					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)
 					&& instance.add(stack);
 		}else {

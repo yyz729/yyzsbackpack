@@ -25,7 +25,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().useDedicatedSlot) {
+        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().use_dedicated_slot) {
             BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
@@ -34,7 +34,7 @@ public abstract class SurvivalTrinketSlotMixin extends Slot {
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
         // 获取 TrinketInventory 实例
-        if (this.container instanceof TrinketInventory trinketInv && !Backpack.getConfig().useDedicatedSlot) {
+        if (this.container instanceof TrinketInventory trinketInv && !Backpack.getConfig().use_dedicated_slot) {
             // 通过 TrinketComponent 获取实体
             TrinketComponent comp = trinketInv.getComponent();
             LivingEntity entity = comp.getEntity();

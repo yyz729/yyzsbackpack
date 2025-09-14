@@ -40,7 +40,7 @@ public abstract class ServerPlayerMixin {
         ItemStack stackInSlot36 = inventory.getItem(36+54);
 
         // 检查36号槽位是否有背包
-        if (stackInSlot36.getItem() instanceof BackpackItem && BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().useDedicatedSlot) {
+        if (stackInSlot36.getItem() instanceof BackpackItem && BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().use_dedicated_slot) {
             // 保存背包内容到NBT
             BackpackStorage.saveBackpackContents(inventory, stackInSlot36, true);
 

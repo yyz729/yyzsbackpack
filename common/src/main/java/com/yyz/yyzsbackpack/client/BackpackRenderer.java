@@ -17,7 +17,7 @@ public class BackpackRenderer {
     public static final ResourceLocation SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/slot.png");
 
     public static void renderEquipSlotBackground(InventoryMenu menu, GuiGraphics guiGraphics, int x, int y){
-        if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().useDedicatedSlot) return;
+        if(BackpackHelper.isTrinketModLoaded() && !Backpack.getConfig().use_dedicated_slot) return;
         guiGraphics.blit(SLOT_TEXTURE,  x + ((BackpackMenu)menu).getBackpackEquipSlotX(),  y +((BackpackMenu)menu).getBackpackEquipSlotY(), 0, 0, 18, 18, 18, 18);
     }
 

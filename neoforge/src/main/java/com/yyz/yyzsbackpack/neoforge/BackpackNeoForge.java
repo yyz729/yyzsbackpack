@@ -9,7 +9,6 @@ import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
-import moonfather.workshop_for_handsome_adventurer.ModWorkshop;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -23,7 +22,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import ru.astemir.keepinventory.ConfigurableKeepInventory;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
@@ -83,10 +81,11 @@ public final class BackpackNeoForge {
         TABS.register(modEventBus);
         DATA_COMPONENT.register(modEventBus);
         Backpack.init();
+
     }
 
     public static ItemStack getEquipped(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
@@ -120,7 +119,7 @@ public final class BackpackNeoForge {
     }
 
     public static Container getContainer(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
@@ -161,7 +160,7 @@ public final class BackpackNeoForge {
     }
 
     public static int getIndex(Player player) {
-        if(!Backpack.getConfig().useDedicatedSlot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (BackpackPlatform.isModLoaded("curios")) {
                 // 直接使用 Optional 替代 resolve()
                 Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);

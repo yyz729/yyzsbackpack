@@ -180,7 +180,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
         ((BackpackMenu)menu).setPreviewVisible(false);
         boolean requireKey;
-        switch (Backpack.getConfig().tooltipModifier.toLowerCase()) {
+        switch (Backpack.getConfig().tooltip_modifier.toLowerCase()) {
             case "shift" -> requireKey = hasShiftDown();
             case "alt" -> requireKey = hasAltDown();
             case "ctrl" -> requireKey = hasControlDown();

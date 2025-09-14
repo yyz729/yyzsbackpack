@@ -129,7 +129,7 @@ public class BackpackSorter {
         if (slotIndex < 0 || slotIndex >= slots.size() ||
                 actionType != ClickType.PICKUP ||
                 slots.get(slotIndex).getItem().getItem() instanceof BackpackItem ||
-                !Backpack.getConfig().quickSwapEnabled) return;
+                !Backpack.getConfig().quick_swap_backpack) return;
 
         if (!(menu.getSlot(slotIndex) instanceof BackpackStorageSlot)) return;
 

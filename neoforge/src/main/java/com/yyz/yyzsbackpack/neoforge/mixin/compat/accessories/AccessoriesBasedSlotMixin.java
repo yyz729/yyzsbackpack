@@ -27,7 +27,7 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem && entity instanceof Player && !Backpack.getConfig().useDedicatedSlot) {
+        if (backpackStack.getItem() instanceof BackpackItem && entity instanceof Player && !Backpack.getConfig().use_dedicated_slot) {
             BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
@@ -35,7 +35,7 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
 
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
-        if(entity instanceof Player player && !Backpack.getConfig().useDedicatedSlot) {
+        if(entity instanceof Player player && !Backpack.getConfig().use_dedicated_slot) {
             ItemStack oldBackpackStack = this.getItem();
             if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
                 BackpackStorage.saveBackpackContents(player.getInventory(), oldBackpackStack, true);

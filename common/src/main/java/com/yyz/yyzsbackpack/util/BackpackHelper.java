@@ -64,7 +64,7 @@ public class BackpackHelper {
 
     public static boolean isItemBlacklisted(Item item) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
-        return convertStringSetToIdentifierSet(Backpack.getConfig().restrictedItems).contains(id);
+        return convertStringSetToIdentifierSet(Backpack.getConfig().restricted_items).contains(id);
     }
 
     // 点击范围判断 - 添加偏移值支持

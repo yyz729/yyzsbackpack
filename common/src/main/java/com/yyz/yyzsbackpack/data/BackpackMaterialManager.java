@@ -29,7 +29,7 @@ public class BackpackMaterialManager {
         try {
             Files.createDirectories(materialsDir);
         } catch (IOException e) {
-            System.err.println("无法创建材料目录: " + e.getMessage());
+            System.err.println("Failed to create materials directory: " + e.getMessage());
             return;
         }
         
@@ -42,7 +42,7 @@ public class BackpackMaterialManager {
                 .filter(path -> path.toString().endsWith(".json"))
                 .forEach(BackpackMaterialManager::loadMaterialFile);
         } catch (IOException e) {
-            System.err.println("读取材料目录失败: " + e.getMessage());
+            System.err.println("Failed to read materials directory: " + e.getMessage());
         }
     }
     
@@ -53,10 +53,10 @@ public class BackpackMaterialManager {
             BackpackMaterialData data = GSON.fromJson(reader, BackpackMaterialData.class);
             if (data != null && data.type != null) {
                 MATERIALS.put(data.type, new DataDrivenBackpackMaterial(data));
-                System.out.println("加载背包材料: " + data.type + " (" + data.columns + "x" + data.rows + ")");
+                System.out.println("Loaded backpack material: " + data.type + " (" + data.columns + "x" + data.rows + ")");
             }
         } catch (IOException e) {
-            System.err.println("加载材料文件失败: " + filePath.getFileName() + " - " + e.getMessage());
+            System.err.println("Failed to load material file: " + filePath.getFileName() + " - " + e.getMessage());
         }
     }
     
@@ -120,7 +120,7 @@ public class BackpackMaterialManager {
             try {
                 Files.write(filePath, content.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                System.err.println("创建默认材料文件失败: " + fileName + " - " + e.getMessage());
+                System.err.println("Failed to create default material file: " + fileName + " - " + e.getMessage());
             }
         }
     }

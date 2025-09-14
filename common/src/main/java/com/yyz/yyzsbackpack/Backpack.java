@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.yyz.yyzsbackpack.command.BackpackCommand;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.commands.CommandSourceStack;

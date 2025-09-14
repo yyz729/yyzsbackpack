@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.config;
+package com.yyz.yyzsbackpack.base;
 
 public class BackpackEffect {
     public String effectType = "none"; // 效果类型标识符

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack;
+package com.yyz.yyzsbackpack.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -8,8 +8,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
-import com.yyz.yyzsbackpack.config.BackpackEffect;
+import com.yyz.yyzsbackpack.base.BackpackEffect;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -148,7 +150,7 @@ public class BackpackCommand {
         BackpackConfig config = Backpack.getConfig();
         try {
             config.getClass().getField(name).set(config, value);
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,7 +160,7 @@ public class BackpackCommand {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
         if (config.restricted_items.add(item)) {
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                     () -> Component.translatable("command.yyzsbackpack.restricted_items.add", item),
                     true
@@ -173,7 +175,7 @@ public class BackpackCommand {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
         if (config.restricted_items.remove(item)) {
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                     () -> Component.translatable("command.yyzsbackpack.restricted_items.remove", item),
                     true
@@ -187,7 +189,7 @@ public class BackpackCommand {
     private static int clearItems(CommandContext<CommandSourceStack> ctx) {
         BackpackConfig config = Backpack.getConfig();
         config.restricted_items.clear();
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("command.yyzsbackpack.restricted_items.clear"),
                 true
@@ -257,7 +259,7 @@ public class BackpackCommand {
         be.effectType = effect;
         be.amplifier = level;
 
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("command.yyzsbackpack.effect.set", tier, effect, level),
                 true
@@ -272,7 +274,7 @@ public class BackpackCommand {
         BackpackConfig config = Backpack.getConfig();
         config.backpack_multi_effects.add(new BackpackEffect(effect, level));
 
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("command.yyzsbackpack.effect.add", effect, level),
                 true
@@ -291,7 +293,7 @@ public class BackpackCommand {
         }
 
         effects.remove(tier);
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("command.yyzsbackpack.effect.remove", tier),
                 true
@@ -302,7 +304,7 @@ public class BackpackCommand {
     private static int clearEffects(CommandContext<CommandSourceStack> ctx) {
         BackpackConfig config = Backpack.getConfig();
         config.backpack_multi_effects.clear();
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.translatable("command.yyzsbackpack.effect.clear"),
                 true

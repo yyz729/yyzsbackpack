@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.yyz.yyzsbackpack.base.BackpackEffect;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

@@ -53,19 +53,19 @@ public final class BackpackNeoForge {
     // 背包物品注册（使用DeferredItem）
     public static final DeferredItem<Item> NETHERITE_BACKPACK = ITEMS.registerItem(
             "netherite_backpack",
-            props -> new BackpackItem("iron", props),
+            props -> new BackpackItem("netherite", props),
             new Item.Properties().stacksTo(1).fireResistant()
     );
 
     public static final DeferredItem<Item> DIAMOND_BACKPACK = ITEMS.registerItem(
             "diamond_backpack",
-            props -> new BackpackItem("iron", props),
+            props -> new BackpackItem("diamond", props),
             new Item.Properties().stacksTo(1)
     );
 
     public static final DeferredItem<Item> GOLD_BACKPACK = ITEMS.registerItem(
             "gold_backpack",
-            props -> new BackpackItem("iron", props),
+            props -> new BackpackItem("gold", props),
             new Item.Properties().stacksTo(1)
     );
 

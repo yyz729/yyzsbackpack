@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.util;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
-import com.yyz.yyzsbackpack.config.BackpackEffect;
+import com.yyz.yyzsbackpack.base.BackpackEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;

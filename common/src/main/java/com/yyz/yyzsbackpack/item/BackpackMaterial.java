@@ -1,26 +1,17 @@
 package com.yyz.yyzsbackpack.item;
 
-public enum BackpackMaterial {
-//    WOODEN("wooden",1),
-//    STONE("stone",2),
-    IRON("iron",2),
-    GOLD("gold",4),
-    DIAMOND("diamond",6),
-    NETHERITE("netherite",6);
+import net.minecraft.resources.ResourceLocation;
 
-    private final String type;
-    private final int columns;
+public interface BackpackMaterial {
+    int getSize();
+    int getColumns();
+    int getRows();
+    String getType();
 
-    BackpackMaterial(String type,int columns) {
-        this.type = type;
-        this.columns = columns;
-    }
+    int guiWidth();
+    int guiHeight();
 
-    public int getColumns() {
-        return columns;
-    }
+    ResourceLocation getGuiTexture();
 
-    public String getType() {
-        return type;
-    }
+    ResourceLocation getModelTexture();
 }

@@ -33,8 +33,6 @@ public class BackpackEquipSlot extends Slot {
         super.onTake(player, backpackStack);
     }
 
-
-
     @Override
     public void setByPlayer(ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();

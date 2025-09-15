@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,6 +35,6 @@ public abstract class GenericContainerScreenHandlerMixin extends AbstractContain
 
     @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",ordinal = 0), index = 2)
     private int injected(int x) {
-        return x - 54;
+        return x - BackpackHelper.getMaxBackpackSize();
     }
 }

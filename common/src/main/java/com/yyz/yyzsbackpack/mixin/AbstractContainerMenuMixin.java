@@ -3,6 +3,7 @@ package com.yyz.yyzsbackpack.mixin;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
@@ -25,13 +26,6 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     @Shadow public abstract ItemStack getCarried();
 
     @Shadow @Final public NonNullList<Slot> slots;
-
-    @Shadow public abstract void setCarried(ItemStack stack);
-
-
-    @Shadow public abstract Slot getSlot(int i);
-
-    @Shadow protected abstract boolean moveItemStackTo(ItemStack itemStack, int i, int j, boolean bl);
 
     @Unique
     private boolean isBackpackVisible = false;
@@ -97,10 +91,6 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         this.BackpackEquipSlotX = x;
         this.BackpackEquipSlotY = y;
     }
-    @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
-    private int adjustOffhandSlotPositionHotbar(int original) {
-        return 40 + 9 * 6 + 1 ;
-    }
 
     @Inject(method = "clicked", at = @At("RETURN"))
     private void handleBackpackSwap(int slotIndex, int button, ClickType actionType, Player player, CallbackInfo ci) {
@@ -109,142 +99,12 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
     private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
-        // 只处理 PICKUP 类型的右键点击 + Shift
-        if (clickType == ClickType.QUICK_MOVE && j == 1) {
-            if (i < 0) {
-                ci.cancel();
-                return;
-            }
 
-            Slot slot = (Slot)this.slots.get(i);
-            if (!slot.mayPickup(player)) {
-                ci.cancel();
-                return;
-            }
+        BackpackSorter.quickMoveTo((AbstractContainerMenu)(Object)this,slots,i,j,clickType,player,ci);
 
-            // 如果是背包槽位，转移到快捷栏
-            if (slot instanceof BackpackStorageSlot) {
-                for (ItemStack itemStack = this.quickMoveToHotbar(player, i);
-                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-                     itemStack = this.quickMoveToHotbar(player, i)) {
-                }
-                ci.cancel();
-                return;
-            }
-
-            // 如果是原版槽位，转移到背包
-            else  { // 物品栏和快捷栏槽位
-                for (ItemStack itemStack = this.quickMoveToBackpack(player, i);
-                     !itemStack.isEmpty() && ItemStack.isSameItem(slot.getItem(), itemStack);
-                     itemStack = this.quickMoveToBackpack(player, i)) {
-                }
-                ci.cancel();
-            }
-        }
-        else if (clickType == ClickType.QUICK_MOVE && j == 2) {
-            Slot hoveredSlot = (Slot) this.slots.get(i);
-
-            // 动态识别玩家物品栏槽位
-            boolean isInventorySlot = false;
-            if (hoveredSlot.container instanceof Inventory) {
-                int slotIndexInPlayerInv = hoveredSlot.getContainerSlot();
-                // 主物品栏范围：9-35 (不包括快捷栏0-8和护甲36-39)
-                if (slotIndexInPlayerInv >= 9 && slotIndexInPlayerInv < 36) {
-                    isInventorySlot = true;
-                }
-            }
-
-            boolean isBackpackSlot = hoveredSlot instanceof BackpackStorageSlot;
-            boolean isContainerSlot = !isInventorySlot && !isBackpackSlot &&
-                    hoveredSlot.container != player.getInventory();
-
-            if (!isInventorySlot && !isBackpackSlot && !isContainerSlot) return;
-
-            if (isInventorySlot) {
-                BackpackSorter.sortInventorySlots(player,this.slots);
-            } else if (isBackpackSlot) {
-                BackpackSorter.sortBackpackSlots(player,this.slots);
-            } else {
-                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,this.slots);
-            }
-        }
     }
-
-
-    @Unique
-    private ItemStack quickMoveToHotbar(Player player, int slotIndex) {
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIndex);
-
-
-        // 动态获取快捷栏索引范围
-        int hotbarStart = -1;
-        int hotbarEnd = -1;
-        for (int idx = 0; idx < this.slots.size(); idx++) {
-            Slot s = this.slots.get(idx);
-            if (s.container instanceof Inventory &&
-                    s.getContainerSlot() >= 0 &&
-                    s.getContainerSlot() < 9) {
-                if (hotbarStart == -1) hotbarStart = idx;
-                hotbarEnd = idx + 1; // 结束索引是exclusive的
-            }
-        }
-
-        if (slot != null && slot.hasItem()) {
-            ItemStack slotStack = slot.getItem();
-            itemStack = slotStack.copy();
-
-            // 尝试移动到快捷栏 (36-44)
-            if (!this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (slotStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            slot.onTake(player, slotStack);
-        }
-        return itemStack;
-    }
-
-    @Unique
-    private ItemStack quickMoveToBackpack(Player player, int slotIndex) {
-        ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotIndex);
-
-        if (slot != null && slot.hasItem()) {
-            ItemStack slotStack = slot.getItem();
-            itemStack = slotStack.copy();
-
-            // 查找背包槽位起始索引
-            int backpackStart = -1;
-            for (int i = 0; i < this.slots.size(); i++) {
-                if (this.slots.get(i) instanceof BackpackStorageSlot) {
-                    backpackStart = i;
-                    break;
-                }
-            }
-
-            if (backpackStart == -1) {
-                return ItemStack.EMPTY;
-            }
-
-            // 尝试移动到背包槽位
-            if (!this.moveItemStackTo(slotStack, backpackStart, backpackStart + 54, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (slotStack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            slot.onTake(player, slotStack);
-        }
-        return itemStack;
+    @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
+    private int adjustOffhandSlotPositionHotbar(int original) {
+        return original + BackpackHelper.getSlotIndexOffset();
     }
 }

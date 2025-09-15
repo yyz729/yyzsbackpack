@@ -13,14 +13,18 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class ItemEntityMixin {
 
     @Redirect(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;add(Lnet/minecraft/world/item/ItemStack;)Z"))
-	private boolean modifyFindSlotMatchingItem(Inventory instance, ItemStack stack) {
-		if(instance.getFreeSlot() >= 36 && instance.getFreeSlot() < 36+54) {
+	private boolean modifyFindSlotMatchingItem(Inventory inventory, ItemStack stack) {
+		int i = inventory.getSlotWithRemainingSpace(stack);
+		if(i >= 0 && i < BackpackHelper.getBackpackSize(inventory.player)){
+			return inventory.add(i,stack);
+		}
+		if(inventory.getFreeSlot() >= 36 && inventory.getFreeSlot() < 36 + BackpackHelper.getMaxBackpackSize() ){
 			return !BackpackHelper.isItemBlacklisted(stack.getItem())
 					&& (!(!stack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))
-					&& instance.getFreeSlot() < BackpackHelper.getBackpackSize(instance.player)
-					&& instance.add(stack);
+					&& (inventory.getFreeSlot() < BackpackHelper.getBackpackSize(inventory.player) )
+					&& inventory.add(stack);
 		}else {
-			return instance.add(stack);
+			return inventory.add(stack);
 		}
 	}
 

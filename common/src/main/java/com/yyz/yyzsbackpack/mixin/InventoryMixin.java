@@ -39,12 +39,12 @@ public abstract class InventoryMixin {
 
 	@ModifyArg(method = "<init>", index = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/core/NonNullList;withSize(ILjava/lang/Object;)Lnet/minecraft/core/NonNullList;"))
 	private int modifyMainSize(int size) {
-		return size + 9 * 6 + 1;
+		return size + BackpackHelper.getSlotIndexOffset();
 	}
 
 	@ModifyConstant(method = "getSlotWithRemainingSpace", constant = @Constant(intValue = 40))
 	private int modifyOffhandSlotConstant1(int constant) {
-		return 95;
+		return constant + BackpackHelper.getSlotIndexOffset();
 	}
 
 	@Redirect(method = "getFreeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))

@@ -86,7 +86,6 @@ public class BackpackConfig {
     public int slot_position_y = 0;
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
-    //    public int backpack_max_size = 54;
     public String tooltip_modifier = "shift";
     public String backpack_model_style = "detailed";//simplified
     public Set<String> restricted_items = new HashSet<>();

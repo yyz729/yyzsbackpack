@@ -4,6 +4,7 @@ package com.yyz.yyzsbackpack;
 import com.mojang.brigadier.CommandDispatcher;
 import com.yyz.yyzsbackpack.command.BackpackCommand;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.commands.CommandSourceStack;
 
 import java.io.File;
@@ -15,6 +16,7 @@ public class Backpack{
     private static BackpackConfig config;
 
     public static void init() {
+        BackpackMaterialManager.loadMaterials();
         config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
 
     }

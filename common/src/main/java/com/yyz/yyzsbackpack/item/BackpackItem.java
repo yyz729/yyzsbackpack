@@ -1,20 +1,20 @@
 package com.yyz.yyzsbackpack.item;
 
 
-import net.minecraft.client.renderer.ItemModelShaper;
-import net.minecraft.world.item.DyeItem;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 public class BackpackItem extends Item {
-    private final BackpackMaterial backpackMaterialType;
+    private final String string;
 
-    public BackpackItem(BackpackMaterial backpackMaterial, Properties settings) {
+    public BackpackItem(String iron, Properties settings) {
         super(settings);
-        this.backpackMaterialType = backpackMaterial;
+        this.string = iron;
+
     }
 
+
     public BackpackMaterial getBackpackType() {
-        return backpackMaterialType;
+        return BackpackMaterialManager.getMaterial(string);
     }
 }

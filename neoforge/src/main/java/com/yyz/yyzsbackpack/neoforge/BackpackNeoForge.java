@@ -55,16 +55,16 @@ public final class BackpackNeoForge {
 
     // 背包物品注册
     public static final DeferredHolder<Item, Item> NETHERITE_BACKPACK = ITEMS.register("netherite_backpack",
-            () -> new BackpackItem(BackpackMaterial.NETHERITE, new Item.Properties().stacksTo(1).fireResistant()));
+            () -> new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant()));
 
     public static final DeferredHolder<Item, Item> DIAMOND_BACKPACK = ITEMS.register("diamond_backpack",
-            () -> new BackpackItem(BackpackMaterial.DIAMOND, new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("diamond", new Item.Properties().stacksTo(1)));
 
     public static final DeferredHolder<Item, Item> GOLD_BACKPACK = ITEMS.register("gold_backpack",
-            () -> new BackpackItem(BackpackMaterial.GOLD, new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("gold", new Item.Properties().stacksTo(1)));
 
     public static final DeferredHolder<Item, Item> IRON_BACKPACK = ITEMS.register("iron_backpack",
-            () -> new BackpackItem(BackpackMaterial.IRON, new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("iron", new Item.Properties().stacksTo(1)));
 
 
 

@@ -11,13 +11,11 @@ import net.minecraft.world.item.ItemStack;
 
 public class BackpackStorageSlot extends Slot {
     private final AbstractContainerMenu menu;
-    //    private final int columnIndex;
     private final Inventory inventory;
     private final int slotIndex;
     public BackpackStorageSlot(AbstractContainerMenu menu, Inventory inventory, int index,  int j, int k) {
         super(inventory, index, j, k);
         this.menu = menu;
-//        this.columnIndex = columnIndex;
         this.inventory = inventory;
         this.slotIndex = index;
     }
@@ -28,11 +26,6 @@ public class BackpackStorageSlot extends Slot {
         if (!(backpackStack.getItem() instanceof BackpackItem backpackItem)) {
             return false;
         }
-
-//        int columns = backpackItem.getBackpackType().getColumns();
-//        if (columnIndex >= columns) {
-//            return false;
-//        }
 
         int size = backpackItem.getBackpackType().getSize();
         if(slotIndex >= size + 36){
@@ -57,11 +50,6 @@ public class BackpackStorageSlot extends Slot {
             if(slotIndex >= size + 36){
                 return false;
             }
-
-//            int columns = backpackItem.getBackpackType().getColumns();
-//            if (columnIndex >= columns) {
-//                return false;
-//            }
         }
         if(BackpackHelper.isItemBlacklisted(stack.getItem())){
             return false;

@@ -38,7 +38,8 @@ dependencies {
     modCompileOnly files('libs/hardcover-3.0.0+1.21.jar')
     modCompileOnly files('libs/custominventoryopacity-1.21.1-1.0.0.jar')
     modCompileOnly "curse.maven:collective-342584:6780733"
-
+    modCompileOnly files('libs/reinforced-core-4.0.2+1.21.1.jar')
+    modCompileOnly "curse.maven:backslot-402739:5920664"
 }
 
 processResources {

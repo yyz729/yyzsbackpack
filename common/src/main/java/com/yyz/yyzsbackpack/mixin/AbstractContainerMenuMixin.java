@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.base.BackpackMenuState;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
@@ -28,68 +29,56 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     @Shadow @Final public NonNullList<Slot> slots;
 
     @Unique
-    private boolean isBackpackVisible = false;
-    @Unique
-    private boolean isPreviewVisible = false;
+    private final BackpackMenuState backpackMenuState = new BackpackMenuState();
+
     @Override
     public boolean isBackpackVisible() {
-        return this.isBackpackVisible && !isPreviewVisible();
+        return backpackMenuState.isBackpackVisible();
     }
 
     @Override
     public void setBackpackVisible(boolean shouldRenderBackpack) {
-        this.isBackpackVisible = shouldRenderBackpack;
+        backpackMenuState.setBackpackVisible(shouldRenderBackpack);
     }
+
     @Override
     public boolean isPreviewVisible() {
-        return this.isPreviewVisible;
+        return backpackMenuState.isPreviewVisible();
     }
 
     @Override
     public void setPreviewVisible(boolean renderTipBackpack) {
-        this.isPreviewVisible = renderTipBackpack;
+        backpackMenuState.setPreviewVisible(renderTipBackpack);
     }
-
-    @Unique
-    private int BackpackGuiX = 0;
-    @Unique
-    private int BackpackGuiY = 0;
-
-    @Unique
-    private int BackpackEquipSlotX = 0;
-    @Unique
-    private int BackpackEquipSlotY = 0;
 
     @Override
     public int getBackpackGuiX() {
-        return BackpackGuiX + Backpack.getConfig().backpack_gui_x;
+        return backpackMenuState.getBackpackGuiX();
     }
 
     @Override
     public int getBackpackGuiY() {
-        return BackpackGuiY + Backpack.getConfig().backpack_gui_y;
+        return backpackMenuState.getBackpackGuiY();
     }
 
     @Override
     public void setBackpackGuiPos(int x, int y) {
-        this.BackpackGuiX = x;
-        this.BackpackGuiY = y;
+        backpackMenuState.setBackpackGuiPos(x, y);
     }
 
     @Override
     public int getBackpackEquipSlotX() {
-        return BackpackEquipSlotX + Backpack.getConfig().slot_position_x;
+        return backpackMenuState.getBackpackEquipSlotX();
     }
 
     @Override
     public int getBackpackEquipSlotY() {
-        return BackpackEquipSlotY + Backpack.getConfig().slot_position_y;
+        return backpackMenuState.getBackpackEquipSlotY();
     }
 
     @Override
     public void setBackpackEquipSlotPos(int x, int y) {
-        this.BackpackEquipSlotX = x;
-        this.BackpackEquipSlotY = y;
+        backpackMenuState.setBackpackEquipSlotPos(x, y);
     }
 
     @Inject(method = "clicked", at = @At("RETURN"))
@@ -99,9 +88,7 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     @Inject(method = "doClick", at = @At("HEAD"), cancellable = true)
     private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
-
         BackpackSorter.quickMoveTo((AbstractContainerMenu)(Object)this,slots,i,j,clickType,player,ci);
-
     }
     @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {

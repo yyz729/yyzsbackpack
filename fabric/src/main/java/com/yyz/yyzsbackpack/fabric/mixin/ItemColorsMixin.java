@@ -17,6 +17,6 @@ public class ItemColorsMixin {
 
     @Inject(method = "createDefault", at = @At("RETURN"))
     private static void injected(BlockColors blockColors, CallbackInfoReturnable<ItemColors> cir, @Local ItemColors itemColors) {
-        itemColors.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackFabric.IRON_BACKPACK);
+        itemColors.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackFabric.IRON_BACKPACK,BackpackFabric.GOLD_BACKPACK,BackpackFabric.DIAMOND_BACKPACK,BackpackFabric.NETHERITE_BACKPACK);
     }
 }

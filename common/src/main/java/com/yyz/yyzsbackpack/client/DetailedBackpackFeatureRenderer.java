@@ -74,7 +74,7 @@ public class DetailedBackpackFeatureRenderer extends RenderLayer<AbstractClientP
 
     private boolean shouldRender(Player player) {
         // 这里添加你的显示条件，比如检查物品或状态效果
-        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model;
+        return BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model && Backpack.getConfig().backpack_model_style.equals("detailed");
     }
 
     private ResourceLocation getTexture(Player player) {

@@ -78,7 +78,6 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackPlatform.isModLoaded("apothic_attributes");
         }
 
-
         return true; // 默认启用其他 Mixin
 
     }

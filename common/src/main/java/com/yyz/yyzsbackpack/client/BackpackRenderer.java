@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
@@ -30,6 +31,8 @@ public class BackpackRenderer {
                                                         Inventory inventory, boolean shouldRenderBackpack,
                                                         BackpackMenu renderCondition) {
 
+
+        RenderSystem.enableBlend();
         if (!shouldRenderBackpack) return;
         int width = 256;
         int height = 256;
@@ -47,9 +50,11 @@ public class BackpackRenderer {
         int left = x - width - 1 + renderCondition.getBackpackGuiX();
         int top = y + (backgroundHeight - height) / 2 + renderCondition.getBackpackGuiY();
         context.blit(texture, left, top, 0, 0, width, height, width, height);
+        RenderSystem.disableBlend();
     }
 
     public static void renderBackpackPreview(GuiGraphics guiGraphics, Minecraft minecraft, AbstractContainerMenu menu, @Nullable Slot hoveredSlot, int leftPos, int topPos, int imageWidth, int imageHeight){
+        RenderSystem.enableBlend();
         ((BackpackMenu)menu).setPreviewVisible(false);
         boolean requireKey;
         switch (Backpack.getConfig().tooltip_modifier.toLowerCase()) {
@@ -103,6 +108,7 @@ public class BackpackRenderer {
                 guiGraphics.renderItemDecorations(minecraft.font, stack, x, y);
             }
         }
+        RenderSystem.disableBlend();
     }
 
     public static void renderPreviewBackpackBackground(GuiGraphics context, ItemStack stack, int x, int y,

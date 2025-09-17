@@ -68,8 +68,8 @@ public class BackpackMaterialManager {
                         "  \"size\": 18,\n" +
                         "  \"columns\": 2,\n" +
                         "  \"rows\": 9,\n" +
-                        "  \"width\": 50,\n" +
-                        "  \"height\": 174,\n" +
+                        "  \"guiWidth\": 50,\n" +
+                        "  \"guiHeight\": 174,\n" +
                         "  \"guiTexture\": \"yyzsbackpack:textures/gui/2x9backpack.png\",\n" +
                         "  \"modelTexture\": \"yyzsbackpack:textures/backpack/iron_backpack.png\"\n" +
                         "}");
@@ -81,8 +81,8 @@ public class BackpackMaterialManager {
                         "  \"size\": 36,\n" +
                         "  \"columns\": 4,\n" +
                         "  \"rows\": 9,\n" +
-                        "  \"width\": 86,\n" +
-                        "  \"height\": 174,\n" +
+                        "  \"guiWidth\": 86,\n" +
+                        "  \"guiHeight\": 174,\n" +
                         "  \"guiTexture\": \"yyzsbackpack:textures/gui/4x9backpack.png\",\n" +
                         "  \"modelTexture\": \"yyzsbackpack:textures/backpack/gold_backpack.png\"\n" +
                         "}");
@@ -94,8 +94,8 @@ public class BackpackMaterialManager {
                         "  \"size\": 54,\n" +
                         "  \"columns\": 6,\n" +
                         "  \"rows\": 9,\n" +
-                        "  \"width\": 122,\n" +
-                        "  \"height\": 174,\n" +
+                        "  \"guiWidth\": 122,\n" +
+                        "  \"guiHeight\": 174,\n" +
                         "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\",\n" +
                         "  \"modelTexture\": \"yyzsbackpack:textures/backpack/diamond_backpack.png\"\n" +
                         "}");
@@ -107,8 +107,8 @@ public class BackpackMaterialManager {
                         "  \"size\": 54,\n" +
                         "  \"columns\": 6,\n" +
                         "  \"rows\": 9,\n" +
-                        "  \"width\": 122,\n" +
-                        "  \"height\": 174,\n" +
+                        "  \"guiWidth\": 122,\n" +
+                        "  \"guiHeight\": 174,\n" +
                         "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\",\n" +
                         "  \"modelTexture\": \"yyzsbackpack:textures/backpack/netherite_backpack.png\"\n" +
                         "}");

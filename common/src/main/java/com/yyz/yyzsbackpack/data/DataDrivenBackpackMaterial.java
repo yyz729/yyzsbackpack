@@ -33,12 +33,12 @@ public class DataDrivenBackpackMaterial implements BackpackMaterial {
     
     @Override
     public int guiWidth() {
-        return data.width;
+        return data.guiWidth;
     }
     
     @Override
     public int guiHeight() {
-        return data.height;
+        return data.guiHeight;
     }
     
     @Override

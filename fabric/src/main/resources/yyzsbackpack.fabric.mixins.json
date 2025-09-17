@@ -10,10 +10,12 @@
     "compat.collective.ItemEntityMixin",
     "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
     "compat.itemindicator.InventorySlotsIndicatorMixin",
+    "compat.reinforced.ReinforcedStorageScreenHandlerMixin",
     "compat.trinkets.SurvivalTrinketSlotMixin"
   ],
   "client": [
-    "ItemColorsMixin"
+    "ItemColorsMixin",
+    "compat.reinforced.ReinforcedStorageScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

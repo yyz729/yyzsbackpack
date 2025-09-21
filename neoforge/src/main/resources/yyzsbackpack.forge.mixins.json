@@ -21,7 +21,8 @@
   "client": [
     "compat.apothic_attributes.InventoryRenderMixin",
     "compat.ae2.AEBaseScreenMixin",
-    "compat.curios.CuriosScreenMixin"
+    "compat.curios.CuriosScreenMixin",
+    "ItemColorsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

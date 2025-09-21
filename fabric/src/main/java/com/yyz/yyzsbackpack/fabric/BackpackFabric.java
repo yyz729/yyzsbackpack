@@ -6,6 +6,7 @@ import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import io.wispforest.accessories.api.AccessoriesCapability;
@@ -119,7 +120,7 @@ public final class BackpackFabric implements ModInitializer {
             }
         }
         // 检查背包槽（索引36）
-        return player.getInventory().getItem(36+54);
+        return player.getInventory().getItem(36+ BackpackHelper.getMaxBackpackSize());
     }
 
     public static Container getContainer(Player player) {
@@ -168,9 +169,9 @@ public final class BackpackFabric implements ModInitializer {
                             );
                             return !list.isEmpty()
                                     ? list.get(0).getA().index()  // 返回槽位索引
-                                    : 36+54;                         // 未找到时返回默认值
+                                    : 36+BackpackHelper.getMaxBackpackSize();                         // 未找到时返回默认值
                         })
-                        .orElse(36+54);
+                        .orElse(36+BackpackHelper.getMaxBackpackSize());
             }
 
             else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
@@ -180,6 +181,6 @@ public final class BackpackFabric implements ModInitializer {
                 }
             }
         }
-        return 36+54;
+        return 36+BackpackHelper.getMaxBackpackSize();
     }
 }

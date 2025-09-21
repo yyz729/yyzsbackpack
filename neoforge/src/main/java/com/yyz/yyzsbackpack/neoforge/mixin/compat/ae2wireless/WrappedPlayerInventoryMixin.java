@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.neoforge.mixin.compat.ae2wireless;
 
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import de.mari_023.ae2wtlib.wct.WrappedPlayerInventory;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,12 +22,14 @@ public class WrappedPlayerInventoryMixin {
 
     @Inject(method = "getStackInSlot", at = @At("RETURN"),remap = false, cancellable = true)
     private void getStackInSlot(int slotIndex, CallbackInfoReturnable<ItemStack> cir) {
-        ItemStack var10000 = switch (slotIndex) {
-            case 36+55, 37+55, 38+55, 39+55, 40+55 -> this.playerInventory.getItem(slotIndex);
-            default -> ItemStack.EMPTY;
-        };
+        int offset = BackpackHelper.getSlotIndexOffset(); // 获取偏移量
 
-
-        cir.setReturnValue(var10000);
+        // 判断slotIndex是否是我们关心的五个索引之一
+        if (slotIndex == 36 + offset || slotIndex == 37 + offset || slotIndex == 38 + offset ||
+                slotIndex == 39 + offset || slotIndex == 40 + offset) {
+            cir.setReturnValue(this.playerInventory.getItem(slotIndex));
+        } else {
+            cir.setReturnValue(ItemStack.EMPTY);
+        }
     }
 }

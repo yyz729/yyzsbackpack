@@ -114,7 +114,6 @@ public class BackpackHelper {
                 height = backpack.getBackpackType().guiHeight();
             }
 
-//            int backpackWidth = width;
             // 应用偏移值
             int backpackX = left - width - 1 + renderCondition.getBackpackGuiX();
             int backpackY = top + (backgroundHeight - height) / 2 + renderCondition.getBackpackGuiY();

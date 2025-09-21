@@ -7,6 +7,7 @@ import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.minecraft.core.component.DataComponentType;
@@ -115,7 +116,7 @@ public final class BackpackNeoForge {
                 }
             }
         }
-        return player.getInventory().getItem(36+54);
+        return player.getInventory().getItem(36+ BackpackHelper.getMaxBackpackSize());
     }
 
     public static Container getContainer(Player player) {
@@ -184,7 +185,7 @@ public final class BackpackNeoForge {
                 }
             }
         }
-        return 36+54;
+        return 36+BackpackHelper.getMaxBackpackSize();
     }
 
     public static boolean getEmptyRule(Player player) {

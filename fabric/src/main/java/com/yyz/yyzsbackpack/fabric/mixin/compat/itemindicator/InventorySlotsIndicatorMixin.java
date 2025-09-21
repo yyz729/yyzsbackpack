@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.fabric.mixin.compat.itemindicator;
 
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import de.guntram.mcmod.durabilityviewer.itemindicator.InventorySlotsIndicator;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +34,7 @@ public class InventorySlotsIndicatorMixin {
         // 只遍历有效槽位范围
         for (int i = 0; i < effectiveSize; i++) {
             ItemStack itemStack = inventory.items.get(i);
-            if (itemStack.isEmpty() && i != 36+54) {
+            if (itemStack.isEmpty() && i != 36+ BackpackHelper.getMaxBackpackSize()) {
                 slots++;
             }
         }

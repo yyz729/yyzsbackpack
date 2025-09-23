@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.compat.emi;
 
-import com.yyz.yyzsbackpack.base.BackpackExclusionZoneProvider;
+import com.yyz.yyzsbackpack.base.BackpackScreen;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiInitRegistry;
 import dev.emi.emi.api.EmiPlugin;
@@ -21,7 +21,7 @@ public class BackpackEmiPlugin implements EmiPlugin {
     public void register(EmiRegistry registry) {
         registry.addGenericExclusionArea((screen, consumer) -> {
             if (screen instanceof AbstractContainerScreen<?> handledScreen) {
-                if (handledScreen instanceof BackpackExclusionZoneProvider provider) {
+                if (handledScreen instanceof BackpackScreen provider) {
                     for (Rect2i zone : provider.getBackpackExclusionZones()) {
                         consumer.accept(new Bounds(
                                 zone.getX(),

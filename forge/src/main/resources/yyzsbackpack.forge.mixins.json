@@ -15,6 +15,7 @@
     "compat.wfha.SimpleTableMenuMixin"
   ],
   "client": [
+    "ItemColorsMixin",
     "compat.ae2.AEBaseScreenMixin",
     "compat.curios.CuriosScreenMixin",
     "compat.curios.CuriosScreenV2Mixin",

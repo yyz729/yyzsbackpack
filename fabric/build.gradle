@@ -41,9 +41,11 @@ dependencies {
 
     modImplementation files('libs/SlotCycler-v8.0.1-1.20.1-Fabric.jar')
     modImplementation files('libs/gravestones-1.0.12-1.20.1.jar')
+    modImplementation files('libs/Truly-Modular-miapi-fabric-1.1.46-1.20.1.jar')
 
     modImplementation("curse.maven:applied-energistics-2-223794:6492967")
     modImplementation "curse.maven:collective-342584:6429218"
+    modImplementation "curse.maven:applied-energistics-2-wireless-terminals-459929:4936436"
 }
 
 processResources {

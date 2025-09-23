@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.inventoryfree;
 
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import kirderf1.inventoryfree.InventoryEnforcer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +14,6 @@ public class InventoryEnforcerMixin {
 
     @Redirect(method = "findAvailableSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"),remap = false)
     private static int modifyFindSlotMatchingUnusedItem(NonNullList<ItemStack> instance, Inventory inventory) {
-        return BackpackManager.getBackpackSize(inventory.player);
+        return BackpackHelper.getBackpackSize(inventory.player);
     }
 }

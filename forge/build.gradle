@@ -62,6 +62,9 @@ dependencies {
 
     modImplementation ("curse.maven:inventory-free-406383:4658538")
     modImplementation ("curse.maven:collective-342584:6429218")
+
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
 }
 
 processResources {

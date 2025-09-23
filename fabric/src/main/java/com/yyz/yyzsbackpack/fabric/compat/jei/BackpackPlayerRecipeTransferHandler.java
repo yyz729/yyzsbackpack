@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.fabric.compat.jei;
 
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.constants.RecipeTypes;
@@ -30,7 +31,7 @@ public class BackpackPlayerRecipeTransferHandler implements IRecipeTransferHandl
 
     public BackpackPlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
         this.handlerHelper = handlerHelper;
-        IRecipeTransferInfo<InventoryMenu, CraftingRecipe> basicRecipeTransferInfo = handlerHelper.createBasicRecipeTransferInfo(InventoryMenu.class, (MenuType)null, RecipeTypes.CRAFTING, 1, 4, 9, 36+55);
+        IRecipeTransferInfo<InventoryMenu, CraftingRecipe> basicRecipeTransferInfo = handlerHelper.createBasicRecipeTransferInfo(InventoryMenu.class, (MenuType)null, RecipeTypes.CRAFTING, 1, 4, 9, 36+ BackpackHelper.getSlotIndexOffset());
         this.handler = handlerHelper.createUnregisteredRecipeTransferHandler(basicRecipeTransferInfo);
     }
 

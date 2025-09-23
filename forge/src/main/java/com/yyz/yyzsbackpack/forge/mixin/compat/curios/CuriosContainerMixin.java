@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -22,16 +23,16 @@ public abstract class CuriosContainerMixin extends AbstractContainerMenu{
 
     @ModifyConstant(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Z)V", constant = @Constant(intValue = 36),remap = false)
     private int armorIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @ModifyConstant(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Z)V", constant = @Constant(intValue = 40),remap = false)
     private int offhandIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)
     private void addSlots(int windowId, Inventory inventory, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
+        SlotManager.addBackpackInventorySlots(this,inventory);
     }
 }

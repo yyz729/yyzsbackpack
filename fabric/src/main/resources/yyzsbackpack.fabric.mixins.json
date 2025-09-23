@@ -9,11 +9,16 @@
     "InventorySlotsIndicatorMixin",
     "SurvivalTrinketSlotMixin",
     "compat.ae2.AEBaseMenuMixin",
+    "compat.ae2wireless.ArmorSlotMixin",
+    "compat.ae2wireless.WCTMenuMixin",
+    "compat.ae2wireless.WrappedPlayerInventoryMixin",
     "compat.collective.ItemEntityMixin",
-    "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
+    "compat.tmm.CraftingScreenHandlerMixin"
   ],
   "client": [
     "InventorioScreenMixin",
+    "ItemColorsMixin",
     "compat.ae2.AEBaseScreenMixin"
   ],
   "injectors": {

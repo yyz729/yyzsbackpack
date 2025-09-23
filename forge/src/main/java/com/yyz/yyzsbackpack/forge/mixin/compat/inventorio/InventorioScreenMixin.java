@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.inventorio;
 
-import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import de.rubixdev.inventorio.client.ui.InventorioScreen;
 import de.rubixdev.inventorio.player.InventorioScreenHandler;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -24,6 +24,6 @@ public abstract class InventorioScreenMixin extends EffectRenderingInventoryScre
 
     @Inject(method = "render", at = @At("HEAD"))
     private void addBackpackSlots(CallbackInfo ci) {
-        ((BackpackCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
+        ((BackpackMenu)menu).setBackpackVisible(!getRecipeBookComponent().isVisible());
     }
 }

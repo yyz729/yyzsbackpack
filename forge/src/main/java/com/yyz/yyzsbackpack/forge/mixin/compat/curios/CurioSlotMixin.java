@@ -1,8 +1,8 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackStorage;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -23,8 +23,8 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
 
     @Override
     public void onTake(@NotNull Player player, ItemStack backpackStack) {
-        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().force_slot) {
-            BackpackManager.saveBackpackContents(player.getInventory(), backpackStack, true);
+        if (backpackStack.getItem() instanceof BackpackItem && !Backpack.getConfig().use_dedicated_slot) {
+            BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack, true);
         }
         super.onTake(player, backpackStack);
     }
@@ -32,13 +32,13 @@ public abstract class CurioSlotMixin extends SlotItemHandler {
     @Override
     public void setByPlayer(@NotNull ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();
-        if(!Backpack.getConfig().force_slot) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
             if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackManager.saveBackpackContents(player.getInventory(), oldBackpackStack, true);
+                BackpackStorage.saveBackpackContents(player.getInventory(), oldBackpackStack, true);
             }
             super.setByPlayer(newBackpackStack);
             if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackManager.restoreBackpackContents(player.getInventory(), newBackpackStack);
+                BackpackStorage.restoreBackpackContents(player.getInventory(), newBackpackStack);
             }
             return;
         }

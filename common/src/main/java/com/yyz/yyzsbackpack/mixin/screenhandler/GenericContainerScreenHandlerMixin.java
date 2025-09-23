@@ -1,6 +1,8 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,13 +28,14 @@ public abstract class GenericContainerScreenHandlerMixin extends AbstractContain
 
     @Inject(method = "<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V", at = @At("RETURN"))
     private void addSlots(MenuType<?> menuType, int i, Inventory inventory, Container container, int j, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);//114+ handler.getRowCount() * 18
+        SlotManager.addBackpackInventorySlots(this,inventory);
+        ((BackpackMenu)this).setBackpackVisible(true);
 
     }
 
-    @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",ordinal = 0), index = 3)
-    private boolean injected(boolean par4) {
-        return false;
+    @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",ordinal = 0), index = 2)
+    private int injected(int x) {
+        return x - BackpackHelper.getMaxBackpackSize();
     }
 
 }

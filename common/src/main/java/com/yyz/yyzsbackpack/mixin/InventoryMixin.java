@@ -1,0 +1,104 @@
+package com.yyz.yyzsbackpack.mixin;
+
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
+import com.yyz.yyzsbackpack.util.BackpackStorage;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+
+@Mixin(Inventory.class)
+public abstract class InventoryMixin implements Container {
+	@Shadow
+	@Final
+	public Player player;
+
+	@Shadow public abstract void setItem(int i, ItemStack arg);
+
+	@Shadow public abstract @NotNull ItemStack getItem(int i);
+
+	@Shadow @Final public NonNullList<ItemStack> items;
+
+	@Shadow public abstract int getSlotWithRemainingSpace(ItemStack arg);
+
+	@Shadow public abstract int getFreeSlot();
+
+	@Shadow public abstract boolean add(int j, ItemStack arg);
+
+	@ModifyArg(method = "<init>", index = 0, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/core/NonNullList;withSize(ILjava/lang/Object;)Lnet/minecraft/core/NonNullList;"))
+	private int modifyMainSize(int size) {
+		return size + BackpackHelper.getSlotIndexOffset();
+	}
+
+	@ModifyConstant(method = "getSlotWithRemainingSpace", constant = @Constant(intValue = 40))
+	private int modifyOffhandSlotConstant1(int constant) {
+		return constant + BackpackHelper.getSlotIndexOffset();
+	}
+
+	@Redirect(method = "getFreeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
+	private int modifyLoopCount(NonNullList<ItemStack> instance) {
+		return BackpackHelper.getBackpackSize(player);
+	}
+	@Redirect(method = "findSlotMatchingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
+	private int modifyFindSlotMatchingItem(NonNullList<ItemStack> instance) {
+		return BackpackHelper.getBackpackSize(player);
+	}
+	@Redirect(method = "findSlotMatchingUnusedItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
+	private int modifyFindSlotMatchingUnusedItem(NonNullList<ItemStack> instance) {
+		return BackpackHelper.getBackpackSize(player);
+	}
+
+	@Redirect(method = "getSlotWithRemainingSpace", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/NonNullList;size()I"))
+	private int modifyGetSlotWithRemainingSpace(NonNullList<ItemStack> instance) {
+		return BackpackHelper.getBackpackSize(player);
+	}
+
+	@Inject(method = "placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;Z)V", at = @At("HEAD"), cancellable = true)
+	private void placeItemBackInInventory(ItemStack itemStack, boolean bl, CallbackInfo ci) {
+		ci.cancel();
+
+		while(true) {
+			if (!itemStack.isEmpty()) {
+				int i = this.getSlotWithRemainingSpace(itemStack);
+				if (i == -1) {
+					i = this.getFreeSlot();
+				}
+
+				if (i != -1 && i < BackpackHelper.getBackpackSize(player)) {
+					int j = itemStack.getMaxStackSize() - this.getItem(i).getCount();
+					if (i>=36 && (BackpackHelper.isItemBlacklisted(itemStack.getItem()) || (!itemStack.getItem().canFitInsideContainerItems() && Backpack.getConfig().restrict_container_items))) {
+						this.player.drop(itemStack, false); // 直接掉落物品
+						return;
+					}
+					if (this.add(i, itemStack.split(j)) && bl && this.player instanceof ServerPlayer) {
+						((ServerPlayer)this.player).connection.send(new ClientboundContainerSetSlotPacket(-2, 0, i, this.getItem(i)));
+					}
+					continue;
+				}
+
+				this.player.drop(itemStack, false);
+			}
+
+			return;
+		}
+	}
+	@Inject(method = "tick", at = @At("RETURN"))
+	private void addSlot(CallbackInfo ci) {
+		if(BackpackPlatform.getEquipped(player).getOrCreateTag().contains("BackpackItems")){
+			BackpackStorage.restoreBackpackContents(player.getInventory(), BackpackPlatform.getEquipped(player));
+		}
+	}
+}

@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.screenhandler;
 
-import com.yyz.yyzsbackpack.BackpackManager;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,6 +23,7 @@ public abstract class BrewingStandScreenHandlerMixin extends AbstractContainerMe
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V", at = @At("RETURN"))
     private void addSlots(int i, Inventory inventory, Container container, ContainerData containerData, CallbackInfo ci) {
-        BackpackManager.addBackpackSlots(this,inventory);
+        SlotManager.addBackpackInventorySlots(this,inventory);
+        ((BackpackMenu)this).setBackpackVisible(true);
     }
 }

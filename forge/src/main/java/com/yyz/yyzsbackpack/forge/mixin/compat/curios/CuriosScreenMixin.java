@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.forge.mixin.compat.curios;
 
-import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -24,8 +24,8 @@ public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<C
 
     @Inject(method = "render", at = @At("HEAD"))
     private void shouldRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        BackpackCondition condition = (BackpackCondition) menu;
-        condition.setRenderBackpack(true);
+        BackpackMenu condition = (BackpackMenu) menu;
+        condition.setBackpackVisible(true);
 
         CuriosApi.getCuriosHelper().getCuriosHandler(menu.player).ifPresent((handler) -> {
             int panelWidth = handler.getVisibleSlots() >0?26:0;
@@ -36,7 +36,7 @@ public abstract class CuriosScreenMixin extends EffectRenderingInventoryScreen<C
             if (hasScrollBar) {
                 panelWidth += 30/2;
             }
-            condition.setBackpackOffset(-panelWidth, 0);
+            condition.setBackpackGuiPos(-panelWidth, 0);
         });
 
     }

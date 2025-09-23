@@ -3,7 +3,7 @@ package com.yyz.yyzsbackpack.forge.mixin.compat.ae2;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.menu.AEBaseMenu;
-import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,8 +20,8 @@ public abstract class AEBaseScreenMixin <T extends AEBaseMenu> extends AbstractC
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void shouldRender(AEBaseMenu menu, Inventory playerInventory, Component title, ScreenStyle style, CallbackInfo ci) {
-        BackpackCondition condition = (BackpackCondition) menu;
-        condition.setRenderBackpack(true);
-        condition.setBackpackOffset(-20, 0);
+        BackpackMenu condition = (BackpackMenu) menu;
+        condition.setBackpackVisible(true);
+        condition.setBackpackGuiPos(-20, 0);
     }
 }

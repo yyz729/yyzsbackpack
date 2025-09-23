@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.compat.accessories;
 
-import com.yyz.yyzsbackpack.base.BackpackCondition;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import io.wispforest.accessories.client.AccessoriesMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(AccessoriesMenu.class)
-public abstract class AccessoriesMenuMixin extends AbstractContainerMenu implements BackpackCondition {
+public abstract class AccessoriesMenuMixin extends AbstractContainerMenu implements BackpackMenu {
     protected AccessoriesMenuMixin(@Nullable MenuType<?> menuType, int i) {
         super(menuType, i);
     }

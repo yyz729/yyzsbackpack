@@ -19,7 +19,6 @@ public final class Backpack {
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         BackpackCommand.register(dispatcher);
     }
-    
 
     public static BackpackConfig getConfig() {
         return config;

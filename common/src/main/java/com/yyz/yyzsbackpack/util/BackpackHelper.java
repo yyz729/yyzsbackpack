@@ -31,7 +31,6 @@ public class BackpackHelper {
     }
 
     public static int getMaxBackpackSize(){
-//        return Backpack.getConfig().backpack_max_size;
         return BackpackMaterialManager.getMaxSize();
     }
 

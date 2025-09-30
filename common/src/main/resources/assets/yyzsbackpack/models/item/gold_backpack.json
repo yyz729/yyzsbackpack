@@ -1,6 +1,7 @@
   {
   "parent": "item/generated",
   "textures": {
-    "layer0": "yyzsbackpack:item/gold_backpack"
+    "layer0": "yyzsbackpack:item/backpack",
+    "layer1": "yyzsbackpack:item/gold_backpack_overlay"
   }
 }

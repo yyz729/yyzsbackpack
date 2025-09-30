@@ -20,10 +20,14 @@
     ],
     "client": [
       "com.yyz.yyzsbackpack.fabric.client.BackpackFabricClient"
+    ],
+    "rei_client": [
+      "com.yyz.yyzsbackpack.compat.rei.BackpackClientREIPlugin"
     ]
   },
   "mixins": [
-    "yyzsbackpack.mixins.json"
+    "yyzsbackpack.mixins.json",
+    "yyzsbackpack.fabric.mixins.json"
   ],
   "accessWidener": "yyzsbackpack.accesswidener",
   "depends": {

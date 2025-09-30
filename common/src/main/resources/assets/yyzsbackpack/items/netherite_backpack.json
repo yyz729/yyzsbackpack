@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "model",
-    "model": "yyzsbackpack:item/netherite_backpack"
+    "model": "yyzsbackpack:item/netherite_backpack",
+    "tints": [
+      {
+        "type": "minecraft:dye",
+        "default": -6265536
+      }
+    ]
   }
 }

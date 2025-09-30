@@ -3,12 +3,14 @@
   "minVersion": "0.8",
   "package": "com.yyz.yyzsbackpack.neoforge.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.yyz.yyzsbackpack.mixin.ConditionalMixinPlugin",
+  "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
-    "CuriosContainerMixin"
+    "compat.curios.CuriosContainerMixin",
+    "compat.curios.CurioSlotMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
   ],
   "client": [
-    "CuriosScreenMixin"
+    "compat.curios.CuriosScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

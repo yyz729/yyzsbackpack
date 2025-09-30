@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.yyz.yyzsbackpack.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
+  "mixins": [
+    "compat.collective.ItemEntityMixin",
+    "compat.reinforced.ReinforcedStorageScreenHandlerMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
+    "compat.trinkets.SurvivalTrinketSlotMixin"
+  ],
+  "client": [
+    "compat.reinforced.ReinforcedStorageScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

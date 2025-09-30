@@ -40,6 +40,10 @@ dependencies {
 
     modImplementation "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version"
     compileOnly "top.theillusivec4.curios:curios-neoforge:$rootProject.curios_version:api"
+    modImplementation   ("curse.maven:jei-238222:6617262")
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:$rootProject.rei_version"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:$rootProject.rei_version"
+    modImplementation files('libs/hotbarslotcycling-neoforge-21.5.0.jar')
 }
 
 processResources {

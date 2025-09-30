@@ -1,15 +1,26 @@
 package com.yyz.yyzsbackpack;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.yyz.yyzsbackpack.command.BackpackCommand;
+import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
+import net.minecraft.commands.CommandSourceStack;
 
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.equipment.ArmorType;
+import java.io.File;
 
-public class Backpack{
-
+public final class Backpack {
     public static final String MOD_ID = "yyzsbackpack";
-
+    private static BackpackConfig config;
 
     public static void init() {
+        BackpackMaterialManager.loadMaterials();
+        config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
+    }
+    public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        BackpackCommand.register(dispatcher);
+    }
 
+    public static BackpackConfig getConfig() {
+        return config;
     }
 }

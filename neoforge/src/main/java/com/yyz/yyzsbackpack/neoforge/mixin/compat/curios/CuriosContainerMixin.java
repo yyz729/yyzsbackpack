@@ -1,6 +1,5 @@
 package com.yyz.yyzsbackpack.neoforge.mixin.compat.curios;
 
-import com.yyz.yyzsbackpack.BackpackManager;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;

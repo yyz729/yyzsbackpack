@@ -3,10 +3,13 @@ package com.yyz.yyzsbackpack.fabric;
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.compat.accessories.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -26,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
@@ -74,50 +78,95 @@ public final class BackpackFabric implements ModInitializer {
 
     }
     public static ItemStack getEquipped(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets") && !Backpack.getConfig().use_dedicated_slot) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查是否为 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty() ? list.get(0).getB() : ItemStack.EMPTY;
-                    })
-                    .orElse(ItemStack.EMPTY);
+        if(!Backpack.getConfig().use_dedicated_slot){
+            if (BackpackPlatform.isModLoaded("trinkets")) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查是否为 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty() ? list.get(0).getB() : ItemStack.EMPTY;
+                        })
+                        .orElse(ItemStack.EMPTY);
+            }
+
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return stack;
+                            }
+                        }
+                    }
+                }
+            }
         }
         return player.getInventory().getItem(36+ BackpackHelper.getMaxBackpackSize());
     }
 
     public static Container getContainer(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().use_dedicated_slot) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty()
-                                ? list.get(0).getA().inventory()  // 返回背包容器
-                                : player.getInventory();         // 未找到时返回玩家库存
-                    })
-                    .orElse(player.getInventory());
+        if(!Backpack.getConfig().use_dedicated_slot) {
+            if (BackpackPlatform.isModLoaded("trinkets")) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty()
+                                    ? list.get(0).getA().inventory()  // 返回背包容器
+                                    : player.getInventory();         // 未找到时返回玩家库存
+                        })
+                        .orElse(player.getInventory());
+            }
+
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
+                AccessoriesCapability capability = AccessoriesCapability.get(player);
+                if (capability != null) {
+                    Map<String, AccessoriesContainer> containers = capability.getContainers();
+                    for (AccessoriesContainer container : containers.values()) {
+                        Container accessoriesContainer = container.getAccessories();
+                        for (int i = 0; i < accessoriesContainer.getContainerSize(); i++) {
+                            ItemStack stack = accessoriesContainer.getItem(i);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                return new AccessoriesContainerAdapter(accessoriesContainer, i);
+                            }
+                        }
+                    }
+                }
+            }
         }
         return player.getInventory();
     }
 
     public static int getIndex(Player player) {
-        if (BackpackPlatform.isModLoaded("trinkets")&& !Backpack.getConfig().use_dedicated_slot) {
-            return TrinketsApi.getTrinketComponent(player)
-                    .map(trinketComponent -> {
-                        // 使用 Predicate 检查 BackpackItem
-                        List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
-                                stack -> stack.getItem() instanceof BackpackItem
-                        );
-                        return !list.isEmpty()
-                                ? list.get(0).getA().index()  // 返回槽位索引
-                                : 36+BackpackHelper.getMaxBackpackSize();                         // 未找到时返回默认值
-                    })
-                    .orElse(36+BackpackHelper.getMaxBackpackSize());
+        if(!Backpack.getConfig().use_dedicated_slot) {
+            if (BackpackPlatform.isModLoaded("trinkets")) {
+                return TrinketsApi.getTrinketComponent(player)
+                        .map(trinketComponent -> {
+                            // 使用 Predicate 检查 BackpackItem
+                            List<Tuple<SlotReference, ItemStack>> list = trinketComponent.getEquipped(
+                                    stack -> stack.getItem() instanceof BackpackItem
+                            );
+                            return !list.isEmpty()
+                                    ? list.get(0).getA().index()  // 返回槽位索引
+                                    : 36+BackpackHelper.getMaxBackpackSize();                         // 未找到时返回默认值
+                        })
+                        .orElse(36+BackpackHelper.getMaxBackpackSize());
+            }
+
+            else if (BackpackPlatform.isModLoaded("accessories") && !BackpackPlatform.isModLoaded("trinkets")) {
+                Container container = getContainer(player);
+                if (container instanceof AccessoriesContainerAdapter) {
+                    return ((AccessoriesContainerAdapter) container).getBackpackSlotIndex();
+                }
+            }
         }
         return 36+BackpackHelper.getMaxBackpackSize();
     }

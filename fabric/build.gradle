@@ -38,6 +38,7 @@ dependencies {
 
     modCompileOnly files('libs/reinforced-core-4.0.6+1.21.5.jar')
     modCompileOnly "curse.maven:collective-342584:6429228"
+    modCompileOnly "curse.maven:accessories-938917:6932241"
 }
 
 processResources {

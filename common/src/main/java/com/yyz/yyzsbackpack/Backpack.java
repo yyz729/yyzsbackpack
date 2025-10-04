@@ -3,6 +3,7 @@ package com.yyz.yyzsbackpack;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
@@ -17,7 +18,8 @@ public class Backpack{
     private static BackpackConfig config;
 
     public static void init() {
-        config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        BackpackMaterialManager.loadMaterials();
+        config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
     }
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         BackpackCommand.register(dispatcher);

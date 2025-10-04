@@ -99,7 +99,7 @@ public class BackpackCommand {
         BackpackConfig config = Backpack.getConfig();
         try {
             config.getClass().getField(name).set(config, value);
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +109,7 @@ public class BackpackCommand {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
         if (config.restricted_items.add(item)) {
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                     () -> Component.literal("Added item: " + item),
                     true
@@ -124,7 +124,7 @@ public class BackpackCommand {
         String item = StringArgumentType.getString(ctx, "item");
         BackpackConfig config = Backpack.getConfig();
         if (config.restricted_items.remove(item)) {
-            config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+            config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
             ctx.getSource().sendSuccess(
                     () -> Component.literal("Removed item: " + item),
                     true
@@ -138,7 +138,7 @@ public class BackpackCommand {
     private static int clearItems(CommandContext<CommandSourceStack> ctx) {
         BackpackConfig config = Backpack.getConfig();
         config.restricted_items.clear();
-        config.saveConfig(new File(BackpackPlatform.getConfigDirectory() + "/yyzsbackpack.json"));
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(
                 () -> Component.literal("Cleared all container items"),
                 true

@@ -1,9 +1,8 @@
 package com.yyz.yyzsbackpack.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yyz.yyzsbackpack.base.BackpackEffect;
-import org.spongepowered.include.com.google.gson.Gson;
-import org.spongepowered.include.com.google.gson.GsonBuilder;
-import org.spongepowered.include.com.google.gson.JsonElement;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,11 +15,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BackpackConfig extends JsonElement {
+public class BackpackConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-
+    // 修改为存储多行注释的列表
     private static final Map<String, List<String>> FIELD_COMMENTS = new HashMap<>();
     static {
         addComment("quick_swap_backpack", "Enable quick backpack swapping");
@@ -112,8 +111,7 @@ public class BackpackConfig extends JsonElement {
                     }
                     configBuilder.append(line).append("\n");
                 }
-
-                config = GSON.fromJson(new StringReader(configBuilder.toString()), BackpackConfig.class);
+                config = GSON.fromJson(configBuilder.toString(), BackpackConfig.class);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to load config", e);
             }

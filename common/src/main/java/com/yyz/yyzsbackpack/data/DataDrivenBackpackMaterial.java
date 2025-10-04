@@ -43,11 +43,11 @@ public class DataDrivenBackpackMaterial implements BackpackMaterial {
     
     @Override
     public ResourceLocation getGuiTexture() {
-        return ResourceLocation.parse(data.guiTexture);
+        return new ResourceLocation(data.guiTexture);
     }
     
     @Override
     public ResourceLocation getModelTexture() {
-        return ResourceLocation.parse(data.modelTexture);
+        return new ResourceLocation(data.modelTexture);
     }
 }

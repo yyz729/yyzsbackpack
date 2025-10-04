@@ -9,7 +9,7 @@ import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class BackpackItem extends Item {
+public class BackpackItem extends Item implements DyeableLeatherItem{
     private final String string;
 
     public BackpackItem(String iron, Properties settings) {

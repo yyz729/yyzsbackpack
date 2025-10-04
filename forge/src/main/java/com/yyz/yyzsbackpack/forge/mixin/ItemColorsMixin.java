@@ -15,9 +15,10 @@ public class ItemColorsMixin {
 
     @Inject(method = "createDefault", at = @At("RETURN"))
     private static void injected(BlockColors blockColors, CallbackInfoReturnable<ItemColors> cir, @Local ItemColors itemColors) {
-        itemColors.register((itemStack, tintIndex) ->
-                        tintIndex > 0 ? -1 : ((BackpackItem)itemStack.getItem()).getColor(itemStack),
-                BackpackForge.IRON_BACKPACK.get(), BackpackForge.GOLD_BACKPACK.get(),
-                BackpackForge.DIAMOND_BACKPACK.get(), BackpackForge.NETHERITE_BACKPACK.get());
+        itemColors.register((itemStack, tintIndex) -> tintIndex > 0 ? -1 : ((BackpackItem)itemStack.getItem()).getColor(itemStack),
+                BackpackForge.IRON_BACKPACK.get(),
+                BackpackForge.GOLD_BACKPACK.get(),
+                BackpackForge.DIAMOND_BACKPACK.get(),
+                BackpackForge.NETHERITE_BACKPACK.get());
     }
 }

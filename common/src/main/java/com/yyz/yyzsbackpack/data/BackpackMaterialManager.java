@@ -1,10 +1,11 @@
 // BackpackMaterialManager.java
 package com.yyz.yyzsbackpack.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
-import org.spongepowered.include.com.google.gson.Gson;
-import org.spongepowered.include.com.google.gson.GsonBuilder;
+
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -99,7 +99,7 @@ public class DetailedBackpackFeatureRenderer extends RenderLayer<AbstractClientP
             matrices.scale(0.8f, 0.8f, 0.8f);
 
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entitySolid(getTexture(player)));
-            this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, red, green, blue, alpha);
+            this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0f);
 
             VertexConsumer overlay_vertexConsumer = vertexConsumers.getBuffer(RenderType.entitySolid(getOverlayTexture(player)));
             this.backpack_overlay.render(matrices, overlay_vertexConsumer, light, OverlayTexture.NO_OVERLAY);

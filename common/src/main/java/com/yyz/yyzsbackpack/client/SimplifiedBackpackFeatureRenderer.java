@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.component.DyedItemColor;
 
 public class SimplifiedBackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final ModelPart backpack;
@@ -76,7 +75,7 @@ public class SimplifiedBackpackFeatureRenderer extends RenderLayer<AbstractClien
             this.getParentModel().body.translateAndRotate(matrices);
 
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(new ResourceLocation(Backpack.MOD_ID, "textures/backpack/leather_backpack.png")));
-            this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, red, green, blue, alpha);
+            this.backpack.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0f);
 
             VertexConsumer overlay_vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(new ResourceLocation(Backpack.MOD_ID, "textures/backpack/leather_backpack_overlay.png")));
             this.backpack_overlay.render(matrices, overlay_vertexConsumer, light, OverlayTexture.NO_OVERLAY);

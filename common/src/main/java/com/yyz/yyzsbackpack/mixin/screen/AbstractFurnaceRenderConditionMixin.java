@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.screen;
 
-import com.yyz.yyzsbackpack.api.BackpackRenderCondition;
+import com.yyz.yyzsbackpack.base.BackpackMenu;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -25,7 +25,7 @@ public abstract class AbstractFurnaceRenderConditionMixin <T extends AbstractFur
 
     @Inject(method = "render", at = @At("HEAD"))
     private void addBackpackSlots(CallbackInfo ci) {
-        ((BackpackRenderCondition)menu).setRenderBackpack(!getRecipeBookComponent().isVisible());
+        ((BackpackMenu)menu).setBackpackVisible(!getRecipeBookComponent().isVisible());
     }
 
 }

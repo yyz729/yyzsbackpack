@@ -34,7 +34,12 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
-    modCompileOnly("curse.maven:jei-238222:5846846")
+    modCompileOnly "curse.maven:inventorio-491073:6439101"
+    modCompileOnly "curse.maven:giselbaers-durability-viewer-262146:4954677"
+    modCompileOnly files('libs/hotbarslotcycling-fabric-20.4.2.jar')
+    modCompileOnly ("curse.maven:collective-342584:6429218")
+    modCompileOnly "curse.maven:collective-342584:5460528"
+
 
 }
 

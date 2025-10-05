@@ -46,7 +46,14 @@ dependencies {
     compileOnly  "top.theillusivec4.curios:curios-forge:$rootProject.curios_version:api"
     // Use the full Curios API jar at runtime
     modImplementation "top.theillusivec4.curios:curios-forge:$rootProject.curios_version"
-    modImplementation   ("curse.maven:jei-238222:5846847")
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:$rootProject.rei_version"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-forge:$rootProject.rei_version"
+    modCompileOnly files('libs/hotbarslotcycling-forge-20.4.2.jar')
+
+    modCompileOnly"curse.maven:workshop-for-handsome-adventurer-875843:4960318"
+
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
 }
 
 processResources {

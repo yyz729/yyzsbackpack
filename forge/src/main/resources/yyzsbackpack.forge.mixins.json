@@ -5,13 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
-    "CuriosContainerMixin",
-    "CuriosContainerV2Mixin",
-    "CurioSlotMixin"
+    "compat.curios.CuriosContainerMixin",
+    "compat.curios.CuriosContainerV2Mixin",
+    "compat.curios.CurioSlotMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
   ],
   "client": [
-    "CuriosScreenMixin",
-    "CuriosScreenV2Mixin"
+    "ItemColorsMixin",
+    "compat.curios.CuriosScreenMixin",
+    "compat.curios.CuriosScreenV2Mixin"
   ],
   "injectors": {
     "defaultRequire": 1

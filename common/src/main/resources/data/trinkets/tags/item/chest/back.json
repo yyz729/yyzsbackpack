@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "yyzsbackpack:iron_backpack",
+    "yyzsbackpack:gold_backpack",
+    "yyzsbackpack:diamond_backpack",
+    "yyzsbackpack:netherite_backpack"
+    ]
+}

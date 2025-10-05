@@ -1,0 +1,24 @@
+{
+  "item.yyzsbackpack.iron_backpack": "Iron Backpack",
+  "item.yyzsbackpack.gold_backpack": "Gold Backpack",
+  "item.yyzsbackpack.diamond_backpack": "Diamond Backpack",
+  "item.yyzsbackpack.netherite_backpack": "Netherite Backpack",
+
+  "itemGroup.yyzsbackpack.title": "yyz's backpack",
+
+  "command.yyzsbackpack.set.boolean": "Set %s to %s",
+  "command.yyzsbackpack.set.integer": "Set %s to %s",
+  "command.yyzsbackpack.set.tooltip_modifier": "Set tooltip_modifier to %s",
+  "command.yyzsbackpack.set.tooltip_modifier.invalid": "Invalid value! Must be: shift, alt, ctrl, none",
+  "command.yyzsbackpack.restricted_items.add": "Added item: %s",
+  "command.yyzsbackpack.restricted_items.exists": "Item already exists!",
+  "command.yyzsbackpack.restricted_items.remove": "Removed item: %s",
+  "command.yyzsbackpack.restricted_items.not_found": "Item not found!",
+  "command.yyzsbackpack.restricted_items.clear": "Cleared all container items",
+  "command.yyzsbackpack.reload": "Reloaded backpack config",
+  "command.yyzsbackpack.effect.set": "Set tier %s effect: %s %s",
+  "command.yyzsbackpack.effect.add": "Added effect: %s %s",
+  "command.yyzsbackpack.effect.remove": "Removed tier %s effect",
+  "command.yyzsbackpack.effect.invalid_tier": "Invalid tier! Max tier is %s",
+  "command.yyzsbackpack.effect.clear": "Cleared all backpack effects"
+}

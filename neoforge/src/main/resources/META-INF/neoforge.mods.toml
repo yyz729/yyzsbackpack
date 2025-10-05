@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "Unlicense"
+
+[[mods]]
+modId = "yyzsbackpack"
+version = "${version}"
+displayName = "yyzsbackpack"
+authors = "yyz729"
+description = '''
+Modrinth https://modrinth.com/mod/yyzs-backpack
+Github https://github.com/yyz729/yyzsbackpack
+'''
+#logoFile = ""
+
+[[dependencies.yyzsbackpack]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.yyzsbackpack]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.9,)"
+ordering = "NONE"
+side = "BOTH"
+
+
+[[mixins]]
+config = "yyzsbackpack.mixins.json"
+[[mixins]]
+config = "yyzsbackpack.neoforge.mixins.json"

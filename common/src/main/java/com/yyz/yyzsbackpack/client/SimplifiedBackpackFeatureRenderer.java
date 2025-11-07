@@ -62,10 +62,8 @@ public class SimplifiedBackpackFeatureRenderer extends RenderLayer<AvatarRenderS
     }
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, AvatarRenderState entityRenderState, float f, float g) {
-        Avatar player = ((BackpackRenderState)entityRenderState).getAbstractClientPlayer();
-        if (shouldRender(player)) {
-
-            int j = DyedItemColor.getOrDefault(BackpackPlatform.getEquippedL(player), -6265536);
+        if (((BackpackRenderState) entityRenderState).yyzsbackpack$shouldRender()) {
+            int j = ((BackpackRenderState) entityRenderState).yyzsbackpack$getDyeColor();
 
             poseStack.pushPose();
             this.getParentModel().body.translateAndRotate(poseStack);

@@ -3,9 +3,7 @@ package com.yyz.yyzsbackpack.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackRenderState;
-import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -21,9 +19,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.component.DyedItemColor;
+import org.spongepowered.asm.mixin.Unique;
 
 
 public class DetailedBackpackFeatureRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
@@ -38,26 +34,24 @@ public class DetailedBackpackFeatureRenderer extends RenderLayer<AvatarRenderSta
         this.backpack_overlay =  createBackpackOverlayModel();
     }
 
-
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, AvatarRenderState entityRenderState, float f, float g) {
-        Avatar player = ((BackpackRenderState)entityRenderState).getAbstractClientPlayer();
-        if (shouldRender(player)) {
+        if (((BackpackRenderState) entityRenderState).yyzsbackpack$shouldRender()) {
 
-            int j = DyedItemColor.getOrDefault(BackpackPlatform.getEquippedL(player), -6265536);
+            int j = ((BackpackRenderState) entityRenderState).yyzsbackpack$getDyeColor();
 
             poseStack.pushPose();
             this.getParentModel().body.translateAndRotate(poseStack);
             poseStack.scale(0.8f, 0.8f, 0.8f);
             submitNodeCollector.submitModelPart(backpack,poseStack,RenderType.entitySolid(getTexture()),i, OverlayTexture.NO_OVERLAY,(TextureAtlasSprite)null,j,null);
-            submitNodeCollector.submitModelPart(backpack_overlay,poseStack,RenderType.entitySolid(getOverlayTexture(player)),i, OverlayTexture.NO_OVERLAY,(TextureAtlasSprite)null);
+            submitNodeCollector.submitModelPart(backpack_overlay,poseStack,RenderType.entitySolid(((BackpackRenderState) entityRenderState).yyzsbackpack$getDetailedOverlayTexture()),i, OverlayTexture.NO_OVERLAY,(TextureAtlasSprite)null);
 
             poseStack.popPose();
         }
 
     }
 
-
+    @Unique
     private ModelPart createBackpackModel() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
@@ -77,6 +71,7 @@ public class DetailedBackpackFeatureRenderer extends RenderLayer<AvatarRenderSta
         return meshdefinition.getRoot().bake(64, 64).getChild("backpack");
     }
 
+    @Unique
     private ModelPart createBackpackOverlayModel() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
@@ -86,20 +81,9 @@ public class DetailedBackpackFeatureRenderer extends RenderLayer<AvatarRenderSta
         return meshdefinition.getRoot().bake(64, 64).getChild("backpack_overlay");
     }
 
-
-
-    private boolean shouldRender(Avatar player) {
-        return BackpackPlatform.getEquippedL(player).getItem() instanceof BackpackItem && Backpack.getConfig().render_backpack_model && Backpack.getConfig().backpack_model_style.equals("detailed");
-    }
+    @Unique
     private ResourceLocation getTexture() {
         return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/backpack.png");
     }
-    private ResourceLocation getOverlayTexture(LivingEntity player) {
-        if(BackpackPlatform.getEquippedL(player).getItem() instanceof BackpackItem backpackItem){
-            return backpackItem.getBackpackType().getModelTexture();
-        }
-        return ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/backpack/gold_backpack.png");
-    }
-
 
 }

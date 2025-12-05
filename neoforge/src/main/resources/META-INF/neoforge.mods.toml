@@ -33,3 +33,6 @@ side = "BOTH"
 config = "yyzsbackpack.mixins.json"
 [[mixins]]
 config = "yyzsbackpack.neoforge.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"

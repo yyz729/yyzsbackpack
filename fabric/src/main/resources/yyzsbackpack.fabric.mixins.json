@@ -6,8 +6,9 @@
   "plugin": "com.yyz.yyzsbackpack.mixin.CompatMixinPlugin",
   "mixins": [
     "compat.collective.ItemEntityMixin",
+    "compat.hotbarslotcycling.HotbarCyclingProviderMixin",
     "compat.reinforced.ReinforcedStorageScreenHandlerMixin",
-    "compat.hotbarslotcycling.HotbarCyclingProviderMixin"
+    "compat.trinkets.SurvivalTrinketSlotMixin"
   ],
   "client": [
     "compat.reinforced.ReinforcedStorageScreenMixin"

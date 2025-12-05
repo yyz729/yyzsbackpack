@@ -26,6 +26,7 @@
     "yyzsbackpack.mixins.json",
     "yyzsbackpack.fabric.mixins.json"
   ],
+  "accessWidener": "yyzsbackpack.accesswidener",
   "depends": {
     "fabricloader": ">=0.17.2",
     "minecraft": "1.21.9",

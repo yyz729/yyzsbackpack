@@ -39,6 +39,10 @@ dependencies {
     modCompileOnly "curse.maven:inventory-profiles-next-495267:6616906"
     modCompileOnly "curse.maven:libipn-679177:6616850"
     modCompileOnly "curse.maven:collective-342584:6668185"
+
+    modImplementation "maven.modrinth:trinkets-canary:${rootProject.trinkets_version}"
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
 }
 
 processResources {

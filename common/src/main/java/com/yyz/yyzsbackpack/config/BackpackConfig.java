@@ -90,7 +90,14 @@ public class BackpackConfig {
     public String backpack_model_style = "detailed";//simplified
     public Set<String> restricted_items = new HashSet<>();
 
-    public List<BackpackEffect> backpack_multi_effects = new ArrayList<>();
+    public List<BackpackEffect> backpack_multi_effects = new ArrayList<>() {{
+        // 索引0: 携带1个额外背包的效果 (无效果)
+        add(new BackpackEffect("none", 0));
+        // 索引1: 携带2个额外背包的效果 (无效果)
+        add(new BackpackEffect("none", 0));
+        // 索引2: 携带2个额外背包的效果 (减速效果)
+        add(new BackpackEffect("minecraft:slowness", 1));
+    }};
 
     public static BackpackConfig loadConfig(File file) {
         BackpackConfig config;

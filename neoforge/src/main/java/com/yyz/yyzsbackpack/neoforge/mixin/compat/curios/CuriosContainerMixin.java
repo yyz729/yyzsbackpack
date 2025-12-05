@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.neoforge.mixin.compat.curios;
 
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,12 +23,12 @@ public abstract class CuriosContainerMixin extends AbstractContainerMenu{
 
     @ModifyConstant(method = "setPage", constant = @Constant(intValue = 36),remap = false)
     private int armorIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @ModifyConstant(method = "setPage", constant = @Constant(intValue = 40),remap = false)
     private int offhandIndexChange(int og) {
-        return og + 9 * 6 + 1;
+        return og + BackpackHelper.getSlotIndexOffset();
     }
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;)V", at = @At("RETURN"),remap = false)

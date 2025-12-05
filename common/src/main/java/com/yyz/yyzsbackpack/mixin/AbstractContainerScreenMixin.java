@@ -173,13 +173,15 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Unique
     private int type;
 
+
+    //整理
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void onKeyPressed(int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
-        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_R) && menu.getCarried().isEmpty()) {
-            if (hoveredSlot != null) {
-                slotClicked(hoveredSlot, hoveredSlot.index, 2, ClickType.QUICK_MOVE);
-            }
-        }
+//        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_R) && menu.getCarried().isEmpty()) {
+//            if (hoveredSlot != null) {
+//                slotClicked(hoveredSlot, hoveredSlot.index, 2, ClickType.QUICK_MOVE);
+//            }
+//        }
     }
 
     // 检测Shift键按下

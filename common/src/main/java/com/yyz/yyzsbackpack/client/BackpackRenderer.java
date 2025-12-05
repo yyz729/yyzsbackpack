@@ -117,12 +117,10 @@ public class BackpackRenderer {
 
 
 
-//        int columns = 0;
         int width = 256;
         int height = 256;
         ResourceLocation texture = null;
         if (stack.getItem() instanceof BackpackItem backpackItem) {
-//            columns = backpackItem.getBackpackType().getColumns();
             texture = backpackItem.getBackpackType().getGuiTexture();
             width = backpackItem.getBackpackType().guiWidth();
             height = backpackItem.getBackpackType().guiHeight();

@@ -54,8 +54,8 @@ public class InventorySlotsIndicatorMixin {
 
         // 如果有背包且是自定义背包类型
         if (!backpackStack.isEmpty() && backpackStack.getItem() instanceof BackpackItem backpackItem) {
-            // 基础槽位 + 背包列数 × 9 (每列9个槽位)
-            return 36 + backpackItem.getBackpackType().getColumns() * 9;
+
+            return 36 + backpackItem.getBackpackType().getSize();
         }
 
         // 没有背包时只计算基础槽位

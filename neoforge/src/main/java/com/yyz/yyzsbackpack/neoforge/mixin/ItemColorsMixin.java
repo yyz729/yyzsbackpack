@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemColors.class)
 public class ItemColorsMixin {
 
-    @Inject(method = "createDefault", at = @At("RETURN"))
-    private static void injected(BlockColors blockColors, CallbackInfoReturnable<ItemColors> cir, @Local ItemColors itemColors) {
-        itemColors.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackNeoForge.IRON_BACKPACK.get(),BackpackNeoForge.GOLD_BACKPACK.get(),BackpackNeoForge.DIAMOND_BACKPACK.get(),BackpackNeoForge.NETHERITE_BACKPACK.get());
-    }
+//    @Inject(method = "createDefault", at = @At("RETURN"))
+//    private static void injected(BlockColors blockColors, CallbackInfoReturnable<ItemColors> cir, @Local ItemColors itemColors) {
+//        itemColors.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackNeoForge.IRON_BACKPACK.get(),BackpackNeoForge.GOLD_BACKPACK.get(),BackpackNeoForge.DIAMOND_BACKPACK.get(),BackpackNeoForge.NETHERITE_BACKPACK.get());
+//    }
 }

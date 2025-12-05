@@ -68,6 +68,7 @@ public class BackpackStorage {
     public static int countNonEmptyBackpacks(Container playerInventory) {
         int nonEmptyBackpackCount = 0;
 
+
         // 遍历玩家物品栏所有槽位
         for (int slot = 0; slot < playerInventory.getContainerSize(); slot++) {
             ItemStack stack = playerInventory.getItem(slot);
@@ -97,6 +98,9 @@ public class BackpackStorage {
     public static void updateEffectsByBackpackCount(Player player, List<Holder<MobEffect>> lastAppliedEffects) {
         int backpackCount = BackpackStorage.countNonEmptyBackpacks(player.getInventory());
 
+        if(BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem){
+            backpackCount = backpackCount + 1;
+        }
         // 移除不再需要的老效果
         for (Holder<MobEffect> effect : new ArrayList<>(lastAppliedEffects)) {
             player.removeEffect(effect);

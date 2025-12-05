@@ -67,12 +67,6 @@ public class SlotManager {
         for (int count = 0; count < BackpackHelper.getMaxBackpackSize(); count++){
             screenHandler.addSlot(new BackpackStorageSlot(screenHandler,inventory, 36 + count ,  0 , 0));
         }
-//        for (int column = 0; column < 6; column++) {
-//            for (int row = 0; row < 9; row++) {
-//                final int columnIndex = column;
-//                screenHandler.addSlot(new BackpackStorageSlot(screenHandler,inventory, row + (column + 1) * 9 + 27 , columnIndex, 0 , 0));
-//            }
-//        }
     }
 
     public static void addBackpackEquipSlot(AbstractContainerMenu screenHandler, Container inventory) {

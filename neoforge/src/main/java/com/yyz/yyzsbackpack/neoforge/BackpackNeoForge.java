@@ -5,7 +5,6 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
@@ -18,9 +17,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -76,6 +78,7 @@ public final class BackpackNeoForge {
     );
 
 
+
     public BackpackNeoForge(IEventBus modEventBus) {
         // Run our common setup.
         ITEMS.register(modEventBus);
@@ -83,6 +86,12 @@ public final class BackpackNeoForge {
         DATA_COMPONENT.register(modEventBus);
         Backpack.init();
 
+    }
+
+    @SubscribeEvent
+    public static void onItemColor(RegisterColorHandlersEvent.Item event) {
+        // 注册物品颜色提供器
+        event.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackNeoForge.IRON_BACKPACK.get(),BackpackNeoForge.GOLD_BACKPACK.get(),BackpackNeoForge.DIAMOND_BACKPACK.get(),BackpackNeoForge.NETHERITE_BACKPACK.get());
     }
 
     public static ItemStack getEquipped(Player player) {

@@ -28,10 +28,10 @@ public class CompatMixinPlugin implements IMixinConfigPlugin {
             return BackpackPlatform.isModLoaded("emi");
         }
 
-        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.trinkets.SurvivalTrinketSlot")) {
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.trinkets.SurvivalTrinketSlotMixin")) {
             return BackpackPlatform.isModLoaded("trinkets");
         }
-        if (mixinClassName.equals(" com.yyz.yyzsbackpack.fabric.mixin.compat.itemindicator.InventorySlotsIndicatorMixin")) {
+        if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.itemindicator.InventorySlotsIndicatorMixin")) {
             return BackpackPlatform.isModLoaded("durabilityviewer");
         }
         if (mixinClassName.equals("com.yyz.yyzsbackpack.fabric.mixin.compat.accessories.AccessoriesMenuMixin")) {

@@ -26,6 +26,7 @@ public class BackpackConfig {
         addComment("use_dedicated_slot", "Force use of dedicated backpack slot instead of accessory slot");
         addComment("render_backpack_model", "Render backpack model");
         addComment("restrict_container_items", "Prevent container items (like Shulker Boxes) from being placed in backpack");
+        addComment("can_fit_inside_container_items", "Whether backpacks can be placed inside container items (like Shulker Boxes)");
         addComment("slot_position_x", "X position of backpack slot");
         addComment("slot_position_y", "Y position of backpack slot");
         addComment("backpack_gui_x", "X position of backpack GUI");
@@ -82,6 +83,7 @@ public class BackpackConfig {
     public boolean use_dedicated_slot = false;
     public boolean render_backpack_model = true;
     public boolean restrict_container_items = false;
+    public boolean can_fit_inside_container_items = true;
     public int slot_position_x = 0;
     public int slot_position_y = 0;
     public int backpack_gui_x = 0;

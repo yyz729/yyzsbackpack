@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.item;
 
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import net.minecraft.world.item.Item;
 
@@ -16,5 +17,10 @@ public class BackpackItem extends Item {
 
     public BackpackMaterial getBackpackType() {
         return BackpackMaterialManager.getMaterial(string);
+    }
+
+    @Override
+    public boolean canFitInsideContainerItems() {
+        return Backpack.getConfig().can_fit_inside_container_items;
     }
 }

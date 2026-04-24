@@ -2,9 +2,11 @@ package com.yyz.yyzsbackpack.util;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.CreativeTabOrder;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -13,13 +15,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
 public class BackpackSorter {
-    public static void sortInventorySlots(Player player, NonNullList<Slot> slots) {
+    public static void sortInventorySlots(Player player, NonNullList<Slot> slots, int type) {
         List<Slot> inventorySlots = new ArrayList<>();
         for (Slot slot : slots) {
             // 只处理玩家物品栏中的主物品栏槽位 (9-35)
@@ -30,20 +35,22 @@ public class BackpackSorter {
                 }
             }
         }
-        sortSlots(inventorySlots);
+
+        sortSlots(inventorySlots, type);
     }
 
-    public static void sortBackpackSlots(Player player, NonNullList<Slot> slots) {
+    public static void sortBackpackSlots(Player player, NonNullList<Slot> slots, int type) {
         List<Slot> backpackSlots = new ArrayList<>();
         for (Slot slot : slots) {
             if (slot instanceof BackpackStorageSlot) {
                 backpackSlots.add(slot);
             }
         }
-        sortSlots(backpackSlots);
+
+        sortSlots(backpackSlots, type);
     }
 
-    public static void sortContainerSlots(Player player, Container container, NonNullList<Slot> slots) {
+    public static void sortContainerSlots(Player player, Container container, NonNullList<Slot> slots, int type) {
         List<Slot> containerSlots = new ArrayList<>();
         for (Slot slot : slots) {
             // 收集属于目标容器且不是玩家槽位的槽位
@@ -51,11 +58,29 @@ public class BackpackSorter {
                 containerSlots.add(slot);
             }
         }
-        sortSlots(containerSlots);
+
+        sortSlots(containerSlots,type);
     }
 
-    private static void sortSlots(List<Slot> slotsToSort) {
-        // 1. 收集所有非空物品
+
+    private static final Map<Item, Integer> creativeOrderMap = new HashMap<>();
+    private static boolean initialized = false;
+
+    private static void initCreativeOrder() {
+        if (initialized) return;
+        int index = 0;
+        for (CreativeModeTab tab : BuiltInRegistries.CREATIVE_MODE_TAB) {
+            for (ItemStack stack : tab.getDisplayItems()) {
+                Item item = stack.getItem();
+                creativeOrderMap.putIfAbsent(item, index++);
+            }
+        }
+        initialized = true;
+    }
+
+
+    private static void sortSlots(List<Slot> slotsToSort, int type) {
+        //收集所有非空物品
         List<ItemStack> items = new ArrayList<>();
         for (Slot slot : slotsToSort) {
             if (!slot.getItem().isEmpty()) {
@@ -64,18 +89,71 @@ public class BackpackSorter {
             }
         }
 
-        // 2. 按类型分组并排序
+        //按类型分组并排序
         Map<ResourceLocation, List<ItemStack>> groupedItems = new HashMap<>();
         for (ItemStack stack : items) {
             ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
             groupedItems.computeIfAbsent(id, k -> new ArrayList<>()).add(stack);
         }
 
-        // 按物品ID排序
-        List<ResourceLocation> sortedIds = new ArrayList<>(groupedItems.keySet());
-        Collections.sort(sortedIds);
 
-        // 3. 重新填充槽位（堆叠相同物品）
+        List<ResourceLocation> sortedIds = new ArrayList<>(groupedItems.keySet());
+        switch (type){
+            case 2:
+                System.out.println("执行创造模式排序");
+                //按创造模式物品栏排序
+                initCreativeOrder(); // 确保映射已构建
+                sortedIds.sort((id1, id2) -> {
+                    Item item1 = BuiltInRegistries.ITEM.get(id1);
+                    Item item2 = BuiltInRegistries.ITEM.get(id2);
+                    int order1 = creativeOrderMap.getOrDefault(item1, Integer.MAX_VALUE);
+                    int order2 = creativeOrderMap.getOrDefault(item2, Integer.MAX_VALUE);
+                    if (order1 != order2) {
+                        return Integer.compare(order1, order2);
+                    } else {
+                        // 回退到按 ID 排序（与原逻辑一致）
+                        int namespaceCompare = id1.getNamespace().compareTo(id2.getNamespace());
+                        if (namespaceCompare != 0) return namespaceCompare;
+                        return id1.getPath().compareTo(id2.getPath());
+                    }
+                });
+                break;
+            case 3:
+                System.out.println("执行 ID 排序");
+                // 按物品ID排序
+                Collections.sort(sortedIds);
+                break;
+            case 4:
+                System.out.println("执行稀有度排序");
+                sortedIds.sort((id1, id2) -> {
+                    List<ItemStack> stacks1 = groupedItems.get(id1);
+                    List<ItemStack> stacks2 = groupedItems.get(id2);
+                    if (stacks1 == null || stacks1.isEmpty()) return 1;
+                    if (stacks2 == null || stacks2.isEmpty()) return -1;
+
+                    // 获取该物品类型的任意一个堆栈作为样本
+                    ItemStack sample1 = stacks1.get(0);
+                    ItemStack sample2 = stacks2.get(0);
+
+                    // 获取稀有度组件（若无则默认为 COMMON）
+                    Rarity rarity1 = sample1.getOrDefault(DataComponents.RARITY, Rarity.COMMON);
+                    Rarity rarity2 = sample2.getOrDefault(DataComponents.RARITY, Rarity.COMMON);
+
+                    // 稀有度降序（高稀有度在前）
+                    int cmp = Integer.compare(rarity2.ordinal(), rarity1.ordinal());
+                    if (cmp != 0) return cmp;
+
+                    // 稀有度相同时，按物品 ID 排序（保证结果稳定）
+                    int namespaceCompare = id1.getNamespace().compareTo(id2.getNamespace());
+                    if (namespaceCompare != 0) return namespaceCompare;
+                    return id1.getPath().compareTo(id2.getPath());
+                });
+                break;
+        }
+
+        System.out.println(type);
+
+        //重新填充槽位（堆叠相同物品）
         int slotIndex = 0;
         for (ResourceLocation id : sortedIds) {
             List<ItemStack> stacks = groupedItems.get(id);
@@ -255,7 +333,7 @@ public class BackpackSorter {
                 ci.cancel();
             }
         }
-        else if (clickType == ClickType.QUICK_MOVE && j == 2) {
+        else if (clickType == ClickType.QUICK_MOVE && (j == 2 || j == 3 || j==4)) {
             Slot hoveredSlot = (Slot) slots.get(i);
 
             // 动态识别玩家物品栏槽位
@@ -275,11 +353,11 @@ public class BackpackSorter {
             if (!isInventorySlot && !isBackpackSlot && !isContainerSlot) return;
 
             if (isInventorySlot) {
-                BackpackSorter.sortInventorySlots(player,slots);
+                BackpackSorter.sortInventorySlots(player,slots,j);
             } else if (isBackpackSlot) {
-                BackpackSorter.sortBackpackSlots(player,slots);
+                BackpackSorter.sortBackpackSlots(player,slots,j);
             } else {
-                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,slots);
+                BackpackSorter.sortContainerSlots(player, hoveredSlot.container,slots,j);
             }
         }
     }

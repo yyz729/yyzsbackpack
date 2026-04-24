@@ -2,11 +2,10 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
-import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackScreen;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.client.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.client.BackpackRenderer;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
@@ -15,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -177,11 +175,17 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     //整理
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void onKeyPressed(int i, int j, int k, CallbackInfoReturnable<Boolean> cir) {
-//        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_R) && menu.getCarried().isEmpty()) {
-//            if (hoveredSlot != null) {
-//                slotClicked(hoveredSlot, hoveredSlot.index, 2, ClickType.QUICK_MOVE);
-//            }
-//        }
+        if(BackpackKeyBinding.KEY_SORT.key == InputConstants.UNKNOWN) return;
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), BackpackKeyBinding.KEY_SORT.key.getValue()) && menu.getCarried().isEmpty()) {
+
+            int modifier = 2;
+            if(Screen.hasShiftDown()) modifier = 3;
+            if(Screen.hasControlDown()) modifier = 4;
+
+            if (hoveredSlot != null) {
+                slotClicked(hoveredSlot, hoveredSlot.index, modifier, ClickType.QUICK_MOVE);
+            }
+        }
     }
 
     // 检测Shift键按下

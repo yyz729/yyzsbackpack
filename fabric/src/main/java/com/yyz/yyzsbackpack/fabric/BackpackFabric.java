@@ -12,6 +12,7 @@ import dev.emi.trinkets.api.TrinketsApi;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 
@@ -43,6 +44,8 @@ public final class BackpackFabric implements ModInitializer {
     public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1));
     public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant());
 
+
+
     public static final CreativeModeTab GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(GOLD_BACKPACK))
             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
@@ -52,6 +55,7 @@ public final class BackpackFabric implements ModInitializer {
                 entries.accept(GOLD_BACKPACK);
                 entries.accept(DIAMOND_BACKPACK);
                 entries.accept(NETHERITE_BACKPACK);
+
             })
             .build();
     public static final DataComponentType<List<ItemStack>> BACKPACK_ITEMS_COMPONENT =
@@ -65,6 +69,8 @@ public final class BackpackFabric implements ModInitializer {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "gold_backpack"), GOLD_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "diamond_backpack"), DIAMOND_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "netherite_backpack"), NETHERITE_BACKPACK);
+
+        //Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "netherites_backpack"), NETHERITE_BACKPACKs);
 
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
                 ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"),

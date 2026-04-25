@@ -70,8 +70,7 @@ public class BackpackMaterialManager {
                         "  \"rows\": 9,\n" +
                         "  \"guiWidth\": 50,\n" +
                         "  \"guiHeight\": 174,\n" +
-                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/2x9backpack.png\",\n" +
-                        "  \"modelTexture\": \"yyzsbackpack:textures/backpack/iron_backpack.png\"\n" +
+                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/2x9backpack.png\"\n" +
                         "}");
 
         // 创建金背包材料
@@ -83,8 +82,7 @@ public class BackpackMaterialManager {
                         "  \"rows\": 9,\n" +
                         "  \"guiWidth\": 86,\n" +
                         "  \"guiHeight\": 174,\n" +
-                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/4x9backpack.png\",\n" +
-                        "  \"modelTexture\": \"yyzsbackpack:textures/backpack/gold_backpack.png\"\n" +
+                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/4x9backpack.png\"\n" +
                         "}");
 
         // 创建钻石背包材料
@@ -96,8 +94,7 @@ public class BackpackMaterialManager {
                         "  \"rows\": 9,\n" +
                         "  \"guiWidth\": 122,\n" +
                         "  \"guiHeight\": 174,\n" +
-                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\",\n" +
-                        "  \"modelTexture\": \"yyzsbackpack:textures/backpack/diamond_backpack.png\"\n" +
+                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\"\n" +
                         "}");
 
         // 创建下界合金背包材料
@@ -109,8 +106,7 @@ public class BackpackMaterialManager {
                         "  \"rows\": 9,\n" +
                         "  \"guiWidth\": 122,\n" +
                         "  \"guiHeight\": 174,\n" +
-                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\",\n" +
-                        "  \"modelTexture\": \"yyzsbackpack:textures/backpack/netherite_backpack.png\"\n" +
+                        "  \"guiTexture\": \"yyzsbackpack:textures/gui/6x9backpack.png\"\n" +
                         "}");
     }
     

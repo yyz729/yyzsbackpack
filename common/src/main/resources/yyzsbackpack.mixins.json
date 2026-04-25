@@ -9,7 +9,6 @@
     "InventoryMenuMixin",
     "InventoryMixin",
     "ItemEntityMixin",
-    "NonNullListMixin",
     "ServerPlayerMixin",
     "compat.emi.CookingRecipeHandlerMixin",
     "compat.emi.CraftingRecipeHandlerMixin",

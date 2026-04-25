@@ -34,6 +34,7 @@ import net.minecraft.world.item.component.DyedItemColor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
@@ -188,5 +189,10 @@ public final class BackpackFabric implements ModInitializer {
             }
         }
         return 36+BackpackHelper.getMaxBackpackSize();
+    }
+
+    public static boolean getRender(Player player) {
+
+        return Backpack.getConfig().render_backpack_model;
     }
 }

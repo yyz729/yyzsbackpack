@@ -51,4 +51,9 @@ public class BackpackPlatform {
     public static boolean getEmptyRule(Player player) {
         throw new AssertionError();
     }
+
+    @ExpectPlatform
+    public static boolean getRender(Player player) {
+        throw new AssertionError();
+    }
 }

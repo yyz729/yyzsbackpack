@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
-import com.yyz.yyzsbackpack.client.DetailedBackpackFeatureRenderer;
-import com.yyz.yyzsbackpack.client.SimplifiedBackpackFeatureRenderer;
+import com.yyz.yyzsbackpack.client.BackpackFeatureRenderer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -24,7 +23,6 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
     )
     private void injectCustomFeature(EntityRendererProvider.Context context, boolean bl, CallbackInfo ci) {
         PlayerRenderer renderer = (PlayerRenderer) (Object) this;
-        super.addLayer(new DetailedBackpackFeatureRenderer(renderer));
-        super.addLayer(new SimplifiedBackpackFeatureRenderer(renderer));
+        super.addLayer(new BackpackFeatureRenderer(renderer));
     }
 }

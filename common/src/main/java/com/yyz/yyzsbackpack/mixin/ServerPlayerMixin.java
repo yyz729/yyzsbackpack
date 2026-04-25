@@ -1,9 +1,12 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackStorage;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,6 +28,10 @@ public abstract class ServerPlayerMixin {
     @Inject(method = "die", at = @At("HEAD"))
     private void onPlayerDeath(CallbackInfo ci) {
         BackpackStorage.saveEquippedBackpackOnDeath(yyzsbackpack$player);
+        if(!BackpackPlatform.getEmptyRule(yyzsbackpack$player)) return;
+        for (int i = 0; i < BackpackHelper.getMaxBackpackSize(); i++) {
+            yyzsbackpack$player.getInventory().setItem(36 + i, ItemStack.EMPTY);
+        }
     }
     @Inject(method = "initMenu", at = @At("HEAD"))
     private void onOpenMenu(CallbackInfo ci) {

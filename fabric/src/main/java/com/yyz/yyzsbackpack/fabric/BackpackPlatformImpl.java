@@ -35,4 +35,5 @@ public class BackpackPlatformImpl {
     public static boolean getEmptyRule(Player player) {
         return true;
     }
+    public static boolean getRender(Player player){return BackpackFabric.getRender(player);}
 }

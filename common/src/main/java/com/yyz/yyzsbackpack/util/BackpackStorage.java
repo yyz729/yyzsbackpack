@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BackpackStorage {
     // 保存背包内容到数据组件
-    public static void saveBackpackContents(Container inventory, ItemStack backpackStack, boolean b) {
+    public static void saveBackpackContents(Container inventory, ItemStack backpackStack) {
         BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
         int numSlots = backpackItem.getBackpackType().getSize();
 
@@ -29,10 +29,6 @@ public class BackpackStorage {
             ItemStack stack = inventory.getItem(slotIndex);
             // 复制堆栈防止引用问题
             items.add(stack.copy());
-            // 清空原库存槽位
-            if(b) {
-                inventory.setItem(slotIndex, ItemStack.EMPTY);
-            }
         }
 
         // 设置数据组件
@@ -51,6 +47,9 @@ public class BackpackStorage {
         int numSlots = backpackItem.getBackpackType().getSize();
         //columns * 9;
 
+        for (int i = 0; i < BackpackHelper.getMaxBackpackSize(); i++) {
+            inventory.setItem(36 + i, ItemStack.EMPTY);
+        }
         // 恢复物品到对应槽位
         for (int i = 0; i < Math.min(items.size(), numSlots); i++) {
             ItemStack stack = items.get(i);
@@ -59,6 +58,8 @@ public class BackpackStorage {
                 inventory.setItem(36 + i, stack.copy());
             }
         }
+
+
 
         // 移除数据组件
         backpackStack.remove(BackpackPlatform.getBackpackItemsComponent());
@@ -142,7 +143,7 @@ public class BackpackStorage {
                 && !Backpack.getConfig().use_dedicated_slot) {
 
             // 保存背包NBT数据
-            BackpackStorage.saveBackpackContents(inventory, accessoryItem, true);
+            BackpackStorage.saveBackpackContents(inventory, accessoryItem);
 
             // 清空背包槽
             inventory.setItem(ACCESSORY_SLOT, ItemStack.EMPTY);
@@ -164,8 +165,7 @@ public class BackpackStorage {
             // 根据配置规则保存背包内容
             BackpackStorage.saveBackpackContents(
                     player.getInventory(),
-                    equippedBackpack,
-                    BackpackPlatform.getEmptyRule(player)
+                    equippedBackpack
             );
         }
     }

@@ -28,7 +28,7 @@ public class BackpackEquipSlot extends Slot {
     @Override
     public void onTake(Player player, ItemStack backpackStack) {
         if (backpackStack.getItem() instanceof BackpackItem) {
-            BackpackStorage.saveBackpackContents(inventory, backpackStack, true);
+            BackpackStorage.saveBackpackContents(inventory, backpackStack);
         }
         super.onTake(player, backpackStack);
     }
@@ -37,7 +37,7 @@ public class BackpackEquipSlot extends Slot {
     public void setByPlayer(ItemStack newBackpackStack) {
         ItemStack oldBackpackStack = this.getItem();
         if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
-            BackpackStorage.saveBackpackContents(inventory, oldBackpackStack, true);
+            BackpackStorage.saveBackpackContents(inventory, oldBackpackStack);
         }
 
         super.setByPlayer(newBackpackStack);

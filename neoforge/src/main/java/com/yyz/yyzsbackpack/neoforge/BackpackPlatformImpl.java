@@ -38,4 +38,5 @@ public class BackpackPlatformImpl {
     public static boolean getEmptyRule(Player player) {
         return BackpackNeoForge.getEmptyRule(player);
     }
+    public static boolean getRender(Player player){return BackpackNeoForge.getRender(player);}
 }

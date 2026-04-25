@@ -181,8 +181,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             int modifier = 2;
             if(Screen.hasShiftDown()) modifier = 3;
             if(Screen.hasControlDown()) modifier = 4;
+            if(Screen.hasAltDown()) modifier = 5;
 
             if (hoveredSlot != null) {
+                System.out.println(modifier);
                 slotClicked(hoveredSlot, hoveredSlot.index, modifier, ClickType.QUICK_MOVE);
             }
         }

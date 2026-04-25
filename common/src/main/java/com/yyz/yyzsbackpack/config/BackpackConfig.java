@@ -87,7 +87,6 @@ public class BackpackConfig {
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
     public String tooltip_modifier = "shift";
-    public String backpack_model_style = "detailed";//simplified
     public Set<String> restricted_items = new HashSet<>();
 
     public List<BackpackEffect> backpack_multi_effects = new ArrayList<>() {{

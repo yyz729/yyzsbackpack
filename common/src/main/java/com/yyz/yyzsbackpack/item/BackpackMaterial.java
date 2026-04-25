@@ -13,5 +13,4 @@ public interface BackpackMaterial {
 
     ResourceLocation getGuiTexture();
 
-    ResourceLocation getModelTexture();
 }

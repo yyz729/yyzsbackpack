@@ -84,12 +84,13 @@ public final class BackpackNeoForge {
         ITEMS.register(modEventBus);
         TABS.register(modEventBus);
         DATA_COMPONENT.register(modEventBus);
+        modEventBus.register(this);
         Backpack.init();
 
     }
 
     @SubscribeEvent
-    public static void onItemColor(RegisterColorHandlersEvent.Item event) {
+    public void onItemColor(RegisterColorHandlersEvent.Item event) {
         // 注册物品颜色提供器
         event.register((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, -6265536), BackpackNeoForge.IRON_BACKPACK.get(),BackpackNeoForge.GOLD_BACKPACK.get(),BackpackNeoForge.DIAMOND_BACKPACK.get(),BackpackNeoForge.NETHERITE_BACKPACK.get());
     }
@@ -167,6 +168,31 @@ public final class BackpackNeoForge {
             }
         }
         return player.getInventory();
+    }
+
+    public static boolean getRender(Player player) {
+        if(!Backpack.getConfig().use_dedicated_slot) {
+            if (BackpackPlatform.isModLoaded("curios")) {
+                // 直接使用 Optional 替代 resolve()
+                Optional<ICuriosItemHandler> curiosHandler = CuriosApi.getCuriosInventory(player);
+                if (curiosHandler.isPresent()) {
+                    Optional<SlotResult> backpackSlot = curiosHandler.get().findFirstCurio(
+                            stack -> stack.getItem() instanceof BackpackItem
+                    );
+                    if (backpackSlot.isPresent()) {
+                        SlotContext slotContext = backpackSlot.get().slotContext();
+                        String slotId = slotContext.identifier();
+                        int slotIndex = slotContext.index();
+
+                        Optional<ICurioStacksHandler> stacksHandler = curiosHandler.get().getStacksHandler(slotId);
+                        if (stacksHandler.isPresent()) {
+                            return stacksHandler.get().getRenders().get(slotIndex);
+                        }
+                    }
+                }
+            }
+        }
+        return Backpack.getConfig().render_backpack_model;
     }
 
     public static int getIndex(Player player) {

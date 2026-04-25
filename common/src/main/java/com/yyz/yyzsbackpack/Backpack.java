@@ -7,17 +7,21 @@ import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import net.minecraft.commands.CommandSourceStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class Backpack{
 
     public static final String MOD_ID = "yyzsbackpack";
+    public static final Logger LOGGER = LoggerFactory.getLogger("yyzsbackpack");
 
     private static BackpackConfig config;
 
     public static void init() {
         BackpackMaterialManager.loadMaterials();
+        BackpackSorter.loadDefaultCustomSort();
         config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
 
     }

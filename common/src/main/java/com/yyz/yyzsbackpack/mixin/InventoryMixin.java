@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackStorage;
 import net.minecraft.core.NonNullList;
@@ -102,6 +103,11 @@ public abstract class InventoryMixin {
 		}
 	}
 
-
-
+	@Inject(method = "setPickedItem", at = @At("HEAD"))
+	private void onSetPickedItem(ItemStack stack, CallbackInfo ci) {
+		Inventory inv = (Inventory)(Object)this;
+		if (stack.getItem() instanceof BackpackItem) {
+			BackpackStorage.saveBackpackContents(inv, stack);
+		}
+	}
 }

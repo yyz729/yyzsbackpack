@@ -2,7 +2,6 @@ package com.yyz.yyzsbackpack.util;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
-import com.yyz.yyzsbackpack.CreativeTabOrder;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
@@ -66,6 +65,98 @@ public class BackpackSorter {
     private static final Map<Item, Integer> creativeOrderMap = new HashMap<>();
     private static boolean initialized = false;
 
+    private static final Map<Item, Integer> customOrderMap = new HashMap<>();
+    private static boolean customOrderLoaded = false;
+    private static final String CUSTOM_ORDER_FILE = "config/yyzsbackpack/sorter_custom.json";
+
+    /**
+     * 创建默认的自定义排序配置文件
+     */
+    public static void loadDefaultCustomSort() {
+        java.nio.file.Path configPath = java.nio.file.Paths.get(CUSTOM_ORDER_FILE);
+        try {
+            // 确保父目录存在
+            java.nio.file.Files.createDirectories(configPath.getParent());
+            // 默认 JSON 内容
+            String defaultContent = "[\n" +
+                    "  \"minecraft:diamond\",\n" +
+                    "  \"minecraft:iron_ingot\",\n" +
+                    "  \"minecraft:gold_ingot\",\n" +
+                    "  \"minecraft:emerald\"\n" +
+                    "]";
+            // 写入文件
+            java.nio.file.Files.writeString(configPath, defaultContent);
+            Backpack.LOGGER.info("已生成默认自定义排序配置文件: {}", CUSTOM_ORDER_FILE);
+        } catch (Exception e) {
+            Backpack.LOGGER.error("生成默认自定义排序文件失败: {}", e.getMessage());
+        }
+    }
+
+    private static void loadCustomOrder() {
+        if (customOrderLoaded) return;
+        customOrderMap.clear();
+        java.nio.file.Path configPath = java.nio.file.Paths.get(CUSTOM_ORDER_FILE);
+        if (!java.nio.file.Files.exists(configPath)) {
+            Backpack.LOGGER.warn("自定义排序文件不存在，将生成默认配置: {}", CUSTOM_ORDER_FILE);
+            loadDefaultCustomSort();  // 生成默认文件
+        }
+        try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(configPath)) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            String json = sb.toString().trim();
+            if (json.startsWith("[") && json.endsWith("]")) {
+                String content = json.substring(1, json.length() - 1);
+                List<String> items = new ArrayList<>();
+                boolean inQuotes = false;
+                StringBuilder current = new StringBuilder();
+                for (char c : content.toCharArray()) {
+                    if (c == '"') {
+                        inQuotes = !inQuotes;
+                    } else if (c == ',' && !inQuotes) {
+                        items.add(current.toString().trim());
+                        current.setLength(0);
+                    } else {
+                        current.append(c);
+                    }
+                }
+                if (current.length() > 0) {
+                    items.add(current.toString().trim());
+                }
+                int index = 0;
+                for (String itemStr : items) {
+                    // 去除两端引号
+                    if (itemStr.startsWith("\"") && itemStr.endsWith("\"")) {
+                        itemStr = itemStr.substring(1, itemStr.length() - 1);
+                    }
+                    if (!itemStr.isEmpty()) {
+                        ResourceLocation id = ResourceLocation.tryParse(itemStr);
+                        if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
+                            Item item = BuiltInRegistries.ITEM.get(id);
+                            customOrderMap.putIfAbsent(item, index++);
+                        } else {
+                            Backpack.LOGGER.warn("无效的物品ID: {}", itemStr);
+                        }
+                    }
+                }
+                Backpack.LOGGER.info("已加载自定义排序配置，共 {} 个物品", customOrderMap.size());
+            } else {
+                Backpack.LOGGER.error("自定义排序文件格式错误，应为JSON数组: {}", CUSTOM_ORDER_FILE);
+            }
+        } catch (Exception e) {
+            Backpack.LOGGER.error("读取自定义排序文件失败: {}", e.getMessage());
+        }
+        customOrderLoaded = true;
+    }
+
+    public static void reloadCustomOrder() {
+        customOrderLoaded = false;
+        customOrderMap.clear();
+        loadCustomOrder();
+    }
+
     private static void initCreativeOrder() {
         if (initialized) return;
         int index = 0;
@@ -98,29 +189,21 @@ public class BackpackSorter {
 
 
         List<ResourceLocation> sortedIds = new ArrayList<>(groupedItems.keySet());
+        initCreativeOrder();
         switch (type){
             case 2:
                 System.out.println("执行创造模式排序");
                 //按创造模式物品栏排序
-                initCreativeOrder(); // 确保映射已构建
                 sortedIds.sort((id1, id2) -> {
                     Item item1 = BuiltInRegistries.ITEM.get(id1);
                     Item item2 = BuiltInRegistries.ITEM.get(id2);
                     int order1 = creativeOrderMap.getOrDefault(item1, Integer.MAX_VALUE);
                     int order2 = creativeOrderMap.getOrDefault(item2, Integer.MAX_VALUE);
-                    if (order1 != order2) {
-                        return Integer.compare(order1, order2);
-                    } else {
-                        // 回退到按 ID 排序（与原逻辑一致）
-                        int namespaceCompare = id1.getNamespace().compareTo(id2.getNamespace());
-                        if (namespaceCompare != 0) return namespaceCompare;
-                        return id1.getPath().compareTo(id2.getPath());
-                    }
+                    return Integer.compare(order1, order2);
                 });
                 break;
             case 3:
                 System.out.println("执行 ID 排序");
-                // 按物品ID排序
                 Collections.sort(sortedIds);
                 break;
             case 4:
@@ -131,11 +214,9 @@ public class BackpackSorter {
                     if (stacks1 == null || stacks1.isEmpty()) return 1;
                     if (stacks2 == null || stacks2.isEmpty()) return -1;
 
-                    // 获取该物品类型的任意一个堆栈作为样本
                     ItemStack sample1 = stacks1.get(0);
                     ItemStack sample2 = stacks2.get(0);
 
-                    // 获取稀有度组件（若无则默认为 COMMON）
                     Rarity rarity1 = sample1.getOrDefault(DataComponents.RARITY, Rarity.COMMON);
                     Rarity rarity2 = sample2.getOrDefault(DataComponents.RARITY, Rarity.COMMON);
 
@@ -143,12 +224,29 @@ public class BackpackSorter {
                     int cmp = Integer.compare(rarity2.ordinal(), rarity1.ordinal());
                     if (cmp != 0) return cmp;
 
-                    // 稀有度相同时，按物品 ID 排序（保证结果稳定）
-                    int namespaceCompare = id1.getNamespace().compareTo(id2.getNamespace());
-                    if (namespaceCompare != 0) return namespaceCompare;
-                    return id1.getPath().compareTo(id2.getPath());
+                    // 稀有度相同时，按创造模式物品栏顺序排序
+                    Item item1 = BuiltInRegistries.ITEM.get(id1);
+                    Item item2 = BuiltInRegistries.ITEM.get(id2);
+                    int order1 = creativeOrderMap.getOrDefault(item1, Integer.MAX_VALUE);
+                    int order2 = creativeOrderMap.getOrDefault(item2, Integer.MAX_VALUE);
+                    return Integer.compare(order1, order2);
                 });
                 break;
+            case 5:
+                System.out.println("执行自定义排序");
+                loadCustomOrder(); // 确保加载
+                sortedIds.sort((id1, id2) -> {
+                    Item item1 = BuiltInRegistries.ITEM.get(id1);
+                    Item item2 = BuiltInRegistries.ITEM.get(id2);
+                    // 优先使用自定义顺序，否则回退到创造模式顺序，最后 MAX_VALUE
+                    int order1 = customOrderMap.getOrDefault(item1,
+                            creativeOrderMap.getOrDefault(item1, Integer.MAX_VALUE));
+                    int order2 = customOrderMap.getOrDefault(item2,
+                            creativeOrderMap.getOrDefault(item2, Integer.MAX_VALUE));
+                    return Integer.compare(order1, order2);
+                });
+                break;
+            default:
         }
 
         System.out.println(type);
@@ -218,7 +316,7 @@ public class BackpackSorter {
         if (!(back.getItem() instanceof BackpackItem) ||
                 !(stack.getItem() instanceof BackpackItem)) return;
 
-        BackpackStorage.saveBackpackContents(player.getInventory(), back, true);
+        BackpackStorage.saveBackpackContents(player.getInventory(), back);
         BackpackStorage.restoreBackpackContents(player.getInventory(), stack);
         Container container = BackpackPlatform.getContainer(player);
         container.setItem(BackpackPlatform.getIndex(player), stack);
@@ -333,7 +431,7 @@ public class BackpackSorter {
                 ci.cancel();
             }
         }
-        else if (clickType == ClickType.QUICK_MOVE && (j == 2 || j == 3 || j==4)) {
+        else if (clickType == ClickType.QUICK_MOVE && (j == 2 || j == 3 || j == 4 || j == 5)) {
             Slot hoveredSlot = (Slot) slots.get(i);
 
             // 动态识别玩家物品栏槽位

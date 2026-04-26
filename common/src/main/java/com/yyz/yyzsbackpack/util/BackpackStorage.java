@@ -179,6 +179,10 @@ public class BackpackStorage {
         // 检查背包是否包含物品组件
         if (equippedBackpack.has(BackpackPlatform.getBackpackItemsComponent())) {
             BackpackStorage.restoreBackpackContents(player.getInventory(), equippedBackpack);
+        }else if(equippedBackpack.isEmpty()){
+            for (int i = 0; i < BackpackHelper.getMaxBackpackSize(); i++) {
+            player.getInventory().setItem(36 + i, ItemStack.EMPTY);
+        }
         }
     }
 }

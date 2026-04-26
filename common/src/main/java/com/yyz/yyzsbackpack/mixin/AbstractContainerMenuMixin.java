@@ -5,6 +5,7 @@ import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackMenuState;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
+import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import com.yyz.yyzsbackpack.util.BackpackStorage;

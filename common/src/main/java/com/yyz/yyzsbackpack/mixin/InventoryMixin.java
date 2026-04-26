@@ -96,18 +96,11 @@ public abstract class InventoryMixin {
 		}
 	}
 
-	@Inject(method = "tick", at = @At("RETURN"))
-	private void addSlot(CallbackInfo ci) {
-		if(BackpackPlatform.getEquipped(player).has(BackpackPlatform.getBackpackItemsComponent())){
-			BackpackStorage.restoreBackpackContents(player.getInventory(), BackpackPlatform.getEquipped(player));
-		}
-	}
+//	@Inject(method = "tick", at = @At("RETURN"))
+//	private void addSlot(CallbackInfo ci) {
+//		if(BackpackPlatform.getEquipped(player).has(BackpackPlatform.getBackpackItemsComponent())){
+//			BackpackStorage.restoreBackpackContents(player.getInventory(), BackpackPlatform.getEquipped(player));
+//		}
+//	}
 
-	@Inject(method = "setPickedItem", at = @At("HEAD"))
-	private void onSetPickedItem(ItemStack stack, CallbackInfo ci) {
-		Inventory inv = (Inventory)(Object)this;
-		if (stack.getItem() instanceof BackpackItem) {
-			BackpackStorage.saveBackpackContents(inv, stack);
-		}
-	}
 }

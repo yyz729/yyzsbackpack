@@ -39,12 +39,7 @@ public class BackpackEquipSlot extends Slot {
         if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
             BackpackStorage.saveBackpackContents(inventory, oldBackpackStack);
         }
-
         super.setByPlayer(newBackpackStack);
-
-        if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-            BackpackStorage.restoreBackpackContents(inventory, newBackpackStack);
-        }
     }
 
     @Override

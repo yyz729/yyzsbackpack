@@ -303,6 +303,7 @@ public class BackpackSorter {
                                           int button,
                                           ClickType actionType,
                                           Player player) {
+
         if (slotIndex < 0 || slotIndex >= slots.size() ||
                 actionType != ClickType.PICKUP ||
                 slots.get(slotIndex).getItem().getItem() instanceof BackpackItem ||
@@ -321,6 +322,7 @@ public class BackpackSorter {
         Container container = BackpackPlatform.getContainer(player);
         container.setItem(BackpackPlatform.getIndex(player), stack);
         menu.setCarried(back);
+
     }
 
 

@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.mixin;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.base.BackpackEquipSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenuState;
 import com.yyz.yyzsbackpack.base.BackpackStorageSlot;
 import com.yyz.yyzsbackpack.base.BackpackMenu;
@@ -30,6 +31,8 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     @Shadow public abstract ItemStack getCarried();
 
     @Shadow @Final public NonNullList<Slot> slots;
+
+    @Shadow public abstract Slot getSlot(int i);
 
     @Unique
     private final BackpackMenuState backpackMenuState = new BackpackMenuState();
@@ -97,4 +100,33 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     private int adjustOffhandSlotPositionHotbar(int original) {
         return original + BackpackHelper.getSlotIndexOffset();
     }
+
+    /**
+     * 在 doClick 方法开头注入，拦截 QUICK_MOVE 操作。
+     * 如果源槽位是 BackpackEquipSlot，则提前保存该背包的内容。
+     */
+    @Inject(
+            method = "doClick",
+            at = @At("HEAD"),
+            cancellable = false
+    )
+    private void onDoClick(int slotIndex, int button, ClickType clickType, Player player, CallbackInfo ci) {
+        // 只处理快速移动 (Shift + 左键/右键)
+        if (clickType != ClickType.QUICK_MOVE) return;
+        // 槽位索引有效性检查
+        if (slotIndex < 0 || slotIndex >= this.slots.size()) return;
+
+        Slot sourceSlot = getSlot(slotIndex);
+        if(BackpackPlatform.getIndex(player) != sourceSlot.getContainerSlot()) return;
+
+        // 获取背包物品和容器 (玩家背包)
+        ItemStack backpackStack = sourceSlot.getItem();
+        if (backpackStack.isEmpty()) return;
+
+        // 执行保存背包内容 (与 BackpackEquipSlot.onTake 中的保存逻辑一致)
+        BackpackStorage.saveBackpackContents(sourceSlot.container, backpackStack);
+    }
+
+
+
 }

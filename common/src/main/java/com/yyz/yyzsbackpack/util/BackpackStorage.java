@@ -38,7 +38,6 @@ public class BackpackStorage {
     // 从数据组件恢复背包内容
     public static void restoreBackpackContents(Container inventory, ItemStack backpackStack) {
         // 获取数据组件
-
         List<ItemStack> items = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
         if (items == null) return;
 
@@ -58,7 +57,6 @@ public class BackpackStorage {
                 inventory.setItem(36 + i, stack.copy());
             }
         }
-
 
 
         // 移除数据组件
@@ -179,6 +177,7 @@ public class BackpackStorage {
         // 检查背包是否包含物品组件
         if (equippedBackpack.has(BackpackPlatform.getBackpackItemsComponent())) {
             BackpackStorage.restoreBackpackContents(player.getInventory(), equippedBackpack);
+
         }else if(equippedBackpack.isEmpty()){
             for (int i = 0; i < BackpackHelper.getMaxBackpackSize(); i++) {
             player.getInventory().setItem(36 + i, ItemStack.EMPTY);

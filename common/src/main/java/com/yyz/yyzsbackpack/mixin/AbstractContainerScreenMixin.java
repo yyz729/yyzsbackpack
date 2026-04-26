@@ -63,6 +63,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     }
 
+//    @Inject(method = "render", at = @At("TAIL"))
+//    private void logSlotsSize(CallbackInfo ci) {
+//        int size = menu.slots.size();
+//    }
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER))
     private void renderBackpackBackgroundAfterVanilla(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         BackpackRenderer.renderEquippedBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpack, (BackpackMenu) this.menu);
@@ -184,7 +188,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             if(Screen.hasAltDown()) modifier = 5;
 
             if (hoveredSlot != null) {
-                System.out.println(modifier);
                 slotClicked(hoveredSlot, hoveredSlot.index, modifier, ClickType.QUICK_MOVE);
             }
         }

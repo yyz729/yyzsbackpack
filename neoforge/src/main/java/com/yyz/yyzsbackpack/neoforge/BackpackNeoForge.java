@@ -10,6 +10,7 @@ import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -17,8 +18,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -32,6 +36,7 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 import top.theillusivec4.curios.common.CuriosConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,16 +63,16 @@ public final class BackpackNeoForge {
 
     // 背包物品注册
     public static final DeferredHolder<Item, Item> NETHERITE_BACKPACK = ITEMS.register("netherite_backpack",
-            () -> new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant()));
+            () -> new BackpackItem("netherite", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()).fireResistant()));
 
     public static final DeferredHolder<Item, Item> DIAMOND_BACKPACK = ITEMS.register("diamond_backpack",
-            () -> new BackpackItem("diamond", new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("diamond", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>())));
 
     public static final DeferredHolder<Item, Item> GOLD_BACKPACK = ITEMS.register("gold_backpack",
-            () -> new BackpackItem("gold", new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("gold", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>())));
 
     public static final DeferredHolder<Item, Item> IRON_BACKPACK = ITEMS.register("iron_backpack",
-            () -> new BackpackItem("iron", new Item.Properties().stacksTo(1)));
+            () -> new BackpackItem("iron", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>())));
 
 
 

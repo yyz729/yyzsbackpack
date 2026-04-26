@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class BackpackEquipSlot extends Slot {
 
@@ -31,6 +32,7 @@ public class BackpackEquipSlot extends Slot {
             BackpackStorage.saveBackpackContents(inventory, backpackStack);
         }
         super.onTake(player, backpackStack);
+
     }
 
     @Override

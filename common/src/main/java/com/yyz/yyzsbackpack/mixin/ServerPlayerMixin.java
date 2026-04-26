@@ -38,6 +38,7 @@ public abstract class ServerPlayerMixin {
         BackpackStorage.returnBackpackFromAccessorySlot(yyzsbackpack$player);
     }
 
+
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTick(CallbackInfo ci) {
         BackpackStorage.restoreNonEmptyBackpack(yyzsbackpack$player);

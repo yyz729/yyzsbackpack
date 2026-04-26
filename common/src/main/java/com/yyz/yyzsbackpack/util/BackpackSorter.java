@@ -303,9 +303,8 @@ public class BackpackSorter {
                                           int button,
                                           ClickType actionType,
                                           Player player) {
-
         if (slotIndex < 0 || slotIndex >= slots.size() ||
-                actionType != ClickType.PICKUP ||
+                actionType != ClickType.PICKUP  ||
                 slots.get(slotIndex).getItem().getItem() instanceof BackpackItem ||
                 !Backpack.getConfig().quick_swap_backpack) return;
 

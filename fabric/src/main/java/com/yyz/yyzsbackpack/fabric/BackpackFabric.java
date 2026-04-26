@@ -32,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,10 +41,10 @@ import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
 
-    public static final BackpackItem IRON_BACKPACK = new BackpackItem("iron", new Item.Properties().stacksTo(1));
-    public static final BackpackItem GOLD_BACKPACK = new BackpackItem("gold", new Item.Properties().stacksTo(1));
-    public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1));
-    public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant());
+    public static final BackpackItem IRON_BACKPACK = new BackpackItem("iron", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
+    public static final BackpackItem GOLD_BACKPACK = new BackpackItem("gold", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
+    public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
+    public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant().component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
 
 
 

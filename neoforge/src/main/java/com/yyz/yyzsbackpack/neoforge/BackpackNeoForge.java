@@ -1,11 +1,14 @@
 package com.yyz.yyzsbackpack.neoforge;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
+import com.yyz.yyzsbackpack.util.BackpackBackup;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
@@ -13,6 +16,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -27,6 +33,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -45,6 +52,21 @@ import java.util.Optional;
 public final class BackpackNeoForge {
 
     public static final DeferredRegister.DataComponents DATA_COMPONENT = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE,Backpack.MOD_ID);
+    // 注册备份组件（存储 List<BackupRecord>）
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<BackupRecord>>> BACKUP_RECORDS_COMPONENT =
+            DATA_COMPONENT.registerComponentType(
+                    "backup_records",
+                    builder -> builder
+                            .persistent(Codec.list(BackupRecord.CODEC)) // 需要实现 BackupRecord 的 Codec
+            );
+
+    // 为 BackupRecord 定义 Codec
+    public static final Codec<BackupRecord> BACKUP_RECORD_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Codec.LONG.fieldOf("timestamp").forGetter(BackupRecord::timestamp),
+                    Codec.list(ItemStack.OPTIONAL_CODEC).fieldOf("items").forGetter(BackupRecord::items)
+            ).apply(instance, BackupRecord::new)
+    );
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Backpack.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Backpack.MOD_ID);
@@ -93,6 +115,7 @@ public final class BackpackNeoForge {
         Backpack.init();
 
     }
+
 
     @SubscribeEvent
     public void onItemColor(RegisterColorHandlersEvent.Item event) {

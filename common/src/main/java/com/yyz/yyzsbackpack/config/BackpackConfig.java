@@ -73,6 +73,8 @@ public class BackpackConfig {
         );
     }
 
+
+
     // 添加注释的辅助方法
     private static void addComment(String field, String... lines) {
         FIELD_COMMENTS.put(field, List.of(lines));
@@ -87,6 +89,10 @@ public class BackpackConfig {
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
     public String tooltip_modifier = "shift";
+
+    public int backup_interval_seconds = 30;
+    public int max_backup_count = 5;
+
     public Set<String> restricted_items = new HashSet<>();
 
     public List<BackpackEffect> backpack_multi_effects = new ArrayList<>() {{

@@ -10,17 +10,27 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.base.BackpackEffect;
+import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.util.BackpackBackup;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -108,6 +118,25 @@ public class BackpackCommand {
                         )
                         .then(Commands.literal("reload")
                                 .executes(BackpackCommand::reloadConfig))
+                )
+                .then(Commands.literal("backup")
+                        .then(Commands.literal("now")
+                                .executes(BackpackCommand::backupNow))
+                        .then(Commands.literal("list")
+                                .executes(BackpackCommand::listBackups))
+                        .then(Commands.literal("restore")
+                                .then(Commands.argument("index", IntegerArgumentType.integer(0))
+                                        .executes(BackpackCommand::restoreBackup)))
+                        .then(Commands.literal("delete")
+                                .then(Commands.argument("index", IntegerArgumentType.integer(0))
+                                        .executes(BackpackCommand::deleteBackup)))
+                        .then(Commands.literal("set")
+                                .then(Commands.literal("interval")
+                                        .then(Commands.argument("seconds", IntegerArgumentType.integer(1))
+                                                .executes(BackpackCommand::setBackupInterval)))
+                                .then(Commands.literal("max")
+                                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                                .executes(BackpackCommand::setMaxBackups))))
                 )
         );
     }
@@ -337,4 +366,149 @@ public class BackpackCommand {
         return SharedSuggestionProvider.suggest(tiers, builder);
     }
 
+    private static int backupNow(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        ItemStack backpack = BackpackPlatform.getEquipped(player);
+        if (!(backpack.getItem() instanceof BackpackItem)) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+            return 0;
+        }
+        // 立即备份
+        BackpackBackup.backupBackpackContents(backpack, BackpackPlatform.getContainer(player),
+                Backpack.getConfig().max_backup_count);
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.success"), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int listBackups(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.only_player"));
+            return 0;
+        }
+        ItemStack backpack = BackpackPlatform.getEquipped(player);
+        if (!(backpack.getItem() instanceof BackpackItem)) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+            return 0;
+        }
+        List<BackupRecord> backups = backpack.get(BackpackPlatform.getBackupRecordsComponent());
+        if (backups == null || backups.isEmpty()) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.list.empty"));
+            return 0;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.list.header"), false);
+
+        for (int i = 0; i < backups.size(); i++) {
+            BackupRecord record = backups.get(i);
+            String timeStr = sdf.format(new Date(record.timestamp()));
+            List<ItemStack> items = record.items();
+            int itemCount = (int) items.stream().filter(s -> !s.isEmpty()).count();
+
+            // 构建预览文本（悬停显示）
+            Component preview = buildPreviewComponent(items);
+
+            // 构建可点击的数字（例如 [0]）
+            int finalI = i;
+            Component clickableNumber = Component.literal("[" + i + "]")
+                    .withStyle(style -> style
+                            .withColor(net.minecraft.ChatFormatting.GOLD)
+                            .withClickEvent(new ClickEvent(
+                                    ClickEvent.Action.RUN_COMMAND,
+                                    "/yyzsbackpack backup restore " + finalI
+                            ))
+                            .withHoverEvent(new HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    Component.translatable("command.yyzsbackpack.backup.list.click_to_restore")
+                                            .append("\n")
+                                            .append(preview)
+                            ))
+                    );
+
+            // 整体行： [0] 2026-04-27 12:34:56 (12 items)
+            Component line = Component.literal("")
+                    .append(clickableNumber)
+                    .append(Component.literal(" §f" + timeStr + " §7(" + itemCount + " items)"));
+
+            ctx.getSource().sendSuccess(() -> line, false);
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    // 构建预览组件（显示前5个物品的名称）
+    private static Component buildPreviewComponent(List<ItemStack> items) {
+        MutableComponent preview = Component.literal("");
+        int shown = 0;
+        int maxShow = 5; // 最多显示5个物品
+        for (ItemStack stack : items) {
+            if (stack.isEmpty()) continue;
+            if (shown >= maxShow) break;
+            if (shown > 0) preview.append(Component.literal("\n"));
+            preview.append(Component.literal("• ")).append(stack.getHoverName());
+            shown++;
+        }
+        if (items.stream().anyMatch(s -> !s.isEmpty()) && shown == maxShow) {
+            preview.append(Component.literal("\n..."));
+        }
+        if (shown == 0) {
+            preview = Component.translatable("command.yyzsbackpack.backup.list.empty_preview");
+        }
+        return preview;
+    }
+
+    private static int restoreBackup(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        ItemStack backpack = BackpackPlatform.getEquipped(player);
+        if (!(backpack.getItem() instanceof BackpackItem)) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+            return 0;
+        }
+        int index = IntegerArgumentType.getInteger(ctx, "index");
+        boolean success = BackpackBackup.restoreBackup(backpack, BackpackPlatform.getContainer(player), index);
+        if (success) {
+            ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.restore.success", index), true);
+        } else {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.restore.failed", index));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int deleteBackup(CommandContext<CommandSourceStack> ctx) {
+        ServerPlayer player = ctx.getSource().getPlayer();
+        ItemStack backpack = BackpackPlatform.getEquipped(player);
+        if (!(backpack.getItem() instanceof BackpackItem)) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+            return 0;
+        }
+        int index = IntegerArgumentType.getInteger(ctx, "index");
+        List<BackupRecord> backups = backpack.get(BackpackPlatform.getBackupRecordsComponent());
+        if (backups == null || index < 0 || index >= backups.size()) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.delete.invalid_index"));
+            return 0;
+        }
+        List<BackupRecord> newList = new ArrayList<>(backups);
+        newList.remove(index);
+        backpack.set(BackpackPlatform.getBackupRecordsComponent(), newList);
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.delete.success", index), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setBackupInterval(CommandContext<CommandSourceStack> ctx) {
+        int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
+        BackpackConfig config = Backpack.getConfig();
+        config.backup_interval_seconds = seconds;
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.set.interval", seconds), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setMaxBackups(CommandContext<CommandSourceStack> ctx) {
+        int count = IntegerArgumentType.getInteger(ctx, "count");
+        BackpackConfig config = Backpack.getConfig();
+        config.max_backup_count = count;
+        config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
+        ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.set.max", count), true);
+        return Command.SINGLE_SUCCESS;
+    }
 }

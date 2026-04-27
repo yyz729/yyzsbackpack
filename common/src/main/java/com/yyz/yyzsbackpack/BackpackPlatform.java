@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.Container;
@@ -54,6 +55,11 @@ public class BackpackPlatform {
 
     @ExpectPlatform
     public static boolean getRender(Player player) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static DataComponentType<List<BackupRecord>> getBackupRecordsComponent() {
         throw new AssertionError();
     }
 }

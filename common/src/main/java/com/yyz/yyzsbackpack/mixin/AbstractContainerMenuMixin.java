@@ -103,7 +103,6 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 
     /**
      * 在 doClick 方法开头注入，拦截 QUICK_MOVE 操作。
-     * 如果源槽位是 BackpackEquipSlot，则提前保存该背包的内容。
      */
     @Inject(
             method = "doClick",
@@ -111,7 +110,8 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
             cancellable = false
     )
     private void onDoClick(int slotIndex, int button, ClickType clickType, Player player, CallbackInfo ci) {
-        // 只处理快速移动 (Shift + 左键/右键)
+
+        // 只处理快速移动
         if (clickType != ClickType.QUICK_MOVE) return;
         // 槽位索引有效性检查
         if (slotIndex < 0 || slotIndex >= this.slots.size()) return;
@@ -123,8 +123,8 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         ItemStack backpackStack = sourceSlot.getItem();
         if (backpackStack.isEmpty()) return;
 
-        // 执行保存背包内容 (与 BackpackEquipSlot.onTake 中的保存逻辑一致)
-        BackpackStorage.saveBackpackContents(sourceSlot.container, backpackStack);
+        // 执行保存背包内容
+        BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack);
     }
 
 

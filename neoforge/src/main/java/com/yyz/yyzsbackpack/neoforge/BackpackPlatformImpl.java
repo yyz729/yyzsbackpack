@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.neoforge;
 
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -39,4 +40,8 @@ public class BackpackPlatformImpl {
         return BackpackNeoForge.getEmptyRule(player);
     }
     public static boolean getRender(Player player){return BackpackNeoForge.getRender(player);}
+
+    public static DataComponentType<List<BackupRecord>> getBackupRecordsComponent() {
+        return BackpackNeoForge.BACKUP_RECORDS_COMPONENT.get();
+    }
 }

@@ -25,13 +25,29 @@ public class BackpackBackup {
 
         //获取当前物品列表
         List<ItemStack> currentItems = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
+
         if (currentItems == null) currentItems = new ArrayList<>();
+
+        // 检查空背包：所有槽位都为空则跳过备份
+        if (isAllEmpty(currentItems)) {
+            return;
+        }
+
+        // 检查是否与最新备份重复
+        List<BackupRecord> backups = backpackStack.get(BackpackPlatform.getBackupRecordsComponent());
+        if (backups != null && !backups.isEmpty()) {
+            BackupRecord latest = backups.get(0);
+            List<ItemStack> latestItems = latest.items();
+            if (isSameContents(currentItems, latestItems)) {
+                return; // 与最新备份相同，不备份
+            }
+        }
+
         List<ItemStack> copiedItems = currentItems.stream()
                 .map(ItemStack::copy)
                 .toList();
 
         //获取现有备份列表
-        List<BackupRecord> backups = backpackStack.get(BackpackPlatform.getBackupRecordsComponent());
         if (backups == null) backups = new LinkedList<>();
         else backups = new LinkedList<>(backups); // 转为可变列表
 
@@ -71,6 +87,31 @@ public class BackpackBackup {
         }
         // 同步到组件
         BackpackStorage.saveBackpackContents(inventory, backpackStack);
+        return true;
+    }
+
+    /**
+     * 检查物品列表是否全部为空
+     */
+    private static boolean isAllEmpty(List<ItemStack> items) {
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 比较两个物品列表是否内容相同（逐槽比较 ItemStack）
+     */
+    private static boolean isSameContents(List<ItemStack> a, List<ItemStack> b) {
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); i++) {
+            if (!ItemStack.matches(a.get(i), b.get(i))) {
+                return false;
+            }
+        }
         return true;
     }
 }

@@ -6,12 +6,14 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackupRecord;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
+import com.yyz.yyzsbackpack.effect.HeavyEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.neoforge.compat.curios.CuriosContainerAdapter;
 import com.yyz.yyzsbackpack.util.BackpackBackup;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -20,6 +22,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -68,6 +72,8 @@ public final class BackpackNeoForge {
             ).apply(instance, BackupRecord::new)
     );
 
+
+
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Backpack.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Backpack.MOD_ID);
 
@@ -105,12 +111,18 @@ public final class BackpackNeoForge {
     );
 
 
+    public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Backpack.MOD_ID);
+
+    // 注册负重效果
+    public static final Holder<MobEffect> HEAVY_EFFECT = MOB_EFFECTS.register("heavy", HeavyEffect::new);
+
 
     public BackpackNeoForge(IEventBus modEventBus) {
         // Run our common setup.
         ITEMS.register(modEventBus);
         TABS.register(modEventBus);
         DATA_COMPONENT.register(modEventBus);
+        MOB_EFFECTS.register(modEventBus);
         modEventBus.register(this);
         Backpack.init();
 

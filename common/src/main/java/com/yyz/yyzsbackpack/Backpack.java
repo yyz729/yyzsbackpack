@@ -7,6 +7,7 @@ import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.effect.MobEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -121,23 +121,25 @@ public class BackpackCommand {
                                 .executes(BackpackCommand::reloadConfig))
                 )
                 .then(Commands.literal("backup")
-                        .then(Commands.literal("now")
-                                .executes(BackpackCommand::backupNow))
-                        .then(Commands.literal("list")
-                                .executes(BackpackCommand::listBackups))
-                        .then(Commands.literal("restore")
-                                .then(Commands.argument("index", IntegerArgumentType.integer(0))
-                                        .executes(BackpackCommand::restoreBackup)))
-                        .then(Commands.literal("delete")
-                                .then(Commands.argument("index", IntegerArgumentType.integer(0))
-                                        .executes(BackpackCommand::deleteBackup)))
-                        .then(Commands.literal("set")
-                                .then(Commands.literal("interval")
-                                        .then(Commands.argument("seconds", IntegerArgumentType.integer(1))
-                                                .executes(BackpackCommand::setBackupInterval)))
-                                .then(Commands.literal("max")
-                                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                                .executes(BackpackCommand::setMaxBackups))))
+                        .then(Commands.argument("target", StringArgumentType.word())
+                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(List.of("equipped", "hand"), builder))
+                                .then(Commands.literal("now")
+                                        .executes(BackpackCommand::backupNow))
+                                .then(Commands.literal("list")
+                                        .executes(BackpackCommand::listBackups))
+                                .then(Commands.literal("restore")
+                                        .then(Commands.argument("index", IntegerArgumentType.integer(0))
+                                                .executes(BackpackCommand::restoreBackup)))
+                                .then(Commands.literal("delete")
+                                        .then(Commands.argument("index", IntegerArgumentType.integer(0))
+                                                .executes(BackpackCommand::deleteBackup)))
+                                .then(Commands.literal("set")
+                                        .then(Commands.literal("interval")
+                                                .then(Commands.argument("seconds", IntegerArgumentType.integer(1))
+                                                        .executes(BackpackCommand::setBackupInterval)))
+                                        .then(Commands.literal("max")
+                                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                                        .executes(BackpackCommand::setMaxBackups)))))
                 )
         );
     }
@@ -369,13 +371,13 @@ public class BackpackCommand {
 
     private static int backupNow(CommandContext<CommandSourceStack> ctx) {
         ServerPlayer player = ctx.getSource().getPlayer();
-        ItemStack backpack = BackpackPlatform.getEquipped(player);
-        if (!(backpack.getItem() instanceof BackpackItem)) {
-            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.only_player"));
             return 0;
         }
-        // 立即备份
-        BackpackBackup.backupBackpackContents(backpack, BackpackPlatform.getContainer(player),
+        ItemStack backpack = getTargetBackpack(ctx, player);
+        if (backpack.isEmpty()) return 0;
+        BackpackBackup.backupBackpackContents(backpack, player.getInventory(),
                 Backpack.getConfig().max_backup_count);
         ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.success"), true);
         return Command.SINGLE_SUCCESS;
@@ -387,11 +389,9 @@ public class BackpackCommand {
             ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.only_player"));
             return 0;
         }
-        ItemStack backpack = BackpackPlatform.getEquipped(player);
-        if (!(backpack.getItem() instanceof BackpackItem)) {
-            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
-            return 0;
-        }
+        ItemStack backpack = getTargetBackpack(ctx, player);
+        if (backpack.isEmpty()) return 0;
+
         List<BackupRecord> backups = backpack.get(BackpackPlatform.getBackupRecordsComponent());
         if (backups == null || backups.isEmpty()) {
             ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.list.empty"));
@@ -407,17 +407,14 @@ public class BackpackCommand {
             List<ItemStack> items = record.items();
             int itemCount = (int) items.stream().filter(s -> !s.isEmpty()).count();
 
-            // 构建预览文本（悬停显示）
             Component preview = buildPreviewComponent(items);
-
-            // 构建可点击的数字（例如 [0]）
             int finalI = i;
             Component clickableNumber = Component.literal("[" + i + "]")
                     .withStyle(style -> style
                             .withColor(net.minecraft.ChatFormatting.GOLD)
                             .withClickEvent(new ClickEvent(
                                     ClickEvent.Action.RUN_COMMAND,
-                                    "/yyzsbackpack backup restore " + finalI
+                                    "/yyzsbackpack backup " + StringArgumentType.getString(ctx, "target") + " restore " + finalI
                             ))
                             .withHoverEvent(new HoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
@@ -427,7 +424,6 @@ public class BackpackCommand {
                             ))
                     );
 
-            // 整体行： [0] 2026-04-27 12:34:56 (12 items)
             Component line = Component.literal("")
                     .append(clickableNumber)
                     .append(Component.literal(" §f" + timeStr + " §7(" + itemCount + " items)"));
@@ -459,11 +455,13 @@ public class BackpackCommand {
 
     private static int restoreBackup(CommandContext<CommandSourceStack> ctx) {
         ServerPlayer player = ctx.getSource().getPlayer();
-        ItemStack backpack = BackpackPlatform.getEquipped(player);
-        if (!(backpack.getItem() instanceof BackpackItem)) {
-            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.only_player"));
             return 0;
         }
+        ItemStack backpack = getTargetBackpack(ctx, player);
+        if (backpack.isEmpty()) return 0;
+
         int index = IntegerArgumentType.getInteger(ctx, "index");
         boolean success = BackpackBackup.restoreBackup(backpack, player.getInventory(), index);
         if (success) {
@@ -476,11 +474,13 @@ public class BackpackCommand {
 
     private static int deleteBackup(CommandContext<CommandSourceStack> ctx) {
         ServerPlayer player = ctx.getSource().getPlayer();
-        ItemStack backpack = BackpackPlatform.getEquipped(player);
-        if (!(backpack.getItem() instanceof BackpackItem)) {
-            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+        if (player == null) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.only_player"));
             return 0;
         }
+        ItemStack backpack = getTargetBackpack(ctx, player);
+        if (backpack.isEmpty()) return 0;
+
         int index = IntegerArgumentType.getInteger(ctx, "index");
         List<BackupRecord> backups = backpack.get(BackpackPlatform.getBackupRecordsComponent());
         if (backups == null || index < 0 || index >= backups.size()) {
@@ -510,5 +510,23 @@ public class BackpackCommand {
         config.saveConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
         ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.set.max", count), true);
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static ItemStack getTargetBackpack(CommandContext<CommandSourceStack> ctx, ServerPlayer player) {
+        String target = StringArgumentType.getString(ctx, "target");
+        ItemStack backpack;
+        if ("hand".equalsIgnoreCase(target)) {
+            backpack = player.getMainHandItem();
+        } else if ("equipped".equalsIgnoreCase(target)) {
+            backpack = BackpackPlatform.getEquipped(player);
+        } else {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.invalid_target", target));
+            return ItemStack.EMPTY;
+        }
+        if (!(backpack.getItem() instanceof BackpackItem)) {
+            ctx.getSource().sendFailure(Component.translatable("command.yyzsbackpack.backup.no_backpack"));
+            return ItemStack.EMPTY;
+        }
+        return backpack;
     }
 }

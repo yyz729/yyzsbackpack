@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -63,14 +64,9 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     }
 
-//    @Inject(method = "render", at = @At("TAIL"))
-//    private void logSlotsSize(CallbackInfo ci) {
-//        int size = menu.slots.size();
-//    }
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER))
     private void renderBackpackBackgroundAfterVanilla(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         BackpackRenderer.renderEquippedBackpackBackground(context, leftPos, topPos, imageWidth, imageHeight, inventory, shouldRenderBackpack, (BackpackMenu) this.menu);
-        BackpackRenderer.renderBackpackPreview(context,minecraft,menu,hoveredSlot,leftPos, topPos, imageWidth, imageHeight);
     }
     @ModifyConstant(method = "checkHotbarMouseClicked", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPosition(int original) {
@@ -103,6 +99,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         return menu instanceof BackpackMenu ? BackpackHelper.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpack, (BackpackMenu) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
     }
 
+
     @Redirect(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z"))
     private boolean handleMouseReleased(AbstractContainerScreen<?> instance, double mouseX, double mouseY, int left, int top, int button) {
         return menu instanceof BackpackMenu ? BackpackHelper.isClickOutsideExtendedBounds(inventory, hasClickedOutside(mouseX, mouseY, leftPos, topPos, button), mouseX, mouseY, leftPos, topPos, imageWidth, imageHeight, shouldRenderBackpack, (BackpackMenu) this.menu) : hasClickedOutside(mouseX, mouseY, leftPos, topPos, button);
@@ -129,6 +126,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Override
     public List<Rect2i> getBackpackExclusionZones() { // 修改返回类型为 Rect2i
+
         // 获取偏移值
         int xOffset = ((BackpackMenu) menu).getBackpackGuiX();
         int yOffset = ((BackpackMenu) menu).getBackpackGuiY();
@@ -223,4 +221,5 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             }
         }
     }
+
 }

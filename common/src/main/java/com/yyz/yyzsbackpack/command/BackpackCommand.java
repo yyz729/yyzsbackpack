@@ -15,6 +15,7 @@ import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.base.BackpackEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackBackup;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -436,22 +437,21 @@ public class BackpackCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    // 构建预览组件（显示前5个物品的名称）
     private static Component buildPreviewComponent(List<ItemStack> items) {
         MutableComponent preview = Component.literal("");
-        int shown = 0;
-        int maxShow = 5; // 最多显示5个物品
+        int nonEmptyCount = 0;
         for (ItemStack stack : items) {
             if (stack.isEmpty()) continue;
-            if (shown >= maxShow) break;
-            if (shown > 0) preview.append(Component.literal("\n"));
-            preview.append(Component.literal("• ")).append(stack.getHoverName());
-            shown++;
+            nonEmptyCount++;
+            if (nonEmptyCount > 1) preview.append(Component.literal("\n"));
+            // 格式: "铁锭 x 3" 或 "钻石剑 (锋利V)"
+            MutableComponent itemLine = stack.getHoverName().copy();
+            if (stack.getCount() > 1) {
+                itemLine.append(Component.literal(" x " + stack.getCount()).withStyle(ChatFormatting.GRAY));
+            }
+            preview.append(itemLine);
         }
-        if (items.stream().anyMatch(s -> !s.isEmpty()) && shown == maxShow) {
-            preview.append(Component.literal("\n..."));
-        }
-        if (shown == 0) {
+        if (nonEmptyCount == 0) {
             preview = Component.translatable("command.yyzsbackpack.backup.list.empty_preview");
         }
         return preview;
@@ -465,7 +465,7 @@ public class BackpackCommand {
             return 0;
         }
         int index = IntegerArgumentType.getInteger(ctx, "index");
-        boolean success = BackpackBackup.restoreBackup(backpack, BackpackPlatform.getContainer(player), index);
+        boolean success = BackpackBackup.restoreBackup(backpack, player.getInventory(), index);
         if (success) {
             ctx.getSource().sendSuccess(() -> Component.translatable("command.yyzsbackpack.backup.restore.success", index), true);
         } else {

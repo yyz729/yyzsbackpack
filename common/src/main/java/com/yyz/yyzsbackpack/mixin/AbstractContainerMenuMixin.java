@@ -10,20 +10,21 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
 import com.yyz.yyzsbackpack.util.BackpackStorage;
+import com.yyz.yyzsbackpack.util.SlotManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(AbstractContainerMenu.class)
 public abstract class AbstractContainerMenuMixin implements BackpackMenu {
@@ -127,6 +128,10 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack);
     }
 
+    @Redirect(method = "initializeContents", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
+    private int modifyInitializeContents(List<ItemStack> list) {
+        return slots.size();
+    }
 
 
 }

@@ -67,8 +67,8 @@ public abstract class ServerPlayerMixin {
             ItemStack backpack = BackpackPlatform.getEquipped(yyzsbackpack$player);
             if (backpack.getItem() instanceof BackpackItem) {  // 需要 import BackpackItem
                 // 获取正确的容器（兼容饰品栏）
-                Container container = BackpackPlatform.getContainer(yyzsbackpack$player);
-                BackpackBackup.backupBackpackContents(backpack, container, maxBackups);
+//                Container container = BackpackPlatform.getContainer(yyzsbackpack$player);
+                BackpackBackup.backupBackpackContents(backpack, yyzsbackpack$player.getInventory(), maxBackups);
             }
         }
     }

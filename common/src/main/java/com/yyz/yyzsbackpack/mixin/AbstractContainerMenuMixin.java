@@ -118,11 +118,20 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         if (slotIndex < 0 || slotIndex >= this.slots.size()) return;
 
         Slot sourceSlot = getSlot(slotIndex);
+
         if(BackpackPlatform.getIndex(player) != sourceSlot.getContainerSlot()) return;
+
+
 
         // 获取背包物品和容器 (玩家背包)
         ItemStack backpackStack = sourceSlot.getItem();
+
         if (backpackStack.isEmpty()) return;
+
+        if(!(backpackStack.getItem() instanceof BackpackItem)) return;
+
+        if(backpackStack.has(BackpackPlatform.getBackpackItemsComponent())) return;
+
 
         // 执行保存背包内容
         BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack);

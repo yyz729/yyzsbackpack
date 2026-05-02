@@ -6,6 +6,8 @@
   "item.yyzsbackpack.diamond_backpack": "钻石背包",
   "item.yyzsbackpack.netherite_backpack": "下界合金背包",
 
+  "effect.yyzsbackpack.heavy": "负重",
+
   "itemGroup.yyzsbackpack.title": "yyz的背包",
 
   "command.yyzsbackpack.set.boolean": "已将 %s 设置为 %s",

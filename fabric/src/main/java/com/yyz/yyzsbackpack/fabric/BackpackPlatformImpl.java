@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.fabric;
 
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.Container;
@@ -36,4 +37,8 @@ public class BackpackPlatformImpl {
         return true;
     }
     public static boolean getRender(Player player){return BackpackFabric.getRender(player);}
+
+    public static DataComponentType<List<BackupRecord>> getBackupRecordsComponent() {
+        return BackpackFabric.BACKUP_RECORDS_COMPONENT;
+    }
 }

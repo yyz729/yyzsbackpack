@@ -40,12 +40,6 @@ public abstract class AccessoriesBasedSlotMixin extends Slot {
             if (!oldBackpackStack.isEmpty() && oldBackpackStack.getItem() instanceof BackpackItem) {
                 BackpackStorage.saveBackpackContents(player.getInventory(), oldBackpackStack);
             }
-
-            super.setByPlayer(newBackpackStack);
-
-            if (!newBackpackStack.isEmpty() && newBackpackStack.getItem() instanceof BackpackItem) {
-                BackpackStorage.restoreBackpackContents(player.getInventory(), newBackpackStack);
-            }
         }
 
         super.setByPlayer(newBackpackStack);

@@ -5,6 +5,8 @@ import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffect;
@@ -37,14 +39,13 @@ public class BackpackStorage {
 
     // 从数据组件恢复背包内容
     public static void restoreBackpackContents(Container inventory, ItemStack backpackStack) {
+
         // 获取数据组件
         List<ItemStack> items = backpackStack.get(BackpackPlatform.getBackpackItemsComponent());
         if (items == null) return;
 
         BackpackItem backpackItem = (BackpackItem) backpackStack.getItem();
-//        int columns = backpackItem.getBackpackType().getColumns();
         int numSlots = backpackItem.getBackpackType().getSize();
-        //columns * 9;
 
         for (int i = 0; i < BackpackHelper.getMaxBackpackSize(); i++) {
             inventory.setItem(36 + i, ItemStack.EMPTY);
@@ -58,9 +59,9 @@ public class BackpackStorage {
             }
         }
 
-
         // 移除数据组件
         backpackStack.remove(BackpackPlatform.getBackpackItemsComponent());
+
     }
 
 
@@ -92,38 +93,48 @@ public class BackpackStorage {
         return nonEmptyBackpackCount;
     }
 
-
-
-    public static void updateEffectsByBackpackCount(Player player, List<Holder<MobEffect>> lastAppliedEffects) {
-        int backpackCount = BackpackStorage.countNonEmptyBackpacks(player.getInventory());
-
-        if(BackpackPlatform.getEquipped(player).getItem() instanceof BackpackItem){
-            backpackCount = backpackCount + 1;
-        }
-        // 移除不再需要的老效果
-        for (Holder<MobEffect> effect : new ArrayList<>(lastAppliedEffects)) {
-            player.removeEffect(effect);
-            lastAppliedEffects.remove(effect);
+    /**
+     * 判断玩家当前装备的背包是否为空
+     * @param player 玩家对象
+     * @return true - 已装备背包且所有额外槽位都是空的；false - 至少有一个槽位非空或未装备背包（true）
+     */
+    public static boolean isEquippedBackpackNonEmpty(Player player) {
+        ItemStack equipped = BackpackPlatform.getEquipped(player);
+        if (!(equipped.getItem() instanceof BackpackItem backpackItem)) {
+            return false; // 未装备背包
         }
 
-        // 检查条件并应用新效果
-        List<BackpackEffect> effects = Backpack.getConfig().backpack_multi_effects;
-        if (backpackCount > 0 && !effects.isEmpty()) {
-            // 计算效果索引：如果背包数量超过效果列表长度，则使用最后一个效果
-            int effectIndex = Math.min(backpackCount, effects.size()) - 1;
-
-            BackpackEffect effect = effects.get(effectIndex);
-            Holder<MobEffect> effectType = BackpackHelper.getEffectHolder(effect.effectType);
-            if (effectType == null) return;
-
-            // 创建并应用效果
-            player.addEffect(new MobEffectInstance(effectType, -1, effect.amplifier), player);
-
-            // 记录本次添加的效果
-            if (!lastAppliedEffects.contains(effectType)) {
-                lastAppliedEffects.add(effectType);
+        // 获取该背包类型的实际槽位数
+        int size = backpackItem.getBackpackType().getSize();
+        Inventory inventory = player.getInventory();
+        // 检查从 36 开始的连续 size 个槽位
+        for (int i = 0; i < size; i++) {
+            int slotIndex = 36 + i;
+            ItemStack stack = inventory.getItem(slotIndex);
+            if (!stack.isEmpty()) {
+                return true; // 发现非空物品
             }
         }
+        return false;
+    }
+
+
+    public static void updateEffectsByBackpackCount(Player player) {
+        int count = BackpackStorage.countNonEmptyBackpacks(player.getInventory());
+
+        if(BackpackStorage.isEquippedBackpackNonEmpty(player)){
+            count = count + 1;
+        }
+
+
+        Holder<MobEffect> holder = BackpackHelper.getEffectHolder(ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "heavy"));
+
+        if (count > Backpack.getConfig().heavy_count && holder != null) {
+            player.addEffect(new MobEffectInstance(holder, -1, 0));
+        } else if (holder != null) {
+            player.removeEffect(holder);
+        }
+
     }
 
     /**
@@ -173,7 +184,6 @@ public class BackpackStorage {
      */
     public static void restoreNonEmptyBackpack(Player player) {
         ItemStack equippedBackpack = BackpackPlatform.getEquipped(player);
-
         // 检查背包是否包含物品组件
         if (equippedBackpack.has(BackpackPlatform.getBackpackItemsComponent())) {
             BackpackStorage.restoreBackpackContents(player.getInventory(), equippedBackpack);

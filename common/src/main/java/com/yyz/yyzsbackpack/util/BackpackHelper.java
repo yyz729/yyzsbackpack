@@ -82,8 +82,7 @@ public class BackpackHelper {
     }
 
 
-    public static Holder<MobEffect> getEffectHolder(String effectId) {
-        ResourceLocation location = ResourceLocation.tryParse(effectId);
+    public static Holder<MobEffect> getEffectHolder(ResourceLocation location) {
         if (location == null) {
             return null;
         }

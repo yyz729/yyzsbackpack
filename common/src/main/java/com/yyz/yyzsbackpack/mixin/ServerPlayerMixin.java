@@ -26,8 +26,6 @@ public abstract class ServerPlayerMixin {
     @Unique
     ServerPlayer yyzsbackpack$player = (ServerPlayer) (Object) this;
 
-    @Unique
-    List<Holder<MobEffect>> yyzsbackpack$lastAppliedEffects = new ArrayList<>();
 
     @Inject(method = "die", at = @At("HEAD"))
     private void onPlayerDeath(CallbackInfo ci) {
@@ -50,7 +48,7 @@ public abstract class ServerPlayerMixin {
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTick(CallbackInfo ci) {
         BackpackStorage.restoreNonEmptyBackpack(yyzsbackpack$player);
-        BackpackStorage.updateEffectsByBackpackCount(yyzsbackpack$player, yyzsbackpack$lastAppliedEffects);
+        BackpackStorage.updateEffectsByBackpackCount(yyzsbackpack$player);
 
         int backupIntervalSeconds = Backpack.getConfig().backup_interval_seconds;
         int maxBackups = Backpack.getConfig().max_backup_count;
@@ -65,9 +63,7 @@ public abstract class ServerPlayerMixin {
 
             // 获取当前装备的背包物品
             ItemStack backpack = BackpackPlatform.getEquipped(yyzsbackpack$player);
-            if (backpack.getItem() instanceof BackpackItem) {  // 需要 import BackpackItem
-                // 获取正确的容器（兼容饰品栏）
-//                Container container = BackpackPlatform.getContainer(yyzsbackpack$player);
+            if (backpack.getItem() instanceof BackpackItem) {
                 BackpackBackup.backupBackpackContents(backpack, yyzsbackpack$player.getInventory(), maxBackups);
             }
         }

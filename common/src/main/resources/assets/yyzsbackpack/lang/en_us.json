@@ -6,6 +6,8 @@
   "item.yyzsbackpack.diamond_backpack": "Diamond Backpack",
   "item.yyzsbackpack.netherite_backpack": "Netherite Backpack",
 
+  "effect.yyzsbackpack.heavy": "Heavy",
+
   "itemGroup.yyzsbackpack.title": "yyz's backpack",
 
   "command.yyzsbackpack.set.boolean": "Set %s to %s",

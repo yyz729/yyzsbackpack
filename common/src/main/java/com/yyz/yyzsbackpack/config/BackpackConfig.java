@@ -22,56 +22,61 @@ public class BackpackConfig {
     // 修改为存储多行注释的列表
     private static final Map<String, List<String>> FIELD_COMMENTS = new HashMap<>();
     static {
-        addComment("quick_swap_backpack", "Enable quick backpack swapping");
-        addComment("use_dedicated_slot", "Force use of dedicated backpack slot instead of accessory slot");
-        addComment("render_backpack_model", "Render backpack model");
-        addComment("restrict_container_items", "Prevent container items (like Shulker Boxes) from being placed in backpack");
-        addComment("slot_position_x", "X position of backpack slot");
-        addComment("slot_position_y", "Y position of backpack slot");
-        addComment("backpack_gui_x", "X position of backpack GUI");
-        addComment("backpack_gui_y", "Y position of backpack GUI");
-        addComment("tooltip_modifier", "Backpack preview modifier key (alt, ctrl, none)");
-        addComment("backpack_model_style", "detailed/simplified");
+        addComment("quick_swap_backpack",
+                "Allow swapping the currently equipped backpack by clicking a backpack item inside the backpack's own inventory",
+                "If true, while the backpack GUI is open, clicking a backpack item in its internal slots will replace the one you are wearing"
+        );
+        addComment("use_dedicated_slot",
+                "Force use of the mod's dedicated backpack slot instead of a baubles/trinkets accessory slot",
+                "Only relevant when an accessory slot mod (e.g., Curios API) is present"
+        );
+        addComment("render_backpack_model",
+                "Render the 3D backpack model on the player's back",
+                "Disable if you don't need the visual model"
+        );
+        addComment("restrict_container_items",
+                "Prevent container items (like Shulker Boxes) from being placed inside the backpack",
+                "Helps avoid nested inventories"
+        );
+        addComment("slot_position_x", "X offset of the backpack equipment slot on the inventory screen (pixels)");
+        addComment("slot_position_y", "Y offset of the backpack equipment slot on the inventory screen (pixels)");
+        addComment("backpack_gui_x", "X offset of the backpack GUI window (pixels)");
+        addComment("backpack_gui_y", "Y offset of the backpack GUI window (pixels)");
 
-        // Multi-line comments
         addComment("restricted_items",
-                "Additional container items",
+                "Additional items that cannot be placed into the backpack (besides container items if enabled above)",
                 "Format: \"namespace:item_id\"",
-                "Example: \"minecraft:shulker_box\",",
-                "         \"minecraft:shulker_box\",",
-                "         \"minecraft:shulker_box\","
+                "Example: \"minecraft:diamond_sword\",",
+                "         \"minecraft:tnt\""
         );
 
-        // Detailed multi-line comment with example
-        addComment("backpack_multi_effects",
-                "Multi-tier backpack effects configuration",
-                "Each element in the list corresponds to an additional backpack tier:",
-                "  - Index 0: Effect for carrying 1 extra backpack",
-                "  - Index 1: Effect for carrying 2 extra backpacks",
-                "  - Index 2: Effect for carrying 3 extra backpacks",
-                "  - And so on...",
-                "",
-                "Each effect must contain the following fields:",
-                "  - \"effectType\": Effect ID (e.g. \"minecraft:speed\")",
-                "  - \"amplifier\": Effect level (0-based)",
-                "",
-                "Example configuration:",
-                "[",
-                "  { // Effect for carrying 1 extra backpack",
-                "    \"effectType\": \"none\", // No effect",
-                "    \"amplifier\": 0",
-                "  },",
-                "  { // Effect for carrying 2 extra backpacks",
-                "    \"effectType\": \"minecraft:slowness\",",
-                "    \"amplifier\": 1",
-                "  },",
-                "  { // Effect for carrying 3 extra backpacks",
-                "    \"effectType\": \"minecraft:slowness\",",
-                "    \"amplifier\": 3",
-                "  }",
-                "]"
+        // === 备份相关配置 ===
+        addComment("backup_interval_seconds",
+                "How often (in seconds) the backpack data is automatically saved as a backup",
+                "Backups are stored in the same folder as the main data file"
+        );
+        addComment("max_backup_count",
+                "Maximum number of backup files to keep per player",
+                "When exceeded, the oldest backup is automatically deleted"
+        );
+
+        // === 负重相关配置 ===
+        addComment("heavy_count",
+                "Item count threshold that triggers the heavy effect",
+                "If the total number of items in the backpack reaches or exceeds this value, the player will be slowed down"
+        );
+        addComment("heavy_slow_ratio",
+                "Slowness multiplier when heavy",
+                "Range: 0.0 (no slowdown) to 1.0 (extreme slowdown).",
+                "Example: 0.6 means the player moves at 40% of normal speed"
+        );
+        addComment("heavy_jump_reduction_ratio",
+                "Jump height reduction multiplier when heavy",
+                "Range: 0.0 (no reduction) to 1.0 (cannot jump at all).",
+                "Example: 0.5 means jump height is reduced by 50%"
         );
     }
+
 
 
 
@@ -88,21 +93,16 @@ public class BackpackConfig {
     public int slot_position_y = 0;
     public int backpack_gui_x = 0;
     public int backpack_gui_y = 0;
-    public String tooltip_modifier = "shift";
 
     public int backup_interval_seconds = 30;
     public int max_backup_count = 5;
 
+    public int heavy_count = 2;
+    public double heavy_slow_ratio = 0.6;
+    public double heavy_jump_reduction_ratio = 0.5;
+
     public Set<String> restricted_items = new HashSet<>();
 
-    public List<BackpackEffect> backpack_multi_effects = new ArrayList<>() {{
-        // 索引0: 携带1个额外背包的效果 (无效果)
-        add(new BackpackEffect("none", 0));
-        // 索引1: 携带2个额外背包的效果 (无效果)
-        add(new BackpackEffect("none", 0));
-        // 索引2: 携带2个额外背包的效果 (减速效果)
-        add(new BackpackEffect("minecraft:slowness", 1));
-    }};
 
     public static BackpackConfig loadConfig(File file) {
         BackpackConfig config;

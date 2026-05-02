@@ -64,13 +64,6 @@ public final class BackpackNeoForge {
                             .persistent(Codec.list(BackupRecord.CODEC)) // 需要实现 BackupRecord 的 Codec
             );
 
-    // 为 BackupRecord 定义 Codec
-    public static final Codec<BackupRecord> BACKUP_RECORD_CODEC = RecordCodecBuilder.create(instance ->
-            instance.group(
-                    Codec.LONG.fieldOf("timestamp").forGetter(BackupRecord::timestamp),
-                    Codec.list(ItemStack.OPTIONAL_CODEC).fieldOf("items").forGetter(BackupRecord::items)
-            ).apply(instance, BackupRecord::new)
-    );
 
 
 
@@ -101,7 +94,6 @@ public final class BackpackNeoForge {
 
     public static final DeferredHolder<Item, Item> IRON_BACKPACK = ITEMS.register("iron_backpack",
             () -> new BackpackItem("iron", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>())));
-
 
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> BACKPACK_ITEMS_COMPONENT = DATA_COMPONENT.registerComponentType(

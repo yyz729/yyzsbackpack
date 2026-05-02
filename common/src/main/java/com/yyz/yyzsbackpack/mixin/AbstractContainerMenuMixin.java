@@ -13,7 +13,9 @@ import com.yyz.yyzsbackpack.util.BackpackStorage;
 import com.yyz.yyzsbackpack.util.SlotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -137,10 +139,10 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
         BackpackStorage.saveBackpackContents(player.getInventory(), backpackStack);
     }
 
-    @Redirect(method = "initializeContents", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
-    private int modifyInitializeContents(List<ItemStack> list) {
-        return slots.size();
-    }
+//    @Redirect(method = "initializeContents", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
+//    private int modifyInitializeContents(List<ItemStack> list) {
+//        return slots.size();
+//    }
 
 
 }

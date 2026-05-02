@@ -3,7 +3,9 @@ package com.yyz.yyzsbackpack.fabric;
 import com.mojang.serialization.Codec;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
+import com.yyz.yyzsbackpack.base.BackupRecord;
 import com.yyz.yyzsbackpack.compat.AccessoriesContainerAdapter;
+import com.yyz.yyzsbackpack.effect.HeavyEffect;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.item.BackpackMaterial;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
@@ -24,6 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.Container;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -41,12 +44,12 @@ import static com.yyz.yyzsbackpack.Backpack.MOD_ID;
 
 public final class BackpackFabric implements ModInitializer {
 
-    public static final BackpackItem IRON_BACKPACK = new BackpackItem("iron", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
-    public static final BackpackItem GOLD_BACKPACK = new BackpackItem("gold", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
-    public static final BackpackItem DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1).component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
-    public static final BackpackItem NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).fireResistant().component(BackpackPlatform.getBackpackItemsComponent(), new ArrayList<>()));
+    public static BackpackItem IRON_BACKPACK;
+    public static BackpackItem GOLD_BACKPACK ;
+    public static BackpackItem DIAMOND_BACKPACK;
+    public static BackpackItem NETHERITE_BACKPACK;
 
-
+    public static MobEffect HEAVY_EFFECT;
 
     public static final CreativeModeTab GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(GOLD_BACKPACK))
@@ -65,25 +68,51 @@ public final class BackpackFabric implements ModInitializer {
                     .persistent(Codec.list(ItemStack.OPTIONAL_CODEC))
                     .build();
 
+    public static final DataComponentType<List<BackupRecord>> BACKUP_RECORDS_COMPONENT =
+            DataComponentType.<List<BackupRecord>>builder()
+                    .persistent(Codec.list(BackupRecord.CODEC))
+                    .build();
+
     public static void register(){
+
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"),
+                BACKPACK_ITEMS_COMPONENT);
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "backup_records"),
+                BACKUP_RECORDS_COMPONENT);
+
+        IRON_BACKPACK = new BackpackItem("iron",
+                new Item.Properties().stacksTo(1)
+                        .component(BACKPACK_ITEMS_COMPONENT, new ArrayList<>()));
+        GOLD_BACKPACK = new BackpackItem("gold",
+                new Item.Properties().stacksTo(1)
+                        .component(BACKPACK_ITEMS_COMPONENT, new ArrayList<>()));
+        DIAMOND_BACKPACK = new BackpackItem("diamond",
+                new Item.Properties().stacksTo(1)
+                        .component(BACKPACK_ITEMS_COMPONENT, new ArrayList<>()));
+        NETHERITE_BACKPACK = new BackpackItem("netherite",
+                new Item.Properties().stacksTo(1)
+                        .component(BACKPACK_ITEMS_COMPONENT, new ArrayList<>())
+                        .fireResistant());
 
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "iron_backpack"), IRON_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "gold_backpack"), GOLD_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "diamond_backpack"), DIAMOND_BACKPACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "netherite_backpack"), NETHERITE_BACKPACK);
 
-        //Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "netherites_backpack"), NETHERITE_BACKPACKs);
 
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, "backpack_items"),
-                BACKPACK_ITEMS_COMPONENT);
 
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, "group"), GROUP);
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, env) -> {
             Backpack.registerCommands(dispatcher);
         });
 
-
+        HEAVY_EFFECT = Registry.register(
+                BuiltInRegistries.MOB_EFFECT,
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "heavy"),
+                new HeavyEffect()
+        );
     }
 
     @Override
@@ -93,8 +122,9 @@ public final class BackpackFabric implements ModInitializer {
         // Proceed with mild caution.
 
         // Run our common setup.
-        register();
         Backpack.init();
+        register();
+
     }
 
     public static ItemStack getEquipped(Player player) {

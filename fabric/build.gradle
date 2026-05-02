@@ -31,7 +31,7 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
-    modCompileOnly "dev.emi:trinkets:$rootProject.trinkets_version"
+    modImplementation "dev.emi:trinkets:$rootProject.trinkets_version"
     modCompileOnly "curse.maven:accessories-938917:6549399"
     modCompileOnly files('libs/durabilityviewer-1.21-1.11.0.jar')
     modCompileOnly files('libs/hotbarslotcycling-fabric-21.1.1.jar')

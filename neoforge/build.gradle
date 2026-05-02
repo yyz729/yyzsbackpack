@@ -55,6 +55,7 @@ dependencies {
     modCompileOnly "curse.maven:applied-energistics-2-wireless-terminals-459929:6437277"
     modCompileOnly "curse.maven:configurable-keepinventory-960027:6596286"
 
+    modCompileOnly "curse.maven:spyglass-improvements-571264:5634604"
 }
 
 processResources {

@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.BackpackPlatform;
 import com.yyz.yyzsbackpack.base.BackpackEquipSlot;
@@ -99,8 +100,23 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
     private void handleShiftRightClick(int i, int j, ClickType clickType, Player player, CallbackInfo ci) {
         BackpackSorter.quickMoveTo((AbstractContainerMenu)(Object)this,slots,i,j,clickType,player,ci);
     }
+
+//    @ModifyVariable(
+//            method = "doClick",
+//            at = @At("HEAD"),
+//            index = 1,
+//            argsOnly = true
+//    )
+//    private int modifyJCraftingParameter(int j, @Local(argsOnly = true) ClickType clickType) {
+//        if (clickType == ClickType.SWAP && j == 40) {
+//            return 45;
+//        }
+//        return j;
+//    }
+
     @ModifyConstant(method = "doClick", constant = @Constant(intValue = 40))
     private int adjustOffhandSlotPositionHotbar(int original) {
+
         return original + BackpackHelper.getSlotIndexOffset();
     }
 
@@ -143,6 +159,5 @@ public abstract class AbstractContainerMenuMixin implements BackpackMenu {
 //    private int modifyInitializeContents(List<ItemStack> list) {
 //        return slots.size();
 //    }
-
 
 }

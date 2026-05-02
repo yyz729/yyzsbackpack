@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,12 +25,12 @@ public class ClientPacketListenerMixin {
         if (menu == null) return;
 
         int slotCount = menu.slots.size();
-        List<net.minecraft.world.item.ItemStack> items = packet.getItems();
+        List<ItemStack> items = packet.getItems();
 
         // 如果物品列表长度超过槽位数，进行裁剪后手动调用 initializeContents
         if (items.size() > slotCount) {
             // 创建裁剪后的子列表（0 到 slotCount-1）
-            List<net.minecraft.world.item.ItemStack> trimmed = items.subList(0, slotCount);
+            List<ItemStack> trimmed = items.subList(0, slotCount);
             menu.initializeContents(packet.getStateId(), trimmed, packet.getCarriedItem());
             // 取消原方法，避免重复调用导致越界
             ci.cancel();

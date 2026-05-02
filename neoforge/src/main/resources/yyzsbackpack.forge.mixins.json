@@ -19,10 +19,10 @@
     "compat.wfha.SimpleTableMenuMixin"
   ],
   "client": [
-    "compat.apothic_attributes.InventoryRenderMixin",
+    "ItemColorsMixin",
     "compat.ae2.AEBaseScreenMixin",
-    "compat.curios.CuriosScreenMixin",
-    "ItemColorsMixin"
+    "compat.apothic_attributes.InventoryRenderMixin",
+    "compat.curios.CuriosScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

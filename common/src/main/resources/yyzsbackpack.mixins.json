@@ -33,6 +33,7 @@
     "ClientPacketListenerMixin",
     "CreativeInventoryScreenMixin",
     "GameOptionsMixin",
+    "MultiPlayerGameModeMixin",
     "PlayerRendererMixin",
     "screen.AbstractFurnaceRenderConditionMixin",
     "screen.CraftingRenderConditionMixin",

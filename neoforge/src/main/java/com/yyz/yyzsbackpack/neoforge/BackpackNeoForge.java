@@ -13,6 +13,7 @@ import com.yyz.yyzsbackpack.util.BackpackBackup;
 import com.yyz.yyzsbackpack.util.BackpackHelper;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
+import me.juancarloscp52.spyglass_improvements.client.SpyglassImprovementsClient;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;

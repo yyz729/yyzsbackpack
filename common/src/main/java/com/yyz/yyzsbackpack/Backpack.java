@@ -1,11 +1,13 @@
 package com.yyz.yyzsbackpack;
 
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.brigadier.CommandDispatcher;
 import com.yyz.yyzsbackpack.command.BackpackCommand;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackMaterialManager;
 import com.yyz.yyzsbackpack.util.BackpackSorter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.effect.MobEffect;
 import org.slf4j.Logger;
@@ -24,11 +26,11 @@ public class Backpack{
         BackpackMaterialManager.loadMaterials();
         BackpackSorter.loadDefaultCustomSort();
         config = BackpackConfig.loadConfig(new File(BackpackPlatform.getConfigDirectory().resolve("yyzsbackpack") + "/yyzsbackpack.json"));
-
     }
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         BackpackCommand.register(dispatcher);
     }
+
     public static BackpackConfig getConfig() {
         return config;
     }

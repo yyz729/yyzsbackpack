@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "com.yyz.yyzsbackpack.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"minecraft.InventoryMenuMixin",
+		"minecraft.InventoryMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

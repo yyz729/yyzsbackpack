@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "model",
+    "model": "yyzsbackpack:item/diamond_backpack",
+    "tints": [
+      {
+        "type": "minecraft:dye",
+        "default": -6265536
+      }
+    ]
+  }
+}

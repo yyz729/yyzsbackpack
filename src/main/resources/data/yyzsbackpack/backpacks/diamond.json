@@ -1,0 +1,9 @@
+{
+  "type": "diamond",
+  "size": 54,
+  "columns": 6,
+  "rows": 9,
+  "guiWidth": 122,
+  "guiHeight": 174,
+  "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png"
+}

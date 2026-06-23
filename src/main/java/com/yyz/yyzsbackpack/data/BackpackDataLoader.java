@@ -17,7 +17,6 @@ public class BackpackDataLoader {
         return DATA.get(type);
     }
 
-    // apply 现在接收解析好的 Map<Identifier, BackpackData>
     private static void apply(Map<Identifier, BackpackData> map, ResourceManager manager, ProfilerFiller profiler) {
         DATA.clear();
         for (BackpackData data : map.values()) {
@@ -25,14 +24,11 @@ public class BackpackDataLoader {
         }
     }
 
-    /**
-     * 新的重载监听器，使用 Codec 自动解析 JSON 到 BackpackData
-     */
     public static class ReloadListener extends SimpleJsonResourceReloadListener<BackpackData> {
         public ReloadListener() {
             super(
                     BackpackData.CODEC,
-                    FileToIdConverter.json("backpacks")   // 监听 data/<ns>/backpacks/*.json
+                    FileToIdConverter.json("backpacks")
             );
         }
 

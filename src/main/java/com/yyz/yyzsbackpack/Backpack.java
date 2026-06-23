@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,10 +46,10 @@ public class Backpack implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		IRON_BACKPACK = new BackpackItem("iron", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "iron_backpack"))));
-		GOLD_BACKPACK = new BackpackItem("gold", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "gold_backpack"))));
-		DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "diamond_backpack"))));
-		NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "netherite_backpack"))).fireResistant());
+		IRON_BACKPACK = new BackpackItem("iron", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "iron_backpack"))).equippable(EquipmentSlot.CHEST));
+		GOLD_BACKPACK = new BackpackItem("gold", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "gold_backpack"))).equippable(EquipmentSlot.CHEST));
+		DIAMOND_BACKPACK = new BackpackItem("diamond", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "diamond_backpack"))).equippable(EquipmentSlot.CHEST));
+		NETHERITE_BACKPACK = new BackpackItem("netherite", new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "netherite_backpack"))).fireResistant().equippable(EquipmentSlot.CHEST));
 
 		Registry.register(BuiltInRegistries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "iron_backpack"), IRON_BACKPACK);
 		Registry.register(BuiltInRegistries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, "gold_backpack"), GOLD_BACKPACK);

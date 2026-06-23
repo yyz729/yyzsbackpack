@@ -1,15 +1,18 @@
 {
-	"required": true,
-	"package": "com.yyz.yyzsbackpack.mixin",
-	"compatibilityLevel": "JAVA_25",
-	"mixins": [
-		"minecraft.InventoryMenuMixin",
-		"minecraft.InventoryMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
+  "required": true,
+  "package": "com.yyz.yyzsbackpack.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "minecraft.AbstractContainerMenuMixin",
+    "minecraft.InventoryMenuMixin",
+    "minecraft.InventoryMixin",
+    "minecraft.InventoryScreenMixin",
+    "minecraft.accessor.SlotAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
 	}
 }

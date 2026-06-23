@@ -1,9 +1,17 @@
 {
   "type": "iron",
-  "size": 18,
-  "columns": 2,
-  "rows": 9,
-  "guiWidth": 50,
-  "guiHeight": 174,
-  "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png"
+  "size": 54,
+  "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
+  "backgroundX": -50,
+  "backgroundY": 0,
+  "segments": [
+    {
+      "startSlot": 0,
+      "order": "DEFAULT",
+      "startX": -50,
+      "startY": 0,
+      "columns": 2,
+      "rows": 9
+    }
+  ]
 }

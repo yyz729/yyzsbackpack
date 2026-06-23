@@ -1,28 +1,29 @@
 package com.yyz.yyzsbackpack.data;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.yyz.yyzsbackpack.api.LayoutSegment;
 import net.minecraft.resources.Identifier;
+
+import java.util.List;
 
 public record BackpackData(
     String type,
     int size,
-    int columns,
-    int rows,
-    int guiWidth,
-    int guiHeight,
-    Identifier guiTexture
+    Identifier guiTexture,
+    int backgroundX,
+    int backgroundY,
+    List<LayoutSegment> segments
 ) {
     public static final Codec<BackpackData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.STRING.fieldOf("type").forGetter(BackpackData::type),
                     Codec.INT.fieldOf("size").forGetter(BackpackData::size),
-                    Codec.INT.fieldOf("columns").forGetter(BackpackData::columns),
-                    Codec.INT.fieldOf("rows").forGetter(BackpackData::rows),
-                    Codec.INT.fieldOf("guiWidth").forGetter(BackpackData::guiWidth),
-                    Codec.INT.fieldOf("guiHeight").forGetter(BackpackData::guiHeight),
-                    Identifier.CODEC.fieldOf("guiTexture").forGetter(BackpackData::guiTexture)
+                    Identifier.CODEC.fieldOf("guiTexture").forGetter(BackpackData::guiTexture),
+                    Codec.INT.fieldOf("backgroundX").forGetter(BackpackData::backgroundX),
+                    Codec.INT.fieldOf("backgroundY").forGetter(BackpackData::backgroundY),
+                    Codec.list(LayoutSegment.CODEC).fieldOf("segments").forGetter(BackpackData::segments)
             ).apply(instance, BackpackData::new)
     );
 }
+

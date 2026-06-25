@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.minecraft;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.LayoutOrder;
 import com.yyz.yyzsbackpack.api.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.LayoutSegment;
@@ -49,8 +50,6 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
 
         ItemStack backpackStack = getEquippedBackpack(player);
 
-        IExtendedInventory extInv = (IExtendedInventory) player.getInventory();
-        extInv.yyzsbackpack$syncFromBackpack(backpackStack);
 
         BackpackData data = null;
         if (backpackStack.getItem() instanceof BackpackItem backpackItem) {
@@ -138,10 +137,18 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
 
     @Unique
     private static ItemStack getEquippedBackpack(Player player) {
-        ItemStack mainHand = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (mainHand.getItem() instanceof BackpackItem) {
-            return mainHand;
+        var slots = Backpack.getAllBackpackSlots(player);
+        if (!slots.isEmpty()) {
+            var firstSlot = slots.getFirst();
+            if (firstSlot != null) {
+                ItemStack stack = firstSlot.getStack();
+                if (stack.getItem() instanceof BackpackItem) {
+                    return stack;
+                }
+            }
         }
         return ItemStack.EMPTY;
     }
+
+
 }

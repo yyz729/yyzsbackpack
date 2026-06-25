@@ -8,8 +8,8 @@
     {
       "startSlot": 0,
       "order": "DEFAULT",
-      "startX": -50,
-      "startY": 0,
+      "startX": -42,
+      "startY": 7,
       "columns": 2,
       "rows": 9
     }

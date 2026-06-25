@@ -2,14 +2,14 @@
   "type": "gold",
   "size": 36,
   "guiTexture": "yyzsbackpack:textures/gui/4x9backpack.png",
-  "backgroundX": 10,
-  "backgroundY": 20,
+  "backgroundX": -86,
+  "backgroundY": 0,
   "segments": [
     {
       "startSlot": 0,
       "order": "DEFAULT",
-      "startX": 0,
-      "startY": 0,
+      "startX": -78,
+      "startY": 7,
       "columns": 4,
       "rows": 9
     }

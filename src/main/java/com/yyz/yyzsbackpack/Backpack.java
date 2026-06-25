@@ -1,5 +1,7 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.api.BackpackSlotProvider;
+import com.yyz.yyzsbackpack.api.BackpackSlotReference;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.fabricmc.api.ModInitializer;
@@ -14,11 +16,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Backpack implements ModInitializer {
 	public static final String MOD_ID = "yyzsbackpack";
@@ -59,5 +65,27 @@ public class Backpack implements ModInitializer {
 		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(MOD_ID, "group"), GROUP);
 
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(MOD_ID, "backpack_data"), new BackpackDataLoader.ReloadListener());
+
+	}
+
+
+	private static final List<BackpackSlotProvider> SLOT_PROVIDERS = new ArrayList<>();
+
+	static {
+		SLOT_PROVIDERS.add(new VanillaBackpackSlotProvider()); // 默认注册
+	}
+
+	public static void registerSlotProvider(BackpackSlotProvider provider) {
+		SLOT_PROVIDERS.add(provider);
+	}
+
+	public static List<BackpackSlotReference> getAllBackpackSlots(Player player) {
+		List<BackpackSlotReference> slots = new ArrayList<>();
+		for (BackpackSlotProvider provider : SLOT_PROVIDERS) {
+			slots.addAll(provider.getSlots(player));
+		}
+
+		slots.removeIf(ref -> !(ref.getStack().getItem() instanceof BackpackItem));
+		return slots;
 	}
 }

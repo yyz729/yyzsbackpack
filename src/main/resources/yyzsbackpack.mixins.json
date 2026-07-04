@@ -4,15 +4,23 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "minecraft.AbstractContainerMenuMixin",
-    "minecraft.InventoryMenuMixin",
     "minecraft.InventoryMixin",
-    "minecraft.InventoryScreenMixin",
-    "minecraft.accessor.SlotAccessor"
+    "minecraft.accessor.MenuAccessor",
+    "minecraft.accessor.SlotAccessor",
+    "minecraft.container.crafting.CraftingMenuMixin",
+    "minecraft.container.inventory.InventoryMenuMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-	}
+  },
+  "client": [
+    "minecraft.AbstractContainerScreenMixin",
+    "minecraft.AbstractRecipeBookScreenMixin",
+    "minecraft.accessor.ScreenAccessor",
+    "minecraft.container.crafting.CraftingScreenMixin",
+    "minecraft.container.inventory.InventoryScreenMixin"
+  ]
 }

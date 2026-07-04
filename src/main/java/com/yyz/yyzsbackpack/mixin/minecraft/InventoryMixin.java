@@ -2,22 +2,19 @@ package com.yyz.yyzsbackpack.mixin.minecraft;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.inventory.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,9 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Inventory.class)
 public abstract class InventoryMixin implements IExtendedInventory {
-
-    @Shadow
-    public abstract void setChanged();
 
     @Unique
     private static final int EXTRA_SLOT_COUNT = 256;
@@ -90,7 +84,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
     public void yyzsbackpack$syncToBackpack() {
         Inventory inv = (Inventory)(Object)this;
         Player player = inv.player;
-        if (player == null || player.level().isClientSide()) return; // 只服务端执行
 
         ItemStack equippedBackpack = getEquippedBackpack(player);
         if (!(equippedBackpack.getItem() instanceof BackpackItem)) return;
@@ -104,6 +97,24 @@ public abstract class InventoryMixin implements IExtendedInventory {
         ItemContainerContents newContents = ItemContainerContents.fromItems(contentsList);
         equippedBackpack.set(DataComponents.CONTAINER, newContents);
     }
+
+    @Override
+    public void yyzsbackpack$switchToBackpack(int newIndex) {
+        Inventory inv = (Inventory)(Object)this;
+        Player player = inv.player;
+        if (player == null) return;
+
+        // 保存当前背包
+        yyzsbackpack$syncToBackpack();
+
+        // 更新本地索引
+        Backpack.setSelectedIndex(player, newIndex);
+
+        // 加载新背包
+        yyzsbackpack$syncFromBackpack(Backpack.getSelectedBackpack(player));
+        inv.setChanged();
+    }
+
 
     @Unique
     private int getExtraIndex(int slot) {
@@ -126,9 +137,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
     private void onSetItem(int slot, ItemStack stack, CallbackInfo ci) {
 
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            cachedBackpack = getEquippedBackpack(inv.player).copy();
-        }
+//        cachedBackpack = getEquippedBackpack(inv.player).copy();
 
         if (isExtraSlot(slot)) {
             extraItems.set(getExtraIndex(slot), stack);
@@ -197,11 +206,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
         return -1;
     }
 
-//    @Inject(method = "clearContent", at = @At("HEAD"))
-//    private void onClearContent(CallbackInfo ci) {
-//        extraItems.clear();
-//        yyzsbackpack$syncToBackpack();
-//    }
 
     @Inject(method = "fillStackedContents", at = @At("TAIL"))
     private void onFillStackedContents(StackedItemContents contents, CallbackInfo ci) {
@@ -209,27 +213,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
             contents.accountSimpleStack(stack);
         }
     }
-
-//    @Inject(method = "save", at = @At("TAIL"))
-//    private void onSave(ValueOutput.TypedOutputList<ItemStackWithSlot> output, CallbackInfo ci) {
-//        for (int i = 0; i < extraItems.size(); i++) {
-//            ItemStack stack = extraItems.get(i);
-//            if (!stack.isEmpty()) {
-//                output.add(new ItemStackWithSlot(EXTRA_SLOT_START + i, stack));
-//            }
-//        }
-//    }
-//
-//    @Inject(method = "load", at = @At("TAIL"))
-//    private void onLoad(ValueInput.TypedInputList<ItemStackWithSlot> input, CallbackInfo ci) {
-//        extraItems.clear();
-//        for (net.minecraft.world.ItemStackWithSlot entry : input) {
-//            int slot = entry.slot();
-//            if (isExtraSlot(slot)) {
-//                extraItems.set(getExtraIndex(slot), entry.stack());
-//            }
-//        }
-//    }
 
     @Inject(method = "load", at = @At("TAIL"))
     private void onLoad(ValueInput.TypedInputList<ItemStackWithSlot> input, CallbackInfo ci) {
@@ -247,14 +230,20 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Inject(method = "add(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     private void onAdd(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(addInternal(-1, stack));
-        yyzsbackpack$syncToBackpack();
+        Inventory inv = (Inventory)(Object)this;
+        if (inv.player != null && !inv.player.level().isClientSide()) {
+            cir.setReturnValue(addInternal(-1, stack));
+            yyzsbackpack$syncToBackpack();
+        }
     }
 
     @Inject(method = "add(ILnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     private void onAddWithSlot(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(addInternal(slot, stack));
-        yyzsbackpack$syncToBackpack();
+        Inventory inv = (Inventory)(Object)this;
+        if (inv.player != null && !inv.player.level().isClientSide()) {
+            cir.setReturnValue(addInternal(slot, stack));
+            yyzsbackpack$syncToBackpack();
+        }
     }
 
     @Unique
@@ -323,95 +312,33 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Unique
     private static ItemStack getEquippedBackpack(Player player) {
-        var slots = Backpack.getAllBackpackSlots(player);
-        if (!slots.isEmpty()) {
-            var firstSlot = slots.getFirst();
-            if (firstSlot != null) {
-                ItemStack stack = firstSlot.getStack();
-                if (stack.getItem() instanceof BackpackItem) {
-                    return stack;
-                }
-            }
-        }
-        return ItemStack.EMPTY;
+        return Backpack.getSelectedBackpack(player);
     }
 
-    @Unique
-    private ItemStack cachedBackpack = ItemStack.EMPTY;
-
-    @Unique
-    private void updateExtraSlotsIfBackpackChanged(Player player, ItemStack oldBackpack) {
-        if (player == null && !player.level().isClientSide()) return;
-        ItemStack newBackpack = getEquippedBackpack(player);
-        if (!ItemStack.isSameItemSameComponents(oldBackpack, newBackpack)) {
-            if (newBackpack.getItem() instanceof BackpackItem) {
-                yyzsbackpack$syncFromBackpack(newBackpack);
-            } else {
-                for (int i = 0; i < EXTRA_SLOT_COUNT; i++) {
-                    extraSlotEnabled[i] = false;
-                    extraItems.set(i, ItemStack.EMPTY);
-                }
-            }
-        }
-        setChanged();
-    }
     @Inject(method = "setItem", at = @At("RETURN"))
     private void onSetItemReturn(int slot, ItemStack stack, CallbackInfo ci) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            updateExtraSlotsIfBackpackChanged(inv.player, cachedBackpack);
-            cachedBackpack = ItemStack.EMPTY;
-        }
+        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
     }
 
-    @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"))
-    private void onRemoveItemHead(int slot, int count, CallbackInfoReturnable<ItemStack> cir) {
-        Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            cachedBackpack = getEquippedBackpack(inv.player).copy();
-        }
-    }
 
     @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At("RETURN"))
     private void onRemoveItemReturn(int slot, int count, CallbackInfoReturnable<ItemStack> cir) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            updateExtraSlotsIfBackpackChanged(inv.player, cachedBackpack);
-            cachedBackpack = ItemStack.EMPTY;
-        }
-    }
-
-    @Inject(method = "removeItemNoUpdate", at = @At("HEAD"))
-    private void onRemoveItemNoUpdateHead(int slot, CallbackInfoReturnable<ItemStack> cir) {
-        Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            cachedBackpack = getEquippedBackpack(inv.player).copy();
-        }
+        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
     }
 
     @Inject(method = "removeItemNoUpdate", at = @At("RETURN"))
     private void onRemoveItemNoUpdateReturn(int slot, CallbackInfoReturnable<ItemStack> cir) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            updateExtraSlotsIfBackpackChanged(inv.player, cachedBackpack);
-            cachedBackpack = ItemStack.EMPTY;
-        }
-    }
-
-    @Inject(method = "clearContent", at = @At("HEAD"))
-    private void onClearContentHead(CallbackInfo ci) {
-        Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            cachedBackpack = getEquippedBackpack(inv.player).copy();
-        }
+        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
     }
 
     @Inject(method = "clearContent", at = @At("RETURN"))
     private void onClearContentReturn(CallbackInfo ci) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
-            updateExtraSlotsIfBackpackChanged(inv.player, cachedBackpack);
-            cachedBackpack = ItemStack.EMPTY;
-        }
+        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
     }
+
+
 }

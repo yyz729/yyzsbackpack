@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.container;
 
-import com.yyz.yyzsbackpack.api.inventory.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.api.inventory;
+package com.yyz.yyzsbackpack.api;
 
 import net.minecraft.world.item.ItemStack;
 
@@ -9,4 +9,6 @@ public interface IExtendedInventory {
 
     void yyzsbackpack$syncFromBackpack(ItemStack backpack);
     void yyzsbackpack$syncToBackpack();
+
+    void yyzsbackpack$switchToBackpack(int newIndex);
 }

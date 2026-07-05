@@ -2,14 +2,13 @@ package com.yyz.yyzsbackpack.api;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.BackpackContainerHelper;
-import com.yyz.yyzsbackpack.api.BackpackSlotPos;
-import com.yyz.yyzsbackpack.api.LayoutOrder;
-import com.yyz.yyzsbackpack.api.LayoutSegment;
+import com.yyz.yyzsbackpack.SwitchBackpackC2SPacket;
+import com.yyz.yyzsbackpack.container.BackpackSlot;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -195,6 +194,88 @@ public final class BackpackScreenHelper {
         return new Rectangle(x, y, texWidth, texHeight);
     }
 
+    /**
+     * 在背包界面顶部绘制多背包标签（tabs）。
+     *
+     * @param screen   AbstractContainerScreen 实例
+     * @param graphics GuiGraphicsExtractor
+     * @param mouseX   鼠标 X 坐标
+     * @param mouseY   鼠标 Y 坐标
+     */
+    public static void drawBackpackTabs(AbstractContainerScreen<?> screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) return;
+
+        List<ItemStack> stacks = Backpack.getAllBackpackStacks(minecraft.player);
+        if (stacks.isEmpty()) return;
+        int selected = Backpack.getSelectedIndex(minecraft.player);
+        if (selected >= stacks.size()) selected = 0;
+
+        int left = ((ScreenAccessor<?>) screen).getLeftPos();
+        int top = ((ScreenAccessor<?>) screen).getTopPos();
+        int tabHeight = 20;
+        int y = top - tabHeight - 2;
+
+        for (int i = 0; i < stacks.size(); i++) {
+            int x = left + i * 30;
+            boolean isSelected = (i == selected);
+            // 绘制背景
+            graphics.fill(x, y, x + 28, y + tabHeight, isSelected ? 0xFF_AAAAAA : 0xFF_666666);
+            // 绘制物品
+            ItemStack stack = stacks.get(i);
+            graphics.item(stack, x + 6, y + 2);
+            // 悬停提示
+            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
+                graphics.setTooltipForNextFrame(minecraft.font, stack.getHoverName(), mouseX, mouseY);
+            }
+        }
+    }
+
+    /**
+     * 处理背包标签的点击切换逻辑。
+     *
+     * @param screen AbstractContainerScreen 实例
+     * @param mouseX 鼠标 X 坐标
+     * @param mouseY 鼠标 Y 坐标
+     * @return 如果点击到了某个标签则返回 true，否则 false
+     */
+    public static boolean handleTabClick(AbstractContainerScreen<?> screen, int mouseX, int mouseY) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) return false;
+
+        List<ItemStack> stacks = Backpack.getAllBackpackStacks(minecraft.player);
+        if (stacks.isEmpty()) return false;
+
+        int left = ((ScreenAccessor<?>) screen).getLeftPos();
+        int top = ((ScreenAccessor<?>) screen).getTopPos();
+        int tabHeight = 20;
+        int y = top - tabHeight - 2;
+
+        for (int i = 0; i < stacks.size(); i++) {
+            int x = left + i * 30;
+            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
+                int currentSelected = Backpack.getSelectedIndex(minecraft.player);
+                if (i != currentSelected) {
+                    if (minecraft.player.getInventory() instanceof IExtendedInventory extInv) {
+                        extInv.yyzsbackpack$switchToBackpack(i);
+                    }
+                    ClientPlayNetworking.send(new SwitchBackpackC2SPacket(i));
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int findFirstBackpackSlotIndex(AbstractContainerMenu menu) {
+        List<Slot> slots = menu.slots;
+        for (int i = 0; i < slots.size(); i++) {
+            if (slots.get(i) instanceof BackpackSlot) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     private static ItemStack getEquippedBackpack(Player player) {
         return Backpack.getSelectedBackpack(player);

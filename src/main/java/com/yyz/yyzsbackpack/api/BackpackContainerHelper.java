@@ -23,7 +23,7 @@ public final class BackpackContainerHelper {
 
         // 添加 256 个不可见槽位
         for (int i = 0; i < 256; i++) {
-            ((MenuAccessor)menu).invokeAddSlot(new BackpackSlot(playerInv, start + i, -1000, -1000, start));
+            ((MenuAccessor)menu).invokeAddSlot(new BackpackSlot(playerInv, playerInv.getContainerSize() + i, -1000, -1000, playerInv.getContainerSize()));
         }
     }
 

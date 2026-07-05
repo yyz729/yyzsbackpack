@@ -10,7 +10,6 @@ public class BackpackSlot extends Slot {
     private final Inventory inventory;
     private final int slotIndex;
     private final int EXTRA_SLOT_START;
-    private boolean active;
 
     public BackpackSlot(Inventory inventory, int slotIndex, int x, int y, int slotStart) {
         super(inventory, slotIndex, x, y);
@@ -24,7 +23,7 @@ public class BackpackSlot extends Slot {
         IExtendedInventory ext = (IExtendedInventory) inventory;
 
         int extraIndex = slotIndex - EXTRA_SLOT_START;
-        return ext.yyzsbackpack$isExtraSlotEnabled(extraIndex) && super.mayPlace(stack);
+        return ext.yyzsbackpack$isExtraSlotEnabled(extraIndex) && super.mayPlace(stack) && stack.getItem().canFitInsideContainerItems();
     }
 
     @Override

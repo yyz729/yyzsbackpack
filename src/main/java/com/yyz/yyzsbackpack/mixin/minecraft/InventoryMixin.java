@@ -26,10 +26,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Inventory.class)
 public abstract class InventoryMixin implements IExtendedInventory {
 
+    @Shadow
+    public abstract int getContainerSize();
+
     @Unique
     private static final int EXTRA_SLOT_COUNT = 256;
-    @Unique
-    private static final int EXTRA_SLOT_START = 46;
 
 
     @Unique
@@ -118,12 +119,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Unique
     private int getExtraIndex(int slot) {
-        return slot - EXTRA_SLOT_START;
+        return slot - getContainerSize();
     }
 
     @Unique
     private boolean isExtraSlot(int slot) {
-        return slot >= EXTRA_SLOT_START && slot < EXTRA_SLOT_START + EXTRA_SLOT_COUNT;
+        return slot >= getContainerSize() && slot < getContainerSize() + EXTRA_SLOT_COUNT;
     }
 
     @Inject(method = "getItem", at = @At("HEAD"), cancellable = true)
@@ -184,7 +185,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
         // 查找额外空位
         for (int i = 0; i < extraItems.size(); i++) {
             if (extraItems.get(i).isEmpty() && extraSlotEnabled[i]) {
-                return EXTRA_SLOT_START + i;
+                return getContainerSize() + i;
             }
         }
         return -1;
@@ -200,7 +201,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
                     && ItemStack.isSameItemSameComponents(existing, stack)
                     && existing.isStackable()
                     && existing.getCount() < ((Inventory)(Object)this).getMaxStackSize(existing)) {
-                return EXTRA_SLOT_START + i;
+                return getContainerSize() + i;
             }
         }
         return -1;

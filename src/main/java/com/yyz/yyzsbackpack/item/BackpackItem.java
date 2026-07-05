@@ -20,4 +20,8 @@ public class BackpackItem extends Item {
         return BackpackDataLoader.getData(type);
     }
 
+    @Override
+    public boolean canFitInsideContainerItems() {
+        return false;
+    }
 }

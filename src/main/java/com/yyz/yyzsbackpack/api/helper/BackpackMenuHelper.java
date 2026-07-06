@@ -1,16 +1,13 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.api.helper;
 
-import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.container.BackpackSlot;
-import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.api.IBackpackMenu;
+import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 
-public final class BackpackContainerHelper {
-    private BackpackContainerHelper() {}
+public final class BackpackMenuHelper {
+    private BackpackMenuHelper() {}
 
     public static void addBackpackSlotsIfPresent(AbstractContainerMenu menu, Inventory playerInv) {
 

@@ -1,12 +1,17 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.api.helper;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.SwitchBackpackC2SPacket;
-import com.yyz.yyzsbackpack.container.BackpackSlot;
+import com.yyz.yyzsbackpack.api.IBackpackOffsetProvider;
+import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
+import com.yyz.yyzsbackpack.api.data.LayoutOrder;
+import com.yyz.yyzsbackpack.api.data.LayoutSegment;
+import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
+import com.yyz.yyzsbackpack.client.gui.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
+import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -35,7 +40,7 @@ public final class BackpackScreenHelper {
      */
     public static void setupBackpackSlots(AbstractContainerScreen<?> screen) {
         AbstractContainerMenu menu = screen.getMenu();
-        int start = BackpackContainerHelper.getBackpackSlotStart(menu);
+        int start = BackpackMenuHelper.getBackpackSlotStart(menu);
         if (start < 0) {
             return; // 该容器没有添加背包槽位
         }
@@ -46,7 +51,7 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        ItemStack backpackStack = getEquippedBackpack(player);
+        ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
         if (data == null) {
             return;
@@ -102,8 +107,7 @@ public final class BackpackScreenHelper {
     }
 
     /**
-     * 在屏幕背景之上绘制自定义背包 GUI 纹理（背景图）。
-     * 应在屏幕的 renderBg() 方法末尾调用。
+     * 在屏幕背景之上绘制自定义背包 GUI 纹理。
      *
      * @param screen   目标容器屏幕
      * @param graphics GuiGraphicsExtractor 实例
@@ -120,7 +124,7 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        ItemStack backpackStack = getEquippedBackpack(player);
+        ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
         if (data == null || data.guiTexture() == null) {
             return;
@@ -157,7 +161,7 @@ public final class BackpackScreenHelper {
     }
 
     /**
-     * 计算当前背包背景纹理在屏幕上的矩形区域（屏幕坐标）。
+     * 计算当前背包背景纹理在屏幕上的矩形区域。
      * @param screen 当前容器屏幕
      * @return 矩形对象，若无背包背景则返回 null
      */
@@ -167,7 +171,7 @@ public final class BackpackScreenHelper {
         Player player = minecraft.player;
         if (player == null) return null;
 
-        ItemStack backpackStack = getEquippedBackpack(player);
+        ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
         if (data == null || data.guiTexture() == null) return null;
 
@@ -194,23 +198,17 @@ public final class BackpackScreenHelper {
         return new Rectangle(x, y, texWidth, texHeight);
     }
 
-    /**
-     * 在背包界面顶部绘制多背包标签（tabs）。
-     *
-     * @param screen   AbstractContainerScreen 实例
-     * @param graphics GuiGraphicsExtractor
-     * @param mouseX   鼠标 X 坐标
-     * @param mouseY   鼠标 Y 坐标
-     */
-    public static void drawBackpackTabs(AbstractContainerScreen<?> screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) return;
+    public static void rebuildBackpackTabs(AbstractContainerScreen<?> screen) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
 
-        List<ItemStack> stacks = Backpack.getAllBackpackStacks(minecraft.player);
+        // 移除旧的 BackpackTabWidget
+        screen.children().removeIf(widget -> widget instanceof BackpackTabWidget);
+
+        List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(mc.player);
         if (stacks.isEmpty()) return;
-        int selected = Backpack.getSelectedIndex(minecraft.player);
-        if (selected >= stacks.size()) selected = 0;
 
+        int selected = BackpackSlotHelper.getSelectedIndex(mc.player);
         int left = ((ScreenAccessor<?>) screen).getLeftPos();
         int top = ((ScreenAccessor<?>) screen).getTopPos();
         int tabHeight = 20;
@@ -219,67 +217,22 @@ public final class BackpackScreenHelper {
         for (int i = 0; i < stacks.size(); i++) {
             int x = left + i * 30;
             boolean isSelected = (i == selected);
-            // 绘制背景
-            graphics.fill(x, y, x + 28, y + tabHeight, isSelected ? 0xFF_AAAAAA : 0xFF_666666);
-            // 绘制物品
-            ItemStack stack = stacks.get(i);
-            graphics.item(stack, x + 6, y + 2);
-            // 悬停提示
-            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
-                graphics.setTooltipForNextFrame(minecraft.font, stack.getHoverName(), mouseX, mouseY);
-            }
-        }
-    }
+            ItemStack icon = stacks.get(i);
 
-    /**
-     * 处理背包标签的点击切换逻辑。
-     *
-     * @param screen AbstractContainerScreen 实例
-     * @param mouseX 鼠标 X 坐标
-     * @param mouseY 鼠标 Y 坐标
-     * @return 如果点击到了某个标签则返回 true，否则 false
-     */
-    public static boolean handleTabClick(AbstractContainerScreen<?> screen, int mouseX, int mouseY) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) return false;
-
-        List<ItemStack> stacks = Backpack.getAllBackpackStacks(minecraft.player);
-        if (stacks.isEmpty()) return false;
-
-        int left = ((ScreenAccessor<?>) screen).getLeftPos();
-        int top = ((ScreenAccessor<?>) screen).getTopPos();
-        int tabHeight = 20;
-        int y = top - tabHeight - 2;
-
-        for (int i = 0; i < stacks.size(); i++) {
-            int x = left + i * 30;
-            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
-                int currentSelected = Backpack.getSelectedIndex(minecraft.player);
-                if (i != currentSelected) {
-                    if (minecraft.player.getInventory() instanceof IExtendedInventory extInv) {
-                        extInv.yyzsbackpack$switchToBackpack(i);
-                    }
-                    ClientPlayNetworking.send(new SwitchBackpackC2SPacket(i));
+            int idx = i;
+            BackpackTabWidget tab = new BackpackTabWidget(x, y, icon, isSelected, () -> {
+                if (mc.player.getInventory() instanceof IExtendedInventory extInv) {
+                    extInv.yyzsbackpack$switchToBackpack(idx);
                 }
-                return true;
-            }
+                ClientPlayNetworking.send(new SwitchBackpackC2SPacket(idx));
+            });
+
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(tab);
         }
-        return false;
     }
 
-    private static int findFirstBackpackSlotIndex(AbstractContainerMenu menu) {
-        List<Slot> slots = menu.slots;
-        for (int i = 0; i < slots.size(); i++) {
-            if (slots.get(i) instanceof BackpackSlot) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
-    private static ItemStack getEquippedBackpack(Player player) {
-        return Backpack.getSelectedBackpack(player);
-    }
+
 
     private static BackpackData getBackpackData(ItemStack stack) {
         if (stack.getItem() instanceof BackpackItem backpackItem) {
@@ -289,14 +242,14 @@ public final class BackpackScreenHelper {
     }
 
     private static int getOffsetX(AbstractContainerScreen<?> screen) {
-        if (screen instanceof BackpackScreenOffsetProvider provider) {
+        if (screen instanceof IBackpackOffsetProvider provider) {
             return provider.yyzsbackpack$getBackpackOffsetX();
         }
         return 0;
     }
 
     private static int getOffsetY(AbstractContainerScreen<?> screen) {
-        if (screen instanceof BackpackScreenOffsetProvider provider) {
+        if (screen instanceof IBackpackOffsetProvider provider) {
             return provider.yyzsbackpack$getBackpackOffsetY();
         }
         return 0;

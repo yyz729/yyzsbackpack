@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.yyz.yyzsbackpack.api.LayoutSegment;
+import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import net.minecraft.resources.Identifier;
 
 import java.util.List;

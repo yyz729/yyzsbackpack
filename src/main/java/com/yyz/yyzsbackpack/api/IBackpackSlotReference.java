@@ -3,7 +3,7 @@ package com.yyz.yyzsbackpack.api;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-public interface BackpackSlotReference {
+public interface IBackpackSlotReference {
     ItemStack getStack();
     void setStack(ItemStack stack);
     default Component getDisplayName() {

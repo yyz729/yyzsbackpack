@@ -1,5 +1,6 @@
-package com.yyz.yyzsbackpack;
+package com.yyz.yyzsbackpack.network;
 
+import com.yyz.yyzsbackpack.Backpack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

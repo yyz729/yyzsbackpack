@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.container;
+package com.yyz.yyzsbackpack.inventory;
 
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import net.minecraft.world.entity.player.Inventory;

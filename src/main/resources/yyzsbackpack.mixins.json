@@ -3,9 +3,9 @@
   "package": "com.yyz.yyzsbackpack.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "AbstractBackpackMenuMixin",
-    "minecraft.AbstractContainerMenuMixin",
-    "minecraft.InventoryMixin",
+    "minecraft.container.AbstractContainerMenuMixin",
+    "minecraft.container.InventoryMixin",
+    "minecraft.PlayerMixin",
     "minecraft.accessor.MenuAccessor",
     "minecraft.accessor.SlotAccessor",
     "minecraft.container.chest.ChestMenuMixin",
@@ -19,9 +19,11 @@
     "requireAnnotations": true
   },
   "client": [
-    "minecraft.AbstractContainerScreenMixin",
-    "minecraft.AbstractRecipeBookScreenMixin",
+    "minecraft.container.AbstractContainerScreenMixin",
+    "minecraft.container.AbstractRecipeBookMixin",
+    "minecraft.AvatarRendererMixin",
     "minecraft.accessor.ScreenAccessor",
+    "minecraft.accessor.ScreenInvoker",
     "minecraft.container.chest.ContainerScreenMixin",
     "minecraft.container.crafting.CraftingScreenMixin",
     "minecraft.container.inventory.InventoryScreenMixin"

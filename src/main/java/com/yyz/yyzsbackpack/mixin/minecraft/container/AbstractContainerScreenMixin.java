@@ -1,18 +1,11 @@
-package com.yyz.yyzsbackpack.mixin.minecraft;
+package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
-import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.BackpackContainerHelper;
-import com.yyz.yyzsbackpack.api.BackpackScreenHelper;
-import com.yyz.yyzsbackpack.api.IBackpackMenu;
+import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
 

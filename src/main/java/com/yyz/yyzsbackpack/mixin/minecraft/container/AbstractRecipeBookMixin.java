@@ -1,17 +1,14 @@
-package com.yyz.yyzsbackpack.mixin.minecraft;
+package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
-import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.BackpackScreenOffsetProvider;
+import com.yyz.yyzsbackpack.api.IBackpackOffsetProvider;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.world.inventory.RecipeBookMenu;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(AbstractRecipeBookScreen.class)
-public abstract class AbstractRecipeBookScreenMixin implements BackpackScreenOffsetProvider {
+public abstract class AbstractRecipeBookMixin implements IBackpackOffsetProvider {
 
     @Shadow
     @Final

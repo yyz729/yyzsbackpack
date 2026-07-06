@@ -1,5 +1,7 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.api.provider;
 
+import com.yyz.yyzsbackpack.api.IBackpackSlotProvider;
+import com.yyz.yyzsbackpack.api.IBackpackSlotReference;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -7,9 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VanillaBackpackSlotProvider implements BackpackSlotProvider {
+public class VanillaBackpackSlotProvider implements IBackpackSlotProvider {
     @Override
-    public List<BackpackSlotReference> getSlots(Player player) {
+    public List<IBackpackSlotReference> getSlots(Player player) {
 //        return List.of(new BackpackSlotReference() {
 //            @Override
 //            public ItemStack getStack() {
@@ -21,12 +23,12 @@ public class VanillaBackpackSlotProvider implements BackpackSlotProvider {
 //            }
 //        });
 
-        List<BackpackSlotReference> slots = new ArrayList<>();
+        List<IBackpackSlotReference> slots = new ArrayList<>();
 
-        // 1. 添加所有普通物品栏（36个槽位）
+        //所有物品栏
         for (int i = 0; i < 36; i++) {
             final int index = i;
-            slots.add(new BackpackSlotReference() {
+            slots.add(new IBackpackSlotReference() {
                 @Override
                 public ItemStack getStack() {
                     return player.getInventory().getItem(index);
@@ -39,8 +41,8 @@ public class VanillaBackpackSlotProvider implements BackpackSlotProvider {
             });
         }
 
-        // 2. 添加胸甲槽位
-        slots.add(new BackpackSlotReference() {
+        //胸甲
+        slots.add(new IBackpackSlotReference() {
             @Override
             public ItemStack getStack() {
                 return player.getItemBySlot(EquipmentSlot.CHEST);

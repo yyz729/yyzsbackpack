@@ -1,8 +1,8 @@
-package com.yyz.yyzsbackpack.mixin.minecraft;
+package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
@@ -86,7 +86,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
         Inventory inv = (Inventory)(Object)this;
         Player player = inv.player;
 
-        ItemStack equippedBackpack = getEquippedBackpack(player);
+        ItemStack equippedBackpack = BackpackSlotHelper.getSelectedBackpack(player);
         if (!(equippedBackpack.getItem() instanceof BackpackItem)) return;
 
         NonNullList<ItemStack> contentsList = NonNullList.withSize(EXTRA_SLOT_COUNT, ItemStack.EMPTY);
@@ -109,10 +109,10 @@ public abstract class InventoryMixin implements IExtendedInventory {
         yyzsbackpack$syncToBackpack();
 
         // 更新本地索引
-        Backpack.setSelectedIndex(player, newIndex);
+        BackpackSlotHelper.setSelectedIndex(player, newIndex);
 
         // 加载新背包
-        yyzsbackpack$syncFromBackpack(Backpack.getSelectedBackpack(player));
+        yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
         inv.setChanged();
     }
 
@@ -136,9 +136,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Inject(method = "setItem", at = @At("HEAD"), cancellable = true)
     private void onSetItem(int slot, ItemStack stack, CallbackInfo ci) {
-
-        Inventory inv = (Inventory)(Object)this;
-//        cachedBackpack = getEquippedBackpack(inv.player).copy();
 
         if (isExtraSlot(slot)) {
             extraItems.set(getExtraIndex(slot), stack);
@@ -218,7 +215,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
     @Inject(method = "load", at = @At("TAIL"))
     private void onLoad(ValueInput.TypedInputList<ItemStackWithSlot> input, CallbackInfo ci) {
         Inventory inv = (Inventory)(Object)this;
-        ItemStack back = getEquippedBackpack(inv.player);
+        ItemStack back = BackpackSlotHelper.getSelectedBackpack(inv.player);
         if (back.getItem() instanceof BackpackItem) {
             yyzsbackpack$syncFromBackpack(back);
         } else {
@@ -311,34 +308,29 @@ public abstract class InventoryMixin implements IExtendedInventory {
         return inv.player.hasInfiniteMaterials();
     }
 
-    @Unique
-    private static ItemStack getEquippedBackpack(Player player) {
-        return Backpack.getSelectedBackpack(player);
-    }
-
     @Inject(method = "setItem", at = @At("RETURN"))
     private void onSetItemReturn(int slot, ItemStack stack, CallbackInfo ci) {
         Inventory inv = (Inventory)(Object)this;
-        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
+        yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(inv.player));
     }
 
 
     @Inject(method = "removeItem(II)Lnet/minecraft/world/item/ItemStack;", at = @At("RETURN"))
     private void onRemoveItemReturn(int slot, int count, CallbackInfoReturnable<ItemStack> cir) {
         Inventory inv = (Inventory)(Object)this;
-        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
+        yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(inv.player));
     }
 
     @Inject(method = "removeItemNoUpdate", at = @At("RETURN"))
     private void onRemoveItemNoUpdateReturn(int slot, CallbackInfoReturnable<ItemStack> cir) {
         Inventory inv = (Inventory)(Object)this;
-        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
+        yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(inv.player));
     }
 
     @Inject(method = "clearContent", at = @At("RETURN"))
     private void onClearContentReturn(CallbackInfo ci) {
         Inventory inv = (Inventory)(Object)this;
-        yyzsbackpack$syncFromBackpack(getEquippedBackpack(inv.player));
+        yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(inv.player));
     }
 
 

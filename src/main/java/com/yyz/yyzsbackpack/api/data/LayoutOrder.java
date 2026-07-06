@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.api;
+package com.yyz.yyzsbackpack.api.data;
 
 import com.mojang.serialization.Codec;
 

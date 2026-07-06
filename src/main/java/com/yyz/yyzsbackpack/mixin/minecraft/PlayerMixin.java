@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft;
 
+import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.IPlayerBackpackData;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -48,6 +49,9 @@ public abstract class PlayerMixin implements IPlayerBackpackData {   // 实现�
         Optional<ItemStack> optionalStack = input.read("BackpackItem", ItemStack.CODEC);
         player.getEntityData().set(DATA_BACKPACK_INDEX, idx);
         player.getEntityData().set(DATA_BACKPACK_STACK, optionalStack.orElse(ItemStack.EMPTY));
+
+        ItemStack selected = BackpackSlotHelper.getSelectedBackpack(player);
+        ((IExtendedInventory)player.getInventory()).yyzsbackpack$syncFromBackpack(selected);
     }
 
     @Override

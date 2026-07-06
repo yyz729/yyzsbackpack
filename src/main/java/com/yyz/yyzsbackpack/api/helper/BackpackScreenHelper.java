@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.api.helper;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackOffsetProvider;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
@@ -16,6 +17,7 @@ import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.server.packs.resources.Resource;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class BackpackScreenHelper {
 
@@ -125,7 +128,12 @@ public final class BackpackScreenHelper {
         }
 
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
+
         BackpackData data = getBackpackData(backpackStack);
+
+        if(data != null) {
+            Backpack.LOGGER.info(data.toString());
+        }
         if (data == null || data.guiTexture() == null) {
             return;
         }
@@ -202,13 +210,56 @@ public final class BackpackScreenHelper {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        // 移除旧的 BackpackTabWidget
-        screen.children().removeIf(widget -> widget instanceof BackpackTabWidget);
+        // 获取旧标签列表
+        List<BackpackTabWidget> oldTabs = screen.children().stream()
+                .filter(w -> w instanceof BackpackTabWidget)
+                .map(w -> (BackpackTabWidget) w)
+                .toList();
 
+        // 获取当前背包状态
         List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(mc.player);
-        if (stacks.isEmpty()) return;
-
+        if (stacks.isEmpty()) {
+            // 无背包，但旧标签存在则需要移除
+            if (!oldTabs.isEmpty()) {
+                for (BackpackTabWidget tab : oldTabs) {
+                    ((ScreenInvoker) screen).invokeRemoveWidget(tab);
+                }
+            }
+            return;
+        }
         int selected = BackpackSlotHelper.getSelectedIndex(mc.player);
+        if (selected >= stacks.size()) selected = 0;
+
+        // 检查是否一致
+        boolean same = true;
+        if (oldTabs.size() != stacks.size()) {
+            same = false;
+        } else {
+            for (int i = 0; i < oldTabs.size(); i++) {
+                BackpackTabWidget oldTab = oldTabs.get(i);
+                // 比较图标
+                if (!ItemStack.matches(oldTab.getIcon(), stacks.get(i))) {
+                    same = false;
+                    break;
+                }
+                // 比较选中状态
+                if (oldTab.isSelected() != (i == selected)) {
+                    same = false;
+                    break;
+                }
+            }
+        }
+
+        if (same) {
+            return; // 完全一致，不执行任何操作
+        }
+
+        // 不一致，移除所有旧标签
+        for (BackpackTabWidget tab : oldTabs) {
+            ((ScreenInvoker) screen).invokeRemoveWidget(tab);
+        }
+
+        // 重建新标签
         int left = ((ScreenAccessor<?>) screen).getLeftPos();
         int top = ((ScreenAccessor<?>) screen).getTopPos();
         int tabHeight = 20;
@@ -218,7 +269,6 @@ public final class BackpackScreenHelper {
             int x = left + i * 30;
             boolean isSelected = (i == selected);
             ItemStack icon = stacks.get(i);
-
             int idx = i;
             BackpackTabWidget tab = new BackpackTabWidget(x, y, icon, isSelected, () -> {
                 if (mc.player.getInventory() instanceof IExtendedInventory extInv) {
@@ -226,7 +276,6 @@ public final class BackpackScreenHelper {
                 }
                 ClientPlayNetworking.send(new SwitchBackpackC2SPacket(idx));
             });
-
             ((ScreenInvoker) screen).invokeAddRenderableWidget(tab);
         }
     }
@@ -253,5 +302,42 @@ public final class BackpackScreenHelper {
             return provider.yyzsbackpack$getBackpackOffsetY();
         }
         return 0;
+    }
+
+    /**
+     * 在背包界面顶部绘制多背包标签（tabs）。
+     *
+     * @param screen   AbstractContainerScreen 实例
+     * @param graphics GuiGraphicsExtractor
+     * @param mouseX   鼠标 X 坐标
+     * @param mouseY   鼠标 Y 坐标
+     */
+    public static void drawBackpackTabs(AbstractContainerScreen<?> screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) return;
+
+        List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(minecraft.player);
+        if (stacks.isEmpty()) return;
+        int selected = BackpackSlotHelper.getSelectedIndex(minecraft.player);
+        if (selected >= stacks.size()) selected = 0;
+
+        int left = ((ScreenAccessor<?>) screen).getLeftPos();
+        int top = ((ScreenAccessor<?>) screen).getTopPos();
+        int tabHeight = 20;
+        int y = top - tabHeight - 2;
+
+        for (int i = 0; i < stacks.size(); i++) {
+            int x = left + i * 30;
+            boolean isSelected = (i == selected);
+            // 绘制背景
+            graphics.fill(x, y, x + 28, y + tabHeight, isSelected ? 0xFF_AAAAAA : 0xFF_666666);
+            // 绘制物品
+            ItemStack stack = stacks.get(i);
+            graphics.item(stack, x + 6, y + 2);
+            // 悬停提示
+            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
+                graphics.setTooltipForNextFrame(minecraft.font, stack.getHoverName(), mouseX, mouseY);
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,17 @@ public class BackpackDataLoader {
 
     public static BackpackData getData(String type) {
         return DATA.get(type);
+    }
+
+    // 服务端发送全部数据
+    public static Map<String, BackpackData> getAllData() {
+        return Collections.unmodifiableMap(DATA);
+    }
+
+    // 客户端接收数据时填充
+    public static void setData(Map<String, BackpackData> newData) {
+        DATA.clear();
+        DATA.putAll(newData);
     }
 
     private static void apply(Map<Identifier, BackpackData> map, ResourceManager manager, ProfilerFiller profiler) {

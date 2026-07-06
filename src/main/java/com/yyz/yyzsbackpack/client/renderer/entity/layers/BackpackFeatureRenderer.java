@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.client;
+package com.yyz.yyzsbackpack.client.renderer.entity.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;

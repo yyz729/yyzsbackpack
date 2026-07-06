@@ -17,8 +17,8 @@ public class BackpackTabWidget extends AbstractWidget {
         this.icon = icon;
         this.selected = selected;
         this.onSwitch = onSwitch;
-
         this.setTooltip(Tooltip.create(icon.getHoverName()));
+
     }
 
     /**
@@ -51,5 +51,13 @@ public class BackpackTabWidget extends AbstractWidget {
     @Override
     protected void updateWidgetNarration(net.minecraft.client.gui.narration.NarrationElementOutput output) {
         this.defaultButtonNarrationText(output);
+    }
+
+    public ItemStack getIcon() {
+        return icon;
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 }

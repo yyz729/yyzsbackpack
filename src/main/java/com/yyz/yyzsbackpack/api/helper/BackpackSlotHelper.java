@@ -104,4 +104,11 @@ public final class BackpackSlotHelper {
         }
         return ItemStack.EMPTY;
     }
+
+    public static ItemStack getSyncedBackpack(Player player) {
+        if (player instanceof IPlayerBackpackData backpackData) {
+            return backpackData.yyzsbackpack$getSyncedBackpack();
+        }
+        return ItemStack.EMPTY;
+    }
 }

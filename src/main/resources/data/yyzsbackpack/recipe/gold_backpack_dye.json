@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "dyed_backpack",
+  "result": {
+    "id": "yyzsbackpack:gold_backpack"
+  },
+  "target": "yyzsbackpack:gold_backpack"
+}

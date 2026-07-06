@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"com.yyz.yyzsbackpack.Backpack"
+		],
+		"client": [
+			"com.yyz.yyzsbackpack.BackpackClient"
 		]
 	},
 	"mixins": [

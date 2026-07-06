@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft;
 
-import com.yyz.yyzsbackpack.client.BackpackFeatureRenderer;
+import com.yyz.yyzsbackpack.client.renderer.entity.layers.BackpackFeatureRenderer;
 import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

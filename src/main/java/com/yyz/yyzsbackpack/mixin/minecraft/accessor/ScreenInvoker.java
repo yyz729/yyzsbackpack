@@ -12,4 +12,7 @@ public interface ScreenInvoker {
 
     @Invoker("addRenderableWidget")
     <T extends GuiEventListener & Renderable & NarratableEntry> T invokeAddRenderableWidget(T widget);
+
+    @Invoker("removeWidget")
+    void invokeRemoveWidget(GuiEventListener widget);
 }

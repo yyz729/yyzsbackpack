@@ -1,6 +1,9 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
+import com.yyz.yyzsbackpack.api.BackpackVisibilityHandler;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
+import com.yyz.yyzsbackpack.client.gui.BackpackToggleButton;
+import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;

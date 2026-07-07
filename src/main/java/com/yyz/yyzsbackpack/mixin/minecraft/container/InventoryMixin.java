@@ -334,4 +334,16 @@ public abstract class InventoryMixin implements IExtendedInventory {
     }
 
 
+    @Inject(method = "setChanged", at = @At("HEAD"))
+    private void onSetChanged(CallbackInfo ci) {
+        Inventory inv = (Inventory)(Object)this;
+        if (inv.player != null) {
+            for (int i = 0; i < EXTRA_SLOT_COUNT; i++) {
+                if (extraSlotEnabled[i]) {
+                    yyzsbackpack$syncToBackpack();
+                    break;
+                }
+            }
+        }
+    }
 }

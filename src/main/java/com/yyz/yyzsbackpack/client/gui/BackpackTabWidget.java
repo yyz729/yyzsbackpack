@@ -13,7 +13,7 @@ public class BackpackTabWidget extends AbstractWidget {
     private final boolean selected;
 
     public BackpackTabWidget(int x, int y, ItemStack icon, boolean selected, Runnable onSwitch) {
-        super(x, y, 28, 20, Component.empty());
+        super(x, y, 18, 18, Component.empty());
         this.icon = icon;
         this.selected = selected;
         this.onSwitch = onSwitch;
@@ -31,7 +31,7 @@ public class BackpackTabWidget extends AbstractWidget {
         graphics.fill(getX(), getY(), getX() + width, getY() + height, color);
 
         // 绘制物品图标
-        graphics.item(icon, getX() + 6, getY() + 2);
+        graphics.item(icon, getX() + 1, getY() + 1);
 
     }
 

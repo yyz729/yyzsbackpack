@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.api.provider;
 
-import com.yyz.yyzsbackpack.api.IBackpackSlotProvider;
-import com.yyz.yyzsbackpack.api.IBackpackSlotReference;
+import com.yyz.yyzsbackpack.api.IBackpackSlots;
+import com.yyz.yyzsbackpack.api.IBackpackSlot;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -9,9 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VanillaBackpackSlotProvider implements IBackpackSlotProvider {
+public class VanillaBackpackSlotProvider implements IBackpackSlots {
     @Override
-    public List<IBackpackSlotReference> getSlots(Player player) {
+    public List<IBackpackSlot> getSlots(Player player) {
 //        return List.of(new BackpackSlotReference() {
 //            @Override
 //            public ItemStack getStack() {
@@ -23,12 +23,12 @@ public class VanillaBackpackSlotProvider implements IBackpackSlotProvider {
 //            }
 //        });
 
-        List<IBackpackSlotReference> slots = new ArrayList<>();
+        List<IBackpackSlot> slots = new ArrayList<>();
 
         //所有物品栏
         for (int i = 0; i < 36; i++) {
             final int index = i;
-            slots.add(new IBackpackSlotReference() {
+            slots.add(new IBackpackSlot() {
                 @Override
                 public ItemStack getStack() {
                     return player.getInventory().getItem(index);
@@ -42,7 +42,7 @@ public class VanillaBackpackSlotProvider implements IBackpackSlotProvider {
         }
 
         //胸甲
-        slots.add(new IBackpackSlotReference() {
+        slots.add(new IBackpackSlot() {
             @Override
             public ItemStack getStack() {
                 return player.getItemBySlot(EquipmentSlot.CHEST);

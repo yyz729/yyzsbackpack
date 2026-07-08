@@ -1,13 +1,16 @@
 package com.yyz.yyzsbackpack.api.helper;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.yyz.yyzsbackpack.api.BackpackVisibilityHandler;
-import com.yyz.yyzsbackpack.api.IBackpackOffsetProvider;
+import com.yyz.yyzsbackpack.api.IBackpackScroll;
+import com.yyz.yyzsbackpack.api.IBackpackToggle;
+import com.yyz.yyzsbackpack.api.IBackpackOffset;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
+import com.yyz.yyzsbackpack.client.gui.BackpackScrollbar;
 import com.yyz.yyzsbackpack.client.gui.BackpackTabWidget;
+import com.yyz.yyzsbackpack.client.gui.BackpackToggleButton;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
 public final class BackpackScreenHelper {
 
@@ -43,75 +47,110 @@ public final class BackpackScreenHelper {
     public static void setupBackpackSlots(AbstractContainerScreen<?> screen) {
         AbstractContainerMenu menu = screen.getMenu();
         int start = BackpackMenuHelper.getBackpackSlotStart(menu);
-        if (start < 0) {
-            return;
-        }
+        if (start < 0) return;
 
-        // 检查背包可见性（默认可见）
-        boolean visible = screen instanceof BackpackVisibilityHandler handler
-                ? handler.yyzsbackpack$isBackpackVisible()
-                : true;
-
-        Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
-        if (player == null) {
-            return;
-        }
-
-        // 不可见：将所有背包槽位移出屏幕
+        // 可见性检查
+        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
         if (!visible) {
-            List<Slot> slots = menu.slots;
-            for (int i = start; i < slots.size(); i++) {
-                Slot slot = slots.get(i);
+            for (int i = start; i < menu.slots.size(); i++) {
+                Slot slot = menu.slots.get(i);
                 ((SlotAccessor) slot).setX(-1000);
                 ((SlotAccessor) slot).setY(-1000);
             }
             return;
         }
 
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = minecraft.player;
+        if (player == null) return;
+
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
-        if (data == null) {
-            return;
-        }
+        if (data == null) return;
+
+        if (!(screen instanceof IBackpackScroll scrollable)) return;
+        int scrollOffset = scrollable.getScrollOffset();
 
         int offsetX = getOffsetX(screen);
         int offsetY = getOffsetY(screen);
 
+        int slotCount = menu.slots.size();
+        int[] origX = new int[slotCount];
+        int[] origY = new int[slotCount];
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        // 遍历所有段，计算每个槽位的原始坐标，同时记录全局 minY / maxY
         for (LayoutSegment segment : data.segments()) {
             int segStart = segment.startSlot();
             int count = segment.getSlotCount();
-            int baseX = segment.getEffectiveStartX();
-            int baseY = segment.getEffectiveStartY();
+            int baseX = segment.getEffectiveStartX() + offsetX;
+            int baseY = segment.getEffectiveStartY() + offsetY;
             int columns = segment.columns().orElse(0);
-            int rows = segment.rows().orElse(0);
             LayoutOrder order = segment.order();
-
-            List<Slot> slots = menu.slots;
 
             if (order == LayoutOrder.CUSTOM) {
                 List<BackpackSlotPos> customPositions = segment.customPositions()
-                        .orElseThrow(() -> new IllegalStateException("Missing customPositions for CUSTOM layout"));
+                        .orElseThrow(() -> new IllegalStateException("Missing customPositions"));
                 for (int j = 0; j < count; j++) {
                     int slotIndex = start + segStart + j;
-                    if (slotIndex >= slots.size()) break;
+                    if (slotIndex >= slotCount) break;
                     BackpackSlotPos pos = customPositions.get(j);
-                    Slot slot = slots.get(slotIndex);
-                    ((SlotAccessor) slot).setX(pos.x() + offsetX);
-                    ((SlotAccessor) slot).setY(pos.y() + offsetY);
+                    origX[slotIndex] = pos.x() + offsetX;
+                    origY[slotIndex] = pos.y() + offsetY;
+                    if (origY[slotIndex] < minY) minY = origY[slotIndex];
+                    if (origY[slotIndex] > maxY) maxY = origY[slotIndex];
                 }
             } else {
+                // 网格布局
                 for (int j = 0; j < count; j++) {
                     int slotIndex = start + segStart + j;
-                    if (slotIndex >= slots.size()) break;
+                    if (slotIndex >= slotCount) break;
                     int relX = j % columns;
                     int relY = j / columns;
-                    int x = baseX + relX * 18 + offsetX;
-                    int y = baseY + relY * 18 + offsetY;
-                    Slot slot = slots.get(slotIndex);
-                    ((SlotAccessor) slot).setX(x);
-                    ((SlotAccessor) slot).setY(y);
+                    int x = baseX + relX * 18;
+                    int y = baseY + relY * 18;
+                    origX[slotIndex] = x;
+                    origY[slotIndex] = y;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
                 }
+            }
+        }
+
+        // 如果没有槽位，结束
+        if (minY == Integer.MAX_VALUE || maxY == Integer.MIN_VALUE) return;
+
+        int visibleRows = 7; // 固定显示7行
+        // 计算真实的最大行索引（假设槽位 Y 坐标严格按 18 像素步进）
+        int maxRow = (maxY - minY) / 18;
+        int maxScroll = Math.max(0, maxRow - visibleRows + 1);
+        scrollable.setMaxScrollOffset(maxScroll);
+
+        // 修正当前滚动偏移
+        if (scrollOffset > maxScroll) {
+            scrollOffset = maxScroll;
+            scrollable.setScrollOffset(scrollOffset);
+        }
+        int pixelOffset = scrollOffset * 18;
+
+        // 可视区域：以最小 Y 为顶部，向下 visibleRows 行
+        int visibleTop = minY;
+        int visibleBottom = visibleTop + visibleRows * 18;
+
+        // 重新设置所有背包槽位
+        for (int i = start; i < slotCount; i++) {
+            Slot slot = menu.slots.get(i);
+            int originalX = origX[i];
+            int originalY = origY[i];
+            int newY = originalY - pixelOffset;
+
+            if (newY >= visibleTop - 2 && newY + 16 <= visibleBottom + 2) {
+                ((SlotAccessor) slot).setX(originalX);
+                ((SlotAccessor) slot).setY(newY);
+            } else {
+                ((SlotAccessor) slot).setX(-1000);
+                ((SlotAccessor) slot).setY(-1000);
             }
         }
     }
@@ -126,11 +165,11 @@ public final class BackpackScreenHelper {
      * @param mouseY      鼠标 Y 坐标
      * @param partialTick 部分帧时间
      */
-    public static void renderBackpackBackground(AbstractContainerScreen<?> screen,
-                                                GuiGraphicsExtractor graphics,
-                                                int mouseX, int mouseY, float partialTick) {
+    public static void addBackpackBackground(AbstractContainerScreen<?> screen,
+                                             GuiGraphicsExtractor graphics,
+                                             int mouseX, int mouseY, float partialTick) {
         // 可见性检查
-        if (screen instanceof BackpackVisibilityHandler handler && !handler.yyzsbackpack$isBackpackVisible()) {
+        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
             return;
         }
 
@@ -182,7 +221,7 @@ public final class BackpackScreenHelper {
      */
     @Nullable
     public static Rectangle getBackpackBackgroundBounds(AbstractContainerScreen<?> screen) {
-        if (screen instanceof BackpackVisibilityHandler handler && !handler.yyzsbackpack$isBackpackVisible()) {
+        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
             return null;
         }
 
@@ -220,7 +259,7 @@ public final class BackpackScreenHelper {
      *
      * @param screen 目标容器屏幕
      */
-    public static void rebuildBackpackTabs(AbstractContainerScreen<?> screen) {
+    public static void addBackpackTabs(AbstractContainerScreen<?> screen) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
@@ -231,7 +270,7 @@ public final class BackpackScreenHelper {
                 .toList();
 
         // 检查可见性
-        boolean visible = screen instanceof BackpackVisibilityHandler handler
+        boolean visible = screen instanceof IBackpackToggle handler
                 ? handler.yyzsbackpack$isBackpackVisible()
                 : true;
 
@@ -330,7 +369,7 @@ public final class BackpackScreenHelper {
         if (minecraft.player == null) return;
 
         // 可见性检查
-        if (screen instanceof BackpackVisibilityHandler handler && !handler.yyzsbackpack$isBackpackVisible()) {
+        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
             return;
         }
 
@@ -359,7 +398,33 @@ public final class BackpackScreenHelper {
         }
     }
 
-    // ---------- 私有辅助方法 ----------
+    /**
+     * 在指定屏幕添加背包开关按钮
+     *
+     * @param screen 目标容器屏幕
+     */
+    public static void addBackpackToggle(AbstractContainerScreen<?> screen) {
+        // 查找已有的 BackpackToggleButton
+        Optional<BackpackToggleButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackToggleButton)
+                .map(w -> (BackpackToggleButton) w)
+                .findFirst();
+
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
+        int x = leftPos + 3;
+        int y = topPos + 5;
+
+        if (existing.isPresent()) {
+            BackpackToggleButton btn = existing.get();
+            btn.setPosition(x, y);   // 更新位置
+        } else {
+            BackpackToggleButton btn = new BackpackToggleButton(x, y, (IBackpackToggle) screen);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    // ---------- 辅助方法 ----------
 
     private static BackpackData getBackpackData(ItemStack stack) {
         if (stack.getItem() instanceof BackpackItem backpackItem) {
@@ -369,16 +434,35 @@ public final class BackpackScreenHelper {
     }
 
     private static int getOffsetX(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffsetProvider provider) {
+        if (screen instanceof IBackpackOffset provider) {
             return provider.yyzsbackpack$getBackpackOffsetX();
         }
         return 0;
     }
 
     private static int getOffsetY(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffsetProvider provider) {
+        if (screen instanceof IBackpackOffset provider) {
             return provider.yyzsbackpack$getBackpackOffsetY();
         }
         return 0;
+    }
+
+    public static void addBackpackScrollbar(AbstractContainerScreen<?> screen) {
+        if (!(screen instanceof IBackpackScroll scrollable)) return;
+
+        // 移除已有的滚动条
+        screen.children().removeIf(w -> w instanceof BackpackScrollbar);
+
+        // 获取背包背景边界，计算滚动条位置（右侧）
+        Rectangle bounds = getBackpackBackgroundBounds(screen);
+        if (bounds == null) return;
+
+        int scrollbarX = bounds.x + bounds.width - 6; // 背景右侧+2像素间隙
+        int scrollbarY = bounds.y + 10;
+        int scrollbarWidth = 1;
+        int scrollbarHeight = bounds.height-20;
+
+        BackpackScrollbar scrollbar = new BackpackScrollbar(scrollbarX, scrollbarY, scrollbarWidth, scrollbarHeight, screen, scrollable);
+        ((ScreenInvoker) screen).invokeAddRenderableWidget(scrollbar);
     }
 }

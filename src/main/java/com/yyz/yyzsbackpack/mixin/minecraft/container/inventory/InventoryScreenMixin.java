@@ -1,15 +1,14 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
-import com.yyz.yyzsbackpack.api.BackpackVisibilityHandler;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
-import com.yyz.yyzsbackpack.client.gui.BackpackToggleButton;
-import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +31,10 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
 
     @Inject(method = "extractBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIFFIIII)V", shift = At.Shift.AFTER))
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        BackpackScreenHelper.renderBackpackBackground((InventoryScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.rebuildBackpackTabs((InventoryScreen) (Object) this);
+        BackpackScreenHelper.addBackpackBackground((InventoryScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs((InventoryScreen) (Object) this);
+        BackpackScreenHelper.addBackpackToggle((InventoryScreen) (Object) this);
+        BackpackScreenHelper.addBackpackScrollbar((InventoryScreen)(Object) this);
+
     }
 }

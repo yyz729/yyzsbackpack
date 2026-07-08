@@ -1,13 +1,11 @@
 package com.yyz.yyzsbackpack.mixin.minecraft;
 
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
-import com.yyz.yyzsbackpack.api.IPlayerBackpackData;
+import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
@@ -21,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin implements IPlayerBackpackData {   // 实现接口
+public abstract class PlayerMixin implements IBackpackData {   // 实现接口
     @Unique
     private static final EntityDataAccessor<ItemStack> DATA_BACKPACK_STACK =
             SynchedEntityData.defineId(Player.class, EntityDataSerializers.ITEM_STACK);

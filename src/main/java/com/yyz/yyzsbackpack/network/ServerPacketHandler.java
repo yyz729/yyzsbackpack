@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.network;
 
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
-import com.yyz.yyzsbackpack.api.IPlayerBackpackData;
+import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
@@ -25,7 +25,7 @@ public class ServerPacketHandler {
                 }
 
                 ItemStack selected = BackpackSlotHelper.getSelectedBackpack(player);
-                if (player instanceof IPlayerBackpackData data) {
+                if (player instanceof IBackpackData data) {
                     data.yyzsbackpack$setSyncedBackpack(selected);
 //                    data.yyzsbackpack$setSyncedBackpackIndex(packet.index());
                 }
@@ -40,7 +40,7 @@ public class ServerPacketHandler {
 
             ItemStack selected = BackpackSlotHelper.getSelectedBackpack(player);
             int index = BackpackSlotHelper.getSelectedIndex(player);
-            if (player instanceof IPlayerBackpackData data) {
+            if (player instanceof IBackpackData data) {
                 data.yyzsbackpack$setSyncedBackpack(selected);
 //                data.yyzsbackpack$setSyncedBackpackIndex(index);
             }

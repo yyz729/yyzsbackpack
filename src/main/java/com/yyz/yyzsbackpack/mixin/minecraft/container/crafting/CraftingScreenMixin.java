@@ -34,7 +34,8 @@ public abstract class CraftingScreenMixin extends AbstractRecipeBookScreen<Craft
             )
     )
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        BackpackScreenHelper.renderBackpackBackground((CraftingScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.rebuildBackpackTabs((CraftingScreen) (Object) this);
+        BackpackScreenHelper.addBackpackBackground((CraftingScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs((CraftingScreen) (Object) this);
+        BackpackScreenHelper.addBackpackToggle((CraftingScreen) (Object) this);
     }
 }

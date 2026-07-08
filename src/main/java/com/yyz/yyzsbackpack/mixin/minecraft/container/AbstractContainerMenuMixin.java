@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackMenu;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
@@ -43,9 +44,6 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
         }
         AbstractContainerMenu self = (AbstractContainerMenu) (Object) this;
 
-//        if (!(self instanceof IBackpackMenu)) {
-//            return;
-//        }
         // 无效槽位检查
         if (slotIndex < 0 || slotIndex >= self.slots.size()) {
             return;
@@ -66,12 +64,6 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
         if (backpackStart == -1 || backpackStart >= self.slots.size()) {
             return; // 当前菜单没有添加背包槽位
         }
-
-//        for (int i = backpackStart; i < self.slots.size(); i++) {
-//            if (!(self.slots.get(i) instanceof BackpackSlot)) {
-//                return; // 目标区域存在非背包槽，放弃本次操作
-//            }
-//        }
 
         // 记录原物品，用于后续更新
         ItemStack original = slot.getItem().copy();
@@ -98,5 +90,35 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
 
         // 不再执行原版
         ci.cancel();
+    }
+
+    @Inject(method = "clicked", at = @At("HEAD"))
+    private void logClick(int slotIndex, int buttonNum, ContainerInput containerInput,
+                          Player player, CallbackInfo ci) {
+        // 获取当前菜单实例（混入对象）
+        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
+
+        // 构造槽位信息
+        String slotInfo;
+        if (slotIndex >= 0 && slotIndex < menu.slots.size()) {
+            Slot slot = menu.slots.get(slotIndex);
+            ItemStack stack = slot.getItem();
+            slotInfo = String.format("Slot[%d] (%s) = %s",
+                    slotIndex,
+                    slot.getClass().getSimpleName(),
+                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
+        } else {
+            slotInfo = "Slot index " + slotIndex + " (outside)";
+        }
+
+        // 打印日志
+        Backpack.LOGGER.info("Container Click - Player: {}, Slot: {}, Button: {}, Input: {}, Carried: {}",
+                player.getName().getString(),
+                slotInfo,
+                buttonNum,
+                containerInput,
+                menu.getCarried().isEmpty() ? "empty" :
+                        menu.getCarried().getDisplayName().getString() + " x" + menu.getCarried().getCount()
+        );
     }
 }

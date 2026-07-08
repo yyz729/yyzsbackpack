@@ -1,39 +1,33 @@
 package com.yyz.yyzsbackpack.api.helper;
 
-import com.yyz.yyzsbackpack.api.IBackpackSlotProvider;
-import com.yyz.yyzsbackpack.api.IBackpackSlotReference;
-import com.yyz.yyzsbackpack.api.IPlayerBackpackData;
+import com.yyz.yyzsbackpack.api.IBackpackSlots;
+import com.yyz.yyzsbackpack.api.IBackpackSlot;
+import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.provider.VanillaBackpackSlotProvider;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class BackpackSlotHelper {
-    private static final List<IBackpackSlotProvider> SLOT_PROVIDERS = new ArrayList<>();
+    private static final List<IBackpackSlots> SLOT_PROVIDERS = new ArrayList<>();
 
     static {
         SLOT_PROVIDERS.add(new VanillaBackpackSlotProvider()); // 默认注册
     }
 
-    public static void registerSlotProvider(IBackpackSlotProvider provider) {
+    public static void registerSlotProvider(IBackpackSlots provider) {
         SLOT_PROVIDERS.add(provider);
     }
 
-    public static List<IBackpackSlotReference> getAllBackpackSlots(Player player) {
-        List<IBackpackSlotReference> slots = new ArrayList<>();
-        for (IBackpackSlotProvider provider : SLOT_PROVIDERS) {
+    public static List<IBackpackSlot> getAllBackpackSlots(Player player) {
+        List<IBackpackSlot> slots = new ArrayList<>();
+        for (IBackpackSlots provider : SLOT_PROVIDERS) {
             slots.addAll(provider.getSlots(player));
         }
 
@@ -45,7 +39,7 @@ public final class BackpackSlotHelper {
      * 获取玩家当前选中的背包物品。
      */
     public static ItemStack getSelectedBackpack(Player player) {
-        List<IBackpackSlotReference> slots = getAllBackpackSlots(player);
+        List<IBackpackSlot> slots = getAllBackpackSlots(player);
         if (slots.isEmpty()) return ItemStack.EMPTY;
         int idx = getSelectedIndex(player);
         if (idx < 0 || idx >= slots.size()) {
@@ -75,19 +69,19 @@ public final class BackpackSlotHelper {
 //    }
 
     public static int getSelectedIndex(Player player) {
-            return ((IPlayerBackpackData)player).yyzsbackpack$getSyncedBackpackIndex();
+            return ((IBackpackData)player).yyzsbackpack$getSyncedBackpackIndex();
     }
 
     public static void setSelectedIndex(Player player, int index) {
 
-        ((IPlayerBackpackData)player).yyzsbackpack$setSyncedBackpackIndex(index);
+        ((IBackpackData)player).yyzsbackpack$setSyncedBackpackIndex(index);
     }
     /**
      * 获取玩家所有背包物品列表（仅含有效背包）。
      */
     public static List<ItemStack> getAllBackpackStacks(Player player) {
         return getAllBackpackSlots(player).stream()
-                .map(IBackpackSlotReference::getStack)
+                .map(IBackpackSlot::getStack)
                 .toList();
     }
 
@@ -99,14 +93,14 @@ public final class BackpackSlotHelper {
         if (level == null) return ItemStack.EMPTY;
 
         Entity entity = level.getEntity(entityId);
-        if (entity instanceof IPlayerBackpackData backpackData) {
+        if (entity instanceof IBackpackData backpackData) {
             return backpackData.yyzsbackpack$getSyncedBackpack();
         }
         return ItemStack.EMPTY;
     }
 
     public static ItemStack getSyncedBackpack(Player player) {
-        if (player instanceof IPlayerBackpackData backpackData) {
+        if (player instanceof IBackpackData backpackData) {
             return backpackData.yyzsbackpack$getSyncedBackpack();
         }
         return ItemStack.EMPTY;

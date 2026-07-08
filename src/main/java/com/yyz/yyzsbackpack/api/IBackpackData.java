@@ -2,7 +2,7 @@ package com.yyz.yyzsbackpack.api;
 
 import net.minecraft.world.item.ItemStack;
 
-public interface IPlayerBackpackData {
+public interface IBackpackData {
     /** 获取同步来的背包堆（客户端可用） */
     ItemStack yyzsbackpack$getSyncedBackpack();
 

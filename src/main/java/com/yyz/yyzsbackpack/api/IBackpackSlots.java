@@ -4,6 +4,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-public interface IBackpackSlotProvider {
-    List<IBackpackSlotReference> getSlots(Player player);
+public interface IBackpackSlots {
+    List<IBackpackSlot> getSlots(Player player);
 }

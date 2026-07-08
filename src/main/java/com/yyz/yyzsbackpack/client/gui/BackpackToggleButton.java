@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui;
 
-import com.yyz.yyzsbackpack.api.BackpackVisibilityHandler;
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.IBackpackToggle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -10,10 +11,10 @@ import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
 public class BackpackToggleButton extends Button {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("fabric", "textures/gui/creative_buttons.png");
-    private final BackpackVisibilityHandler handler;
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack_buttons.png");
+    private final IBackpackToggle handler;
 
-    public BackpackToggleButton(int x, int y, BackpackVisibilityHandler handler) {
+    public BackpackToggleButton(int x, int y, IBackpackToggle handler) {
         super(x, y, 10, 12, Component.empty(), btn -> handler.yyzsbackpack$toggleBackpackVisible(), DEFAULT_NARRATION);
         this.handler = handler;
     }
@@ -22,13 +23,12 @@ public class BackpackToggleButton extends Button {
     protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         boolean visible = handler.yyzsbackpack$isBackpackVisible();
         // 可见时箭头向右（下一页），隐藏时箭头向左（上一页）
-        int u = visible ? 10 : 0;
-        int v = 0;
+        int u = (visible ? 10 : 0) + 3;
+        int v = 3;
         if (this.isHovered()) {
             u += 20;
         }
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.getX(), this.getY(), u+3, v+3, 4, 6, 256, 256);
-
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.getX(), this.getY(), u, v, 4, 6, 256, 256);
         if (this.isHovered()) {
             String key = visible ? "yyzsbackpack.button.hide" : "yyzsbackpack.button.show";
             graphics.setTooltipForNextFrame(Minecraft.getInstance().font, Component.translatable(key), mouseX, mouseY);

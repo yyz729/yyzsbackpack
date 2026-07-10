@@ -13,7 +13,7 @@ public class BackpackTabWidget extends AbstractWidget {
     private final boolean selected;
 
     public BackpackTabWidget(int x, int y, ItemStack icon, boolean selected, Runnable onSwitch) {
-        super(x, y, 18, 18, Component.empty());
+        super(x, y, 9, 9, Component.empty());
         this.icon = icon;
         this.selected = selected;
         this.onSwitch = onSwitch;
@@ -26,12 +26,19 @@ public class BackpackTabWidget extends AbstractWidget {
      */
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        // 绘制背景色（选中 / 未选中）
-        int color = selected ? 0xFF_AAAAAA : 0xFF_666666;
-        graphics.fill(getX(), getY(), getX() + width, getY() + height, color);
+        graphics.pose().pushMatrix();
+        // 平移到控件左上角，再缩放 1/3
+        graphics.pose().translate(getX(), getY());
+        graphics.pose().scale(1.0F / 2.0F, 1.0F / 2.0F);
 
-        // 绘制物品图标
-        graphics.item(icon, getX() + 1, getY() + 1);
+        // 绘制背景（原始尺寸 18x18）
+        int color = selected ? 0xFF_AAAAAA : 0xFF_666666;
+        graphics.fill(0, 0, 18, 18, color);
+
+        // 绘制物品
+        graphics.item(icon, 1, 1);
+
+        graphics.pose().popMatrix();
 
     }
 

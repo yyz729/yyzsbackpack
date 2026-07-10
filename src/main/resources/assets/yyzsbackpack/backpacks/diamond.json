@@ -1,10 +1,8 @@
 {
   "type": "diamond",
-  "size": 54,
   "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
   "backgroundX": -122,
   "backgroundY": 0,
-  "force_server": false,
   "segments": [
     {
       "startSlot": 0,

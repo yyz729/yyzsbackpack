@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public record LayoutSegment(
         int startSlot,
+        int endSlot,
         LayoutOrder order,
         Optional<Integer> startX,
         Optional<Integer> startY,
@@ -20,10 +21,7 @@ public record LayoutSegment(
             return customPositions.orElseThrow(() ->
                 new IllegalStateException("missing customPositions")).size();
         } else {
-            return columns.orElseThrow(() ->
-                new IllegalStateException("missing columns")) *
-                   rows.orElseThrow(() ->
-                new IllegalStateException("missing rows"));
+            return endSlot - startSlot;
         }
     }
 
@@ -42,6 +40,7 @@ public record LayoutSegment(
     public static final Codec<LayoutSegment> CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
             Codec.INT.fieldOf("startSlot").forGetter(LayoutSegment::startSlot),
+            Codec.INT.fieldOf("endSlot").forGetter(LayoutSegment::endSlot),
             LayoutOrder.CODEC.fieldOf("order").forGetter(LayoutSegment::order),
             Codec.INT.optionalFieldOf("startX").forGetter(LayoutSegment::startX),
             Codec.INT.optionalFieldOf("startY").forGetter(LayoutSegment::startY),

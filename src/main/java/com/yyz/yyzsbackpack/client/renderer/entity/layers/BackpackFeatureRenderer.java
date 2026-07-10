@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.client.renderer.entity.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.Minecraft;
@@ -37,7 +38,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AvatarRenderState, Play
 
     private void renderBackpack(PoseStack matrices, SubmitNodeCollector submitNodeCollector,
                                 int light, AvatarRenderState state, ItemStack stack) {
-
+        if(!Backpack.getConfig().model) return;
         if(minecraft.player == null) return;
         if (!(stack.getItem() instanceof BackpackItem)) return;
 

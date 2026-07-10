@@ -8,11 +8,11 @@
   ],
   "key": {
     "L": "minecraft:leather",
-    "I": "minecraft:iron_ingot",
-    "C": "minecraft:chest"
+    "I": "minecraft:diamond",
+    "C": "minecraft:shulker_box"
   },
   "result": {
-    "id": "yyzsbackpack:iron_backpack",
+    "id": "yyzsbackpack:diamond_backpack",
     "count": 1
   }
 }

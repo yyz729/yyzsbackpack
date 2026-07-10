@@ -35,6 +35,7 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
         BackpackScreenHelper.addBackpackTabs((InventoryScreen) (Object) this);
         BackpackScreenHelper.addBackpackToggle((InventoryScreen) (Object) this);
         BackpackScreenHelper.addBackpackScrollbar((InventoryScreen)(Object) this);
+        BackpackScreenHelper.addBackpackTitle((InventoryScreen) (Object) this, graphics, partialTick);
 
     }
 }

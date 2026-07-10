@@ -1,10 +1,8 @@
 package com.yyz.yyzsbackpack.api.helper;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.yyz.yyzsbackpack.api.IBackpackScroll;
-import com.yyz.yyzsbackpack.api.IBackpackToggle;
-import com.yyz.yyzsbackpack.api.IBackpackOffset;
-import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
@@ -18,10 +16,13 @@ import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
 import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,8 +31,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class BackpackScreenHelper {
 
@@ -60,8 +62,8 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
         if (player == null) return;
 
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
@@ -69,40 +71,49 @@ public final class BackpackScreenHelper {
         if (data == null) return;
 
         if (!(screen instanceof IBackpackScroll scrollable)) return;
-        int scrollOffset = scrollable.getScrollOffset();
 
         int offsetX = getOffsetX(screen);
         int offsetY = getOffsetY(screen);
-
         int slotCount = menu.slots.size();
-        int[] origX = new int[slotCount];
-        int[] origY = new int[slotCount];
-        int minY = Integer.MAX_VALUE;
-        int maxY = Integer.MIN_VALUE;
 
-        // 遍历所有段，计算每个槽位的原始坐标，同时记录全局 minY / maxY
-        for (LayoutSegment segment : data.segments()) {
-            int segStart = segment.startSlot();
-            int count = segment.getSlotCount();
-            int baseX = segment.getEffectiveStartX() + offsetX;
-            int baseY = segment.getEffectiveStartY() + offsetY;
-            int columns = segment.columns().orElse(0);
-            LayoutOrder order = segment.order();
+        // 获取所有段的列表
+        List<LayoutSegment> segments = data.segments();
+        int segmentCount = segments.size();
+
+        // 对每个段单独处理
+        for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
+            LayoutSegment seg = segments.get(segIdx);
+            int segStart = seg.startSlot();
+            int count = seg.getSlotCount();
+            int baseX = seg.getEffectiveStartX() + offsetX;
+            int baseY = seg.getEffectiveStartY() + offsetY;
+            int columns = seg.columns().orElse(1);
+            LayoutOrder order = seg.order();
+
+            // 收集该段所有槽位的原始坐标，并记录 minY / maxY
+            int[] origX = new int[slotCount];
+            int[] origY = new int[slotCount];
+            int minY = Integer.MAX_VALUE;
+            int maxY = Integer.MIN_VALUE;
+            boolean hasSlots = false;
 
             if (order == LayoutOrder.CUSTOM) {
-                List<BackpackSlotPos> customPositions = segment.customPositions()
+                List<BackpackSlotPos> customPositions = seg.customPositions()
                         .orElseThrow(() -> new IllegalStateException("Missing customPositions"));
                 for (int j = 0; j < count; j++) {
                     int slotIndex = start + segStart + j;
                     if (slotIndex >= slotCount) break;
                     BackpackSlotPos pos = customPositions.get(j);
-                    origX[slotIndex] = pos.x() + offsetX;
-                    origY[slotIndex] = pos.y() + offsetY;
-                    if (origY[slotIndex] < minY) minY = origY[slotIndex];
-                    if (origY[slotIndex] > maxY) maxY = origY[slotIndex];
+                    int x = pos.x() + offsetX;
+                    int y = pos.y() + offsetY;
+                    origX[slotIndex] = x;
+                    origY[slotIndex] = y;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                    hasSlots = true;
                 }
             } else {
-                // 网格布局
+                // DEFAULT 网格布局
                 for (int j = 0; j < count; j++) {
                     int slotIndex = start + segStart + j;
                     if (slotIndex >= slotCount) break;
@@ -114,43 +125,47 @@ public final class BackpackScreenHelper {
                     origY[slotIndex] = y;
                     if (y < minY) minY = y;
                     if (y > maxY) maxY = y;
+                    hasSlots = true;
                 }
             }
-        }
 
-        // 如果没有槽位，结束
-        if (minY == Integer.MAX_VALUE || maxY == Integer.MIN_VALUE) return;
+            if (!hasSlots) continue;
 
-        int visibleRows = 7; // 固定显示7行
-        // 计算真实的最大行索引（假设槽位 Y 坐标严格按 18 像素步进）
-        int maxRow = (maxY - minY) / 18;
-        int maxScroll = Math.max(0, maxRow - visibleRows + 1);
-        scrollable.setMaxScrollOffset(maxScroll);
+            // 计算该段的最大滚动偏移
+            int visibleRows = seg.rows().orElse(9); // 默认9行
+            int maxRow = (maxY - minY) / 18;
+            int maxScroll = Math.max(0, maxRow - visibleRows + 1);
+            scrollable.yyzsbackpack$setSegmentMaxScrollOffset(segIdx, maxScroll);
 
-        // 修正当前滚动偏移
-        if (scrollOffset > maxScroll) {
-            scrollOffset = maxScroll;
-            scrollable.setScrollOffset(scrollOffset);
-        }
-        int pixelOffset = scrollOffset * 18;
+            // 获取当前偏移并限制
+            int scrollOffset = scrollable.yyzsbackpack$getSegmentScrollOffset(segIdx);
+            if (scrollOffset > maxScroll) {
+                scrollOffset = maxScroll;
+                scrollable.yyzsbackpack$setSegmentScrollOffset(segIdx, scrollOffset);
+            }
+            int pixelOffset = scrollOffset * 18;
 
-        // 可视区域：以最小 Y 为顶部，向下 visibleRows 行
-        int visibleTop = minY;
-        int visibleBottom = visibleTop + visibleRows * 18;
+            // 可视区域：该段顶部 minY，向下 visibleRows 行
+            int visibleTop = minY;
+            int visibleBottom = visibleTop + visibleRows * 18;
 
-        // 重新设置所有背包槽位
-        for (int i = start; i < slotCount; i++) {
-            Slot slot = menu.slots.get(i);
-            int originalX = origX[i];
-            int originalY = origY[i];
-            int newY = originalY - pixelOffset;
+            // 应用偏移到该段所有槽位
+            for (int j = 0; j < count; j++) {
+                int slotIndex = start + segStart + j;
+                if (slotIndex >= slotCount) break;
+                Slot slot = menu.slots.get(slotIndex);
+                int originalX = origX[slotIndex];
+                int originalY = origY[slotIndex];
+                int newY = originalY - pixelOffset;
 
-            if (newY >= visibleTop - 2 && newY + 16 <= visibleBottom + 2) {
-                ((SlotAccessor) slot).setX(originalX);
-                ((SlotAccessor) slot).setY(newY);
-            } else {
-                ((SlotAccessor) slot).setX(-1000);
-                ((SlotAccessor) slot).setY(-1000);
+                // 是否在可视区域内
+                if (newY >= visibleTop - 2 && newY + 16 <= visibleBottom + 2) {
+                    ((SlotAccessor) slot).setX(originalX);
+                    ((SlotAccessor) slot).setY(newY);
+                } else {
+                    ((SlotAccessor) slot).setX(-1000);
+                    ((SlotAccessor) slot).setY(-1000);
+                }
             }
         }
     }
@@ -263,88 +278,93 @@ public final class BackpackScreenHelper {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        // 获取当前所有标签
         List<BackpackTabWidget> oldTabs = screen.children().stream()
                 .filter(w -> w instanceof BackpackTabWidget)
                 .map(w -> (BackpackTabWidget) w)
                 .toList();
 
-        // 检查可见性
-        boolean visible = screen instanceof IBackpackToggle handler
-                ? handler.yyzsbackpack$isBackpackVisible()
-                : true;
-
+        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
         List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(mc.player);
 
-        // 如果不可见，移除所有已存在的标签并结束
-        if (!visible) {
-            if (!oldTabs.isEmpty()) {
-                for (BackpackTabWidget tab : oldTabs) {
-                    ((ScreenInvoker) screen).invokeRemoveWidget(tab);
-                }
+        if (!visible || stacks.isEmpty()) {
+            for (BackpackTabWidget tab : oldTabs) {
+                ((ScreenInvoker) screen).invokeRemoveWidget(tab);
             }
             return;
         }
 
-        // 可见但无背包，移除所有标签
-        if (stacks.isEmpty()) {
-            if (!oldTabs.isEmpty()) {
-                for (BackpackTabWidget tab : oldTabs) {
-                    ((ScreenInvoker) screen).invokeRemoveWidget(tab);
-                }
+        // 获取数据
+        ItemStack selectedBackpack = BackpackSlotHelper.getSelectedBackpack(mc.player);
+        BackpackData data = getBackpackData(selectedBackpack);
+        int total = stacks.size();
+        int maxVisible = (data != null && data.maxVisibleTabs() > 0) ? data.maxVisibleTabs() : total;
+        maxVisible = Math.min(maxVisible, total);
+
+        // 获取滚动偏移
+        int scrollOffset = 0;
+        if (screen instanceof IBackpackTabScroll tabScroller) {
+            scrollOffset = tabScroller.yyzsbackpack$getTabScrollOffset();
+            int maxOffset = Math.max(0, total - maxVisible);
+            if (scrollOffset > maxOffset) {
+                scrollOffset = maxOffset;
+                tabScroller.yyzsbackpack$setTabScrollOffset(scrollOffset);
             }
-            return;
         }
 
         int selected = BackpackSlotHelper.getSelectedIndex(mc.player);
-        if (selected >= stacks.size()) selected = 0;
+        if (selected >= total) selected = 0;
 
         int left = ((ScreenAccessor<?>) screen).getLeftPos();
         int top = ((ScreenAccessor<?>) screen).getTopPos();
+        int offsetX = getOffsetX(screen);
+        int offsetY = getOffsetY(screen);
+
         int tabHeight = 18;
-        int baseY = top - tabHeight - 2 + getOffsetY(screen);
-        int currentOffsetX = getOffsetX(screen);
+        int baseY = top - tabHeight - 2 + offsetY;
+        int start = scrollOffset;
+        int end = Math.min(start + maxVisible, total);
 
         // 检查是否需要重建
-        boolean same = true;
-        if (oldTabs.size() != stacks.size()) {
-            same = false;
+        boolean needRebuild = false;
+        if (oldTabs.size() != (end - start)) {
+            needRebuild = true;
         } else {
-            for (int i = 0; i < oldTabs.size(); i++) {
-                BackpackTabWidget oldTab = oldTabs.get(i);
-                if (!ItemStack.matches(oldTab.getIcon(), stacks.get(i))) {
-                    same = false;
+            for (int j = 0; j < oldTabs.size(); j++) {
+                int actualIndex = start + j;
+                BackpackTabWidget oldTab = oldTabs.get(j);
+                if (!ItemStack.matches(oldTab.getIcon(), stacks.get(actualIndex))) {
+                    needRebuild = true;
                     break;
                 }
-                if (oldTab.isSelected() != (i == selected)) {
-                    same = false;
+                if (oldTab.isSelected() != (actualIndex == selected)) {
+                    needRebuild = true;
                     break;
                 }
-                int expectedX = left - (i + 1) * 20 + currentOffsetX;
-                int expectedY = baseY;
+                // 位置计算基于可见顺序 j
+                int expectedX = left - (j + 1) * 9 + offsetX - 7;
+                int expectedY = baseY + 25;
                 if (oldTab.getX() != expectedX || oldTab.getY() != expectedY) {
-                    same = false;
+                    needRebuild = true;
                     break;
                 }
             }
         }
 
-        if (same) {
-            return; // 无变化，无需重建
-        }
+        if (!needRebuild) return;
 
-        // 移除所有旧标签
+        // 移除旧标签
         for (BackpackTabWidget tab : oldTabs) {
             ((ScreenInvoker) screen).invokeRemoveWidget(tab);
         }
 
         // 创建新标签
-        for (int i = 0; i < stacks.size(); i++) {
-            int x = left - (i + 1) * 20 + currentOffsetX;
-            int y = baseY;
-            boolean isSelected = (i == selected);
-            ItemStack icon = stacks.get(i);
-            int idx = i;
+        for (int j = 0; j < end - start; j++) {
+            int actualIndex = start + j;
+            int x = left - (j + 1) * 9 + offsetX - 7;   // 基于可见顺序 j，固定位置
+            int y = baseY + 25;
+            boolean isSelected = (actualIndex == selected);
+            ItemStack icon = stacks.get(actualIndex);
+            int idx = actualIndex;
             BackpackTabWidget tab = new BackpackTabWidget(x, y, icon, isSelected, () -> {
                 if (mc.player.getInventory() instanceof IExtendedInventory extInv) {
                     extInv.yyzsbackpack$switchToBackpack(idx);
@@ -352,49 +372,6 @@ public final class BackpackScreenHelper {
                 ClientPlayNetworking.send(new SwitchBackpackC2SPacket(idx));
             });
             ((ScreenInvoker) screen).invokeAddRenderableWidget(tab);
-        }
-    }
-
-    /**
-     * 在背包界面顶部绘制多背包标签（tabs）。
-     * 如果当前屏幕实现了 BackpackVisibilityHandler 且背包不可见，则不绘制。
-     *
-     * @param screen   AbstractContainerScreen 实例
-     * @param graphics GuiGraphicsExtractor
-     * @param mouseX   鼠标 X 坐标
-     * @param mouseY   鼠标 Y 坐标
-     */
-    public static void drawBackpackTabs(AbstractContainerScreen<?> screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) return;
-
-        // 可见性检查
-        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
-            return;
-        }
-
-        List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(minecraft.player);
-        if (stacks.isEmpty()) return;
-        int selected = BackpackSlotHelper.getSelectedIndex(minecraft.player);
-        if (selected >= stacks.size()) selected = 0;
-
-        int left = ((ScreenAccessor<?>) screen).getLeftPos();
-        int top = ((ScreenAccessor<?>) screen).getTopPos();
-        int tabHeight = 20;
-        int y = top - tabHeight - 2;
-
-        for (int i = 0; i < stacks.size(); i++) {
-            int x = left + i * 30;
-            boolean isSelected = (i == selected);
-            // 绘制背景
-            graphics.fill(x, y, x + 28, y + tabHeight, isSelected ? 0xFF_AAAAAA : 0xFF_666666);
-            // 绘制物品
-            ItemStack stack = stacks.get(i);
-            graphics.item(stack, x + 6, y + 2);
-            // 悬停提示
-            if (mouseX >= x && mouseX < x + 28 && mouseY >= y && mouseY < y + tabHeight) {
-                graphics.setTooltipForNextFrame(minecraft.font, stack.getHoverName(), mouseX, mouseY);
-            }
         }
     }
 
@@ -424,45 +401,261 @@ public final class BackpackScreenHelper {
         }
     }
 
+    public static void addBackpackScrollbar(AbstractContainerScreen<?> screen) {
+        // 可见性检查
+        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        if (!visible) {
+            for (BackpackScrollbar bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollbar)
+                    .map(w -> (BackpackScrollbar) w).toList()) {
+                ((ScreenInvoker) screen).invokeRemoveWidget(bar);
+            }
+            return;
+        }
+
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null) {
+            for (BackpackScrollbar bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollbar)
+                    .map(w -> (BackpackScrollbar) w).toList()) {
+                ((ScreenInvoker) screen).invokeRemoveWidget(bar);
+            }
+            return;
+        }
+
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null) {
+            for (BackpackScrollbar bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollbar)
+                    .map(w -> (BackpackScrollbar) w).toList()) {
+                ((ScreenInvoker) screen).invokeRemoveWidget(bar);
+            }
+            return;
+        }
+
+        List<LayoutSegment> segments = data.segments();
+        int offsetX = getOffsetX(screen);
+        int offsetY = getOffsetY(screen);
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
+
+        List<BackpackScrollbar> existingBars = screen.children().stream()
+                .filter(w -> w instanceof BackpackScrollbar)
+                .map(w -> (BackpackScrollbar) w)
+                .toList();
+
+        List<ScrollbarInfo> expectedInfos = new ArrayList<>();
+        for (int i = 0; i < segments.size(); i++) {
+            LayoutSegment seg = segments.get(i);
+            if (seg.order() == LayoutOrder.CUSTOM) continue;
+            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
+
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+            int columns = seg.columns().get();
+            int visibleRows = seg.rows().get();
+
+            int segWidth = columns * 18;
+            int segHeight = visibleRows * 18;
+
+            int scrollbarX = segStartX + segWidth;
+            int scrollbarY = segStartY + 2;
+            int scrollbarWidth = 2;
+            int scrollbarHeight = segHeight - 4;
+
+            expectedInfos.add(new ScrollbarInfo(scrollbarX, scrollbarY,
+                    scrollbarWidth, scrollbarHeight, i));
+        }
+
+        boolean same = true;
+        if (existingBars.size() != expectedInfos.size()) {
+            same = false;
+        } else {
+            for (int i = 0; i < existingBars.size(); i++) {
+                BackpackScrollbar bar = existingBars.get(i);
+                ScrollbarInfo info = expectedInfos.get(i);
+                if (bar.getX() != info.x || bar.getY() != info.y ||
+                        bar.getWidth() != info.width || bar.getHeight() != info.height ||
+                        bar.getSegmentIndex() != info.segmentIndex) {
+                    same = false;
+                    break;
+                }
+            }
+        }
+
+        if (same) {
+            return;
+        }
+
+        for (BackpackScrollbar bar : existingBars) {
+            ((ScreenInvoker) screen).invokeRemoveWidget(bar);
+        }
+
+        // 创建并添加新滚动条
+        for (int i = 0; i < segments.size(); i++) {
+            LayoutSegment seg = segments.get(i);
+            if (seg.order() == LayoutOrder.CUSTOM) continue;
+            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
+
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+            int columns = seg.columns().get();
+            int visibleRows = seg.rows().get();
+
+            int segWidth = columns * 18;
+            int segHeight = visibleRows * 18;
+
+            int scrollbarX = segStartX + segWidth;
+            int scrollbarY = segStartY + 2;
+            int scrollbarWidth = 2;
+            int scrollbarHeight = segHeight - 4;
+
+            BackpackScrollbar scrollbar = new BackpackScrollbar(
+                    scrollbarX, scrollbarY,
+                    scrollbarWidth, scrollbarHeight,
+                    screen, (IBackpackScroll) screen, i
+            );
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(scrollbar);
+        }
+    }
+
+    // 辅助记录预期滚动条信息
+        private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {
+    }
+
     // ---------- 辅助方法 ----------
 
-    private static BackpackData getBackpackData(ItemStack stack) {
+    public static BackpackData getBackpackData(ItemStack stack) {
         if (stack.getItem() instanceof BackpackItem backpackItem) {
             return backpackItem.getData();
         }
         return null;
     }
 
-    private static int getOffsetX(AbstractContainerScreen<?> screen) {
+    public static int getOffsetX(AbstractContainerScreen<?> screen) {
         if (screen instanceof IBackpackOffset provider) {
             return provider.yyzsbackpack$getBackpackOffsetX();
         }
         return 0;
     }
 
-    private static int getOffsetY(AbstractContainerScreen<?> screen) {
+    public static int getOffsetY(AbstractContainerScreen<?> screen) {
         if (screen instanceof IBackpackOffset provider) {
             return provider.yyzsbackpack$getBackpackOffsetY();
         }
         return 0;
     }
 
-    public static void addBackpackScrollbar(AbstractContainerScreen<?> screen) {
-        if (!(screen instanceof IBackpackScroll scrollable)) return;
+    private static final float TITLE_SCROLL_SPEED = 5.0f;
 
-        // 移除已有的滚动条
-        screen.children().removeIf(w -> w instanceof BackpackScrollbar);
+    private static final float STOP_DURATION    = 0.8f;       // 两端停留时间（秒）
+    private static final int   RIGHT_PADDING    = 2;          // 右侧安全间距，防止文字紧贴标签
 
-        // 获取背包背景边界，计算滚动条位置（右侧）
-        Rectangle bounds = getBackpackBackgroundBounds(screen);
-        if (bounds == null) return;
+    public static void addBackpackTitle(AbstractContainerScreen<?> screen,
+                                        GuiGraphicsExtractor graphics,
+                                        float partialTick) {
+        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        if (!visible) return;
 
-        int scrollbarX = bounds.x + bounds.width - 6; // 背景右侧+2像素间隙
-        int scrollbarY = bounds.y + 10;
-        int scrollbarWidth = 1;
-        int scrollbarHeight = bounds.height-20;
+        Minecraft mc = Minecraft.getInstance();
+        Player player = mc.player;
+        if (player == null) return;
 
-        BackpackScrollbar scrollbar = new BackpackScrollbar(scrollbarX, scrollbarY, scrollbarWidth, scrollbarHeight, screen, scrollable);
-        ((ScreenInvoker) screen).invokeAddRenderableWidget(scrollbar);
+        ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpackStack);
+        if (data == null || data.guiTexture() == null) return;
+
+        Font font = mc.font;
+        String title = backpackStack.getHoverName().getString();
+
+        int offsetX = getOffsetX(screen);
+        int offsetY = getOffsetY(screen);
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
+
+        int bgX = leftPos + data.backgroundX() + offsetX;
+        int bgY = topPos + data.backgroundY() + offsetY;
+        int textX = bgX + 7;
+        int textY = bgY + 5;
+
+        // 计算右边界（最左侧标签左边缘 - 安全间距）
+        List<ItemStack> allBackpacks = BackpackSlotHelper.getAllBackpackStacks(player);
+        int totalTabs = allBackpacks.size();
+        int maxVisibleTabs = (data.maxVisibleTabs() > 0) ? data.maxVisibleTabs() : totalTabs;
+        maxVisibleTabs = Math.min(maxVisibleTabs, totalTabs);
+        int scrollOffset = 0;
+        if (screen instanceof IBackpackTabScroll tabScroller) {
+            scrollOffset = tabScroller.yyzsbackpack$getTabScrollOffset();
+            int maxOffset = Math.max(0, totalTabs - maxVisibleTabs);
+            if (scrollOffset > maxOffset) scrollOffset = maxOffset;
+        }
+        int visibleTabCount = Math.min(maxVisibleTabs, totalTabs - scrollOffset);
+
+        int rightBoundary;
+        if (visibleTabCount == 0) {
+            Dimension texSize = getTextureSize(mc, data.guiTexture());
+            if (texSize == null) return;
+            rightBoundary = bgX + texSize.width - 7 - RIGHT_PADDING; // 背景右内边距 - 安全间距
+        } else {
+            int lastJ = visibleTabCount - 1;
+            int tabLeftX = leftPos - (lastJ + 1) * 9 + offsetX - 7;
+            rightBoundary = tabLeftX - RIGHT_PADDING; // 标签左边缘再向左留出空隙
+        }
+
+        int availableWidth = rightBoundary - textX;
+        if (availableWidth <= 0) return;
+
+        int titleWidth = font.width(title);
+
+        if (titleWidth <= availableWidth) {
+            // 文字不超宽，静态绘制
+            graphics.text(font, title, textX, textY, -12566464, false);
+            return;
+        }
+
+        // ---------- 带停留的来回滚动 ----------
+        int maxScroll = titleWidth - availableWidth;                     // 需要滚动的最大像素
+        float moveTime = maxScroll / TITLE_SCROLL_SPEED;                 // 单向移动耗时（秒）
+        float halfCycle = moveTime + STOP_DURATION;                      // 半周期：移动 + 停留
+        float totalCycle = halfCycle * 2;                                // 完整周期：去 + 回
+
+        float elapsed = (System.currentTimeMillis() % 100000L) / 1000.0f;
+        float t = elapsed % totalCycle;                                  // 当前周期内时间
+        float offset;
+
+        if (t < STOP_DURATION) {
+            offset = 0;                                                  // 右端停留（文字右对齐）
+        } else if (t < halfCycle) {
+            float moveProgress = (t - STOP_DURATION) / moveTime;
+            offset = moveProgress * maxScroll;                           // 向右 → 左移动
+        } else if (t < halfCycle + STOP_DURATION) {
+            offset = maxScroll;                                          // 左端停留（文字左对齐）
+        } else {
+            float moveProgress = (t - halfCycle - STOP_DURATION) / moveTime;
+            offset = maxScroll * (1.0f - moveProgress);                  // 向左 → 右移动
+        }
+
+        int drawX = textX + availableWidth - titleWidth + (int) offset;
+
+        graphics.enableScissor(textX, textY, textX + availableWidth, textY + font.lineHeight);
+        graphics.text(font, title, drawX, textY, -12566464, false);
+        graphics.disableScissor();
+    }
+
+    // 纹理尺寸缓存
+    private static final Map<Identifier, Dimension> TEXTURE_SIZE_CACHE = new HashMap<>();
+    private static Dimension getTextureSize(Minecraft mc, Identifier texId) {
+        return TEXTURE_SIZE_CACHE.computeIfAbsent(texId, id -> {
+            try {
+                Resource resource = mc.getResourceManager().getResource(id).orElseThrow();
+                try (NativeImage image = NativeImage.read(resource.open())) {
+                    return new Dimension(image.getWidth(), image.getHeight());
+                }
+            } catch (Exception e) {
+                return new Dimension(0, 0);
+            }
+        });
     }
 }

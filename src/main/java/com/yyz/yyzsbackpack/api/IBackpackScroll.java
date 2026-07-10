@@ -1,8 +1,10 @@
 package com.yyz.yyzsbackpack.api;
 
 public interface IBackpackScroll {
-    int getScrollOffset();
-    void setScrollOffset(int offset);
-    int getMaxScrollOffset();
-    void setMaxScrollOffset(int max);
+
+    int yyzsbackpack$getSegmentCount();
+    int yyzsbackpack$getSegmentScrollOffset(int index);
+    void yyzsbackpack$setSegmentScrollOffset(int index, int offset);
+    int yyzsbackpack$getSegmentMaxScrollOffset(int index);
+    void yyzsbackpack$setSegmentMaxScrollOffset(int index, int max);
 }

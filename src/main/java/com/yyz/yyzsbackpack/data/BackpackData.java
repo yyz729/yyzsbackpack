@@ -17,15 +17,19 @@ public record BackpackData(
     Identifier guiTexture,
     int backgroundX,
     int backgroundY,
+    boolean forceServer,
+    int maxVisibleTabs,
     List<LayoutSegment> segments
 ) {
     public static final Codec<BackpackData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.STRING.fieldOf("type").forGetter(BackpackData::type),
-                    Codec.INT.fieldOf("size").forGetter(BackpackData::size),
+                    Codec.INT.optionalFieldOf("size", 0).forGetter(BackpackData::size),
                     Identifier.CODEC.fieldOf("guiTexture").forGetter(BackpackData::guiTexture),
                     Codec.INT.fieldOf("backgroundX").forGetter(BackpackData::backgroundX),
                     Codec.INT.fieldOf("backgroundY").forGetter(BackpackData::backgroundY),
+                    Codec.BOOL.optionalFieldOf("force_server", false).forGetter(BackpackData::forceServer),
+                    Codec.INT.optionalFieldOf("maxVisibleTabs", -1).forGetter(BackpackData::maxVisibleTabs),
                     Codec.list(LayoutSegment.CODEC).fieldOf("segments").forGetter(BackpackData::segments)
             ).apply(instance, BackpackData::new)
     );

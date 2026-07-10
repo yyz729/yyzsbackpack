@@ -1,10 +1,8 @@
 {
   "type": "gold",
-  "size": 36,
   "guiTexture": "yyzsbackpack:textures/gui/4x9backpack.png",
   "backgroundX": -86,
   "backgroundY": 0,
-  "force_server": false,
   "segments": [
     {
       "startSlot": 0,

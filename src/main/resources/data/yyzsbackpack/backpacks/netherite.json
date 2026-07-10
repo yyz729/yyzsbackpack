@@ -4,14 +4,16 @@
   "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
   "backgroundX": -122,
   "backgroundY": 0,
+  "force_server": false,
   "segments": [
     {
       "startSlot": 0,
+      "endSlot": 54,
       "order": "DEFAULT",
       "startX": -114,
-      "startY": 7,
+      "startY": 17,
       "columns": 6,
-      "rows": 9
+      "rows": 8
     }
   ]
 }

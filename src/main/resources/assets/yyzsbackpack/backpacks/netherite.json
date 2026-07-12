@@ -3,6 +3,7 @@
   "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
   "backgroundX": -122,
   "backgroundY": 0,
+  "maxVisibleTabs": 2,
   "segments": [
     {
       "startSlot": 0,

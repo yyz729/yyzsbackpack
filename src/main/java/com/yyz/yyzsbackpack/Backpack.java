@@ -3,9 +3,7 @@ package com.yyz.yyzsbackpack;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
 import com.yyz.yyzsbackpack.item.ModItems;
-import com.yyz.yyzsbackpack.network.BackpackDataSyncS2CPacket;
-import com.yyz.yyzsbackpack.network.ServerPacketHandler;
-import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
+import com.yyz.yyzsbackpack.network.*;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -35,6 +33,8 @@ public class Backpack implements ModInitializer {
 		ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(MOD_ID, "backpack_data"), new BackpackDataLoader.ReloadListener());
 		PayloadTypeRegistry.serverboundPlay().register(SwitchBackpackC2SPacket.ID, SwitchBackpackC2SPacket.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(BackpackDataSyncS2CPacket.ID, BackpackDataSyncS2CPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(MoveBToBackpackC2SPacket.ID, MoveBToBackpackC2SPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(MoveIToInventoryC2SPacket.ID, MoveIToInventoryC2SPacket.CODEC);
 		ServerPacketHandler.register();
 	}
 

@@ -4,8 +4,8 @@
   "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
   "backgroundX": -50,
   "backgroundY": 0,
-  "force_server": true,
-  "maxVisibleTabs": 4,
+  "force_server": false,
+  "maxVisibleTabs": 2,
   "segments": [
     {
       "startSlot": 0,

@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.client.gui;
+package com.yyz.yyzsbackpack.client.gui.widget.layout;
 
 import com.yyz.yyzsbackpack.api.IBackpackScroll;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
@@ -9,18 +9,18 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-public class BackpackScrollbar extends AbstractWidget {
+public class BackpackScrollWidget extends AbstractWidget {
     private final AbstractContainerScreen<?> screen;
     private final IBackpackScroll scrollable;
-    private final int segmentIndex;          // 新增段索引
+    private final int segmentIndex;
     private boolean dragging = false;
 
-    // 构造函数增加 segmentIndex
-    public BackpackScrollbar(int x, int y, int width, int height,
-                             AbstractContainerScreen<?> screen,
-                             IBackpackScroll scrollable,
-                             int segmentIndex) {
+    public BackpackScrollWidget(int x, int y, int width, int height,
+                                AbstractContainerScreen<?> screen,
+                                IBackpackScroll scrollable,
+                                int segmentIndex) {
         super(x, y, width, height, Component.empty());
         this.screen = screen;
         this.scrollable = scrollable;
@@ -29,14 +29,15 @@ public class BackpackScrollbar extends AbstractWidget {
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+
+        int maxScroll = scrollable.yyzsbackpack$getSegmentMaxScrollOffset(segmentIndex);
+        if (maxScroll <= 0) return; // 无需滚动，不绘制
+
         // 半透明背景
         graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80000000);
 
-        int maxScroll = scrollable.yyzsbackpack$getSegmentMaxScrollOffset(segmentIndex);
-        if (maxScroll <= 0) return; // 无需滚动，不绘制滑块
-
         int currentScroll = scrollable.yyzsbackpack$getSegmentScrollOffset(segmentIndex);
-        float progress = maxScroll > 0 ? (float) currentScroll / maxScroll : 0;
+        float progress = (float) currentScroll / maxScroll;
         int sliderHeight = Math.max(10, this.height / (maxScroll + 1));
         int sliderY = this.getY() + (int) ((this.height - sliderHeight) * progress);
         graphics.fill(this.getX(), sliderY, this.getX() + this.width, sliderY + sliderHeight, 0xFFFFFFFF);
@@ -52,14 +53,14 @@ public class BackpackScrollbar extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+    public boolean mouseDragged(@NonNull MouseButtonEvent event, double dx, double dy) {
         if (this.dragging && this.active && this.visible) {
             double relativeY = event.y() - this.getY();
             double progress = Math.max(0, Math.min(1, relativeY / this.height));
             int max = scrollable.yyzsbackpack$getSegmentMaxScrollOffset(segmentIndex);
             int newOffset = (int) (progress * max);
             scrollable.yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
-            // 刷新槽位（setSegmentScrollOffset 内部应已调用 setupBackpackSlots，但若未调用则手动调用）
+            // 刷新槽位
             BackpackScreenHelper.setupBackpackSlots(screen);
             return true;
         }
@@ -67,7 +68,7 @@ public class BackpackScrollbar extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(@NonNull MouseButtonEvent event) {
         if (this.dragging) {
             this.dragging = false;
             return true;

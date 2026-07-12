@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
+import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -33,9 +34,10 @@ public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<Inve
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         BackpackScreenHelper.addBackpackBackground((InventoryScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
         BackpackScreenHelper.addBackpackTabs((InventoryScreen) (Object) this);
-        BackpackScreenHelper.addBackpackToggle((InventoryScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((InventoryScreen)(Object) this);
+        BackpackScreenHelper.addBackpackScrollbar((InventoryScreen) (Object) this);
         BackpackScreenHelper.addBackpackTitle((InventoryScreen) (Object) this, graphics, partialTick);
 
+        BackpackScreenHelper.addBackpackControls((InventoryScreen) (Object) this);
     }
+
 }

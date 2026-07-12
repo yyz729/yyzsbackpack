@@ -4,6 +4,7 @@ import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,6 +37,8 @@ public abstract class CraftingScreenMixin extends AbstractRecipeBookScreen<Craft
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         BackpackScreenHelper.addBackpackBackground((CraftingScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
         BackpackScreenHelper.addBackpackTabs((CraftingScreen) (Object) this);
-        BackpackScreenHelper.addBackpackToggle((CraftingScreen) (Object) this);
+        BackpackScreenHelper.addBackpackScrollbar((CraftingScreen) (Object) this);
+        BackpackScreenHelper.addBackpackTitle((CraftingScreen) (Object) this, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls((CraftingScreen) (Object) this);
     }
 }

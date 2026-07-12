@@ -6,5 +6,10 @@
 
   "effect.yyzsbackpack.heavy": "负重",
 
-  "itemGroup.yyzsbackpack.title": "yyz的背包"
+  "itemGroup.yyzsbackpack.title": "yyz的背包",
+
+  "yyzsbackpack.button.moveb.line1": "§5点击§r：将相同物品移动到背包",
+  "yyzsbackpack.button.moveb.line2": "§5Shift+点击§r：将所有物品移动到背包",
+  "yyzsbackpack.button.movei.line1": "§5点击§r：将相同物品移动到物品栏",
+  "yyzsbackpack.button.movei.line2": "§5Shift+点击§r：将所有物品移动到物品栏"
 }

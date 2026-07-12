@@ -47,7 +47,7 @@ public class BackpackDataLoaderClient {
                             clientEntry.backgroundX(),
                             clientEntry.backgroundY(),
                             false,
-                            -1,
+                            clientEntry.maxVisibleTabs(),
                             clientEntry.segments()
 
                     );

@@ -7,6 +7,7 @@ import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.entity.player.Inventory;

@@ -3,17 +3,25 @@ package com.yyz.yyzsbackpack.mixin.minecraft.container;
 import com.yyz.yyzsbackpack.api.IBackpackScroll;
 import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
 import com.yyz.yyzsbackpack.api.IBackpackToggle;
+import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
-import com.yyz.yyzsbackpack.client.gui.BackpackTabWidget;
+import com.yyz.yyzsbackpack.client.BackpackKeyBinding;
+import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
+import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
+import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,6 +41,9 @@ public abstract class AbstractContainerScreenMixin implements IBackpackToggle, I
     @Shadow
     protected abstract boolean hasClickedOutside(double mx, double my, int xo, int yo);
 
+    @Shadow
+    @Nullable
+    protected Slot hoveredSlot;
     @Unique
     private static boolean backpackVisible = true; // 默认可见
 
@@ -161,7 +172,7 @@ public abstract class AbstractContainerScreenMixin implements IBackpackToggle, I
         for (int i = 0; i < segments.size(); i++) {
             LayoutSegment seg = segments.get(i);
             if (seg.order() == LayoutOrder.CUSTOM) continue;
-            if (!seg.columns().isPresent() || !seg.rows().isPresent()) continue;
+            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
 
             int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
             int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
@@ -218,5 +229,53 @@ public abstract class AbstractContainerScreenMixin implements IBackpackToggle, I
             }
         }
         return original;
+    }
+
+    @Inject(
+            method = "keyPressed",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+        // 排序键
+        if (BackpackKeyBinding.KEY_SORT.matches(event)) {
+            System.out.println("按下了排序键！");
+            cir.setReturnValue(true);
+            return;
+        }
+
+        // 打开键
+        if (BackpackKeyBinding.KEY_OPEN.matches(event)) {
+            if (hoveredSlot != null) {
+                ItemStack stack = hoveredSlot.getItem();
+                if (!stack.isEmpty() && stack.getItem() instanceof BackpackItem) {
+                    Player player = Minecraft.getInstance().player;
+                    if (player != null) {
+                        // 获取所有背包列表
+                        List<ItemStack> allBackpacks = BackpackSlotHelper.getAllBackpackStacks(player);
+                        // 匹配索引
+                        int index = -1;
+                        for (int i = 0; i < allBackpacks.size(); i++) {
+                            if (ItemStack.matches(stack, allBackpacks.get(i))) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1) {
+                            // 切换背包
+                            if (player.getInventory() instanceof IExtendedInventory extInv) {
+                                extInv.yyzsbackpack$switchToBackpack(index);
+                            }
+                            ClientPlayNetworking.send(new SwitchBackpackC2SPacket(index));
+
+                            cir.setReturnValue(true);
+                            return;
+                        }
+                    }
+                }
+            }
+            cir.setReturnValue(true);
+            return;
+        }
     }
 }

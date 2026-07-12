@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.network;
 
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.IBackpackData;
+import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
@@ -44,6 +45,22 @@ public class ServerPacketHandler {
                 data.yyzsbackpack$setSyncedBackpack(selected);
 //                data.yyzsbackpack$setSyncedBackpackIndex(index);
             }
+        });
+
+        // 接收 MoveB 请求
+        ServerPlayNetworking.registerGlobalReceiver(MoveBToBackpackC2SPacket.ID, (packet, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                BackpackMenuHelper.moveIToBackpack(packet.all(), player);
+            });
+        });
+
+        // 接收 MoveI 请求
+        ServerPlayNetworking.registerGlobalReceiver(MoveIToInventoryC2SPacket.ID, (packet, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                BackpackMenuHelper.moveBToInventory(packet.all(), player);
+            });
         });
     }
 }

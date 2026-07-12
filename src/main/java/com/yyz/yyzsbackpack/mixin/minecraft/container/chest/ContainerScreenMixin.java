@@ -4,6 +4,7 @@ import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,6 +37,8 @@ public abstract class ContainerScreenMixin extends AbstractContainerScreen<Chest
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         BackpackScreenHelper.addBackpackBackground((ContainerScreen) (Object)this, graphics, mouseX, mouseY, partialTick);
         BackpackScreenHelper.addBackpackTabs((ContainerScreen) (Object) this);
-        BackpackScreenHelper.addBackpackToggle((ContainerScreen) (Object) this);
+        BackpackScreenHelper.addBackpackScrollbar((ContainerScreen) (Object) this);
+        BackpackScreenHelper.addBackpackTitle((ContainerScreen) (Object) this, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls((ContainerScreen) (Object) this);
     }
 }

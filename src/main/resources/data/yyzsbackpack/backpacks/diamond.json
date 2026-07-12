@@ -5,6 +5,7 @@
   "backgroundX": -122,
   "backgroundY": 0,
   "force_server": false,
+  "maxVisibleTabs": 2,
   "segments": [
     {
       "startSlot": 0,

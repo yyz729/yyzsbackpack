@@ -20,6 +20,7 @@
   },
   "client": [
     "minecraft.AvatarRendererMixin",
+    "minecraft.GameOptionsMixin",
     "minecraft.accessor.ScreenAccessor",
     "minecraft.accessor.ScreenInvoker",
     "minecraft.container.AbstractContainerScreenMixin",

@@ -32,6 +32,11 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
         this.backpackSlotStart = start;
     }
 
+    @Override
+    public boolean yyzsbackpack$moveItemStackTo(ItemStack stack, int start, int end, boolean reverse) {
+        return this.moveItemStackTo(stack, start, end, reverse);
+    }
+
     @Shadow
     protected abstract boolean moveItemStackTo(ItemStack itemStack, int startSlot, int endSlot, boolean backwards);
 

@@ -6,9 +6,12 @@ import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
-import com.yyz.yyzsbackpack.client.gui.BackpackScrollbar;
-import com.yyz.yyzsbackpack.client.gui.BackpackTabWidget;
-import com.yyz.yyzsbackpack.client.gui.BackpackToggleButton;
+import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackMoveBButton;
+import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackMoveIButton;
+import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
+import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackVisibleButton;
+import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
+import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -16,7 +19,6 @@ import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
 import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -33,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class BackpackScreenHelper {
 
@@ -375,39 +376,13 @@ public final class BackpackScreenHelper {
         }
     }
 
-    /**
-     * 在指定屏幕添加背包开关按钮
-     *
-     * @param screen 目标容器屏幕
-     */
-    public static void addBackpackToggle(AbstractContainerScreen<?> screen) {
-        // 查找已有的 BackpackToggleButton
-        Optional<BackpackToggleButton> existing = screen.children().stream()
-                .filter(w -> w instanceof BackpackToggleButton)
-                .map(w -> (BackpackToggleButton) w)
-                .findFirst();
-
-        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
-        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
-        int x = leftPos + 3;
-        int y = topPos + 5;
-
-        if (existing.isPresent()) {
-            BackpackToggleButton btn = existing.get();
-            btn.setPosition(x, y);   // 更新位置
-        } else {
-            BackpackToggleButton btn = new BackpackToggleButton(x, y, (IBackpackToggle) screen);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
-    }
-
     public static void addBackpackScrollbar(AbstractContainerScreen<?> screen) {
         // 可见性检查
         boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
         if (!visible) {
-            for (BackpackScrollbar bar : screen.children().stream()
-                    .filter(w -> w instanceof BackpackScrollbar)
-                    .map(w -> (BackpackScrollbar) w).toList()) {
+            for (BackpackScrollWidget bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollWidget)
+                    .map(w -> (BackpackScrollWidget) w).toList()) {
                 ((ScreenInvoker) screen).invokeRemoveWidget(bar);
             }
             return;
@@ -416,9 +391,9 @@ public final class BackpackScreenHelper {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) {
-            for (BackpackScrollbar bar : screen.children().stream()
-                    .filter(w -> w instanceof BackpackScrollbar)
-                    .map(w -> (BackpackScrollbar) w).toList()) {
+            for (BackpackScrollWidget bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollWidget)
+                    .map(w -> (BackpackScrollWidget) w).toList()) {
                 ((ScreenInvoker) screen).invokeRemoveWidget(bar);
             }
             return;
@@ -427,9 +402,9 @@ public final class BackpackScreenHelper {
         ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpack);
         if (data == null) {
-            for (BackpackScrollbar bar : screen.children().stream()
-                    .filter(w -> w instanceof BackpackScrollbar)
-                    .map(w -> (BackpackScrollbar) w).toList()) {
+            for (BackpackScrollWidget bar : screen.children().stream()
+                    .filter(w -> w instanceof BackpackScrollWidget)
+                    .map(w -> (BackpackScrollWidget) w).toList()) {
                 ((ScreenInvoker) screen).invokeRemoveWidget(bar);
             }
             return;
@@ -441,9 +416,9 @@ public final class BackpackScreenHelper {
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
-        List<BackpackScrollbar> existingBars = screen.children().stream()
-                .filter(w -> w instanceof BackpackScrollbar)
-                .map(w -> (BackpackScrollbar) w)
+        List<BackpackScrollWidget> existingBars = screen.children().stream()
+                .filter(w -> w instanceof BackpackScrollWidget)
+                .map(w -> (BackpackScrollWidget) w)
                 .toList();
 
         List<ScrollbarInfo> expectedInfos = new ArrayList<>();
@@ -474,7 +449,7 @@ public final class BackpackScreenHelper {
             same = false;
         } else {
             for (int i = 0; i < existingBars.size(); i++) {
-                BackpackScrollbar bar = existingBars.get(i);
+                BackpackScrollWidget bar = existingBars.get(i);
                 ScrollbarInfo info = expectedInfos.get(i);
                 if (bar.getX() != info.x || bar.getY() != info.y ||
                         bar.getWidth() != info.width || bar.getHeight() != info.height ||
@@ -489,7 +464,7 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        for (BackpackScrollbar bar : existingBars) {
+        for (BackpackScrollWidget bar : existingBars) {
             ((ScreenInvoker) screen).invokeRemoveWidget(bar);
         }
 
@@ -512,7 +487,7 @@ public final class BackpackScreenHelper {
             int scrollbarWidth = 2;
             int scrollbarHeight = segHeight - 4;
 
-            BackpackScrollbar scrollbar = new BackpackScrollbar(
+            BackpackScrollWidget scrollbar = new BackpackScrollWidget(
                     scrollbarX, scrollbarY,
                     scrollbarWidth, scrollbarHeight,
                     screen, (IBackpackScroll) screen, i
@@ -549,9 +524,8 @@ public final class BackpackScreenHelper {
     }
 
     private static final float TITLE_SCROLL_SPEED = 5.0f;
-
-    private static final float STOP_DURATION    = 0.8f;       // 两端停留时间（秒）
-    private static final int   RIGHT_PADDING    = 2;          // 右侧安全间距，防止文字紧贴标签
+    private static final float STOP_DURATION = 0.8f;       // 两端停留时间（秒）
+    private static final int   RIGHT_PADDING = 2;          // 右侧安全间距，防止文字紧贴标签
 
     public static void addBackpackTitle(AbstractContainerScreen<?> screen,
                                         GuiGraphicsExtractor graphics,
@@ -658,4 +632,135 @@ public final class BackpackScreenHelper {
             }
         });
     }
+
+
+    /**
+     * 添加移动物品按钮到指定屏幕的指定位置。
+     * 如果按钮已存在则更新位置，否则创建新按钮。
+     *
+     * @param screen 目标容器屏幕
+     * @param x     按钮的 X 坐标（左上角）
+     * @param y     按钮的 Y 坐标（左上角）
+     */
+    public static void addBackpackMoveBButton(AbstractContainerScreen<?> screen, int x, int y) {
+
+        // 查找已有排序按钮
+        Optional<BackpackMoveBButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveBButton)
+                .map(w -> (BackpackMoveBButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveBButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveBButton btn = new BackpackMoveBButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    /**
+     * 添加移动物品按钮到指定屏幕的指定位置。
+     * 如果按钮已存在则更新位置，否则创建新按钮。
+     *
+     * @param screen 目标容器屏幕
+     * @param x     按钮的 X 坐标（左上角）
+     * @param y     按钮的 Y 坐标（左上角）
+     */
+    public static void addBackpackMoveIButton(AbstractContainerScreen<?> screen, int x, int y) {
+
+        // 查找已有排序按钮
+        Optional<BackpackMoveIButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveIButton)
+                .map(w -> (BackpackMoveIButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveIButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveIButton btn = new BackpackMoveIButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+    /**
+     * 添加背包整理按钮到指定屏幕的指定位置。
+     * 如果按钮已存在则更新位置，否则创建新按钮。
+     *
+     * @param screen 目标容器屏幕
+     * @param x     按钮的 X 坐标（左上角）
+     * @param y     按钮的 Y 坐标（左上角）
+     */
+    public static void addBackpackSortButton(AbstractContainerScreen<?> screen, int x, int y) {
+
+        // 查找已有排序按钮
+        Optional<BackpackSortButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackSortButton)
+                .map(w -> (BackpackSortButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackSortButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackSortButton btn = new BackpackSortButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    public static void addBackpackVisible(AbstractContainerScreen<?> screen, int x, int y) {
+        Optional<BackpackVisibleButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackVisibleButton)
+                .map(w -> (BackpackVisibleButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            existing.get().setPosition(x, y);
+        } else {
+            BackpackVisibleButton btn = new BackpackVisibleButton(x, y, (IBackpackToggle) screen);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+    public static void addBackpackControls(AbstractContainerScreen<?> screen) {
+        String className = screen.getClass().getName();
+        List<int[]> offsets = Backpack.getConfig().controlOffsets.get(className);
+        if (offsets == null) return;
+
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int screenHeight = screen.height;
+        int recipeBookRight = leftPos + 124;
+        int recipeBookBottom = screenHeight / 2 - 4;
+        int spacing = 16;
+        int size = 6;
+        int gap = 2;
+
+        // 遍历每个组
+        for (int groupIdx = 0; groupIdx < offsets.size(); groupIdx++) {
+            int[] offset = offsets.get(groupIdx);
+            int offsetX = offset[0];
+            int offsetY = offset[1];
+
+            // 计算该组起始坐标（与之前相同，但每个组独立）
+            int toggleX = recipeBookRight + spacing + offsetX;
+            int toggleY = recipeBookBottom - size + offsetY;
+
+            if (groupIdx == 0) {
+                // 基础组：toggle, sort, moveI, moveB
+                addBackpackVisible(screen, toggleX, toggleY);
+                addBackpackSortButton(screen, toggleX + size + gap - 1, toggleY);
+                addBackpackMoveIButton(screen, toggleX + 2*(size + gap) - 1, toggleY);
+                addBackpackMoveBButton(screen, toggleX + 3*(size + gap) - 1, toggleY);
+            } else if (groupIdx == 1) {
+                // 扩展组：例如两个新按钮（需定义 BackpackQuickStoreButton 和 BackpackQuickTakeButton）
+                // 这里先使用占位，您可替换为实际按钮类
+//                addBackpackQuickStoreButton(screen, toggleX, toggleY);
+//                addBackpackQuickTakeButton(screen, toggleX + size + gap, toggleY);
+            }
+            // 如需更多组，可继续添加 else if
+        }
+    }
+
 }

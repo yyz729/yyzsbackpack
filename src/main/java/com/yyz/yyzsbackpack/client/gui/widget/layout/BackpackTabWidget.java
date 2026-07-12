@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.client.gui;
+package com.yyz.yyzsbackpack.client.gui.widget.layout;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class BackpackTabWidget extends AbstractWidget {
     private final ItemStack icon;
@@ -56,7 +57,7 @@ public class BackpackTabWidget extends AbstractWidget {
      * 实现必须的抽象方法，使用默认叙述。
      */
     @Override
-    protected void updateWidgetNarration(net.minecraft.client.gui.narration.NarrationElementOutput output) {
+    protected void updateWidgetNarration(net.minecraft.client.gui.narration.@NonNull NarrationElementOutput output) {
         this.defaultButtonNarrationText(output);
     }
 

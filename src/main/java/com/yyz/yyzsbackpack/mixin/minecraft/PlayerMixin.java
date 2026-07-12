@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin implements IBackpackData {   // 实现接口
+public abstract class PlayerMixin implements IBackpackData {
     @Unique
     private static final EntityDataAccessor<ItemStack> DATA_BACKPACK_STACK =
             SynchedEntityData.defineId(Player.class, EntityDataSerializers.ITEM_STACK);

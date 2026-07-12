@@ -8,5 +8,10 @@
 
   "effect.yyzsbackpack.heavy": "Heavy",
 
-  "itemGroup.yyzsbackpack.title": "yyz's backpack"
+  "itemGroup.yyzsbackpack.title": "yyz's backpack",
+
+  "yyzsbackpack.button.moveb.line1": "§5Click§r: Move identical items to backpack",
+  "yyzsbackpack.button.moveb.line2": "§5Shift+Click§r: Move all items to backpack",
+  "yyzsbackpack.button.movei.line1": "§5Click§r: Move identical items to inventory",
+  "yyzsbackpack.button.movei.line2": "§5Shift+Click§r: Move all items to inventory"
 }

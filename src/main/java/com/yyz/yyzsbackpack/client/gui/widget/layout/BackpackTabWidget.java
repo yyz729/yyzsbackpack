@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.client.gui.widget.layout;
 
+import com.yyz.yyzsbackpack.Backpack;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;

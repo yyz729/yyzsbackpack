@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.network;
+package com.yyz.yyzsbackpack.network.control;
 
 import com.yyz.yyzsbackpack.Backpack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -8,14 +8,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
-public record MoveIToInventoryC2SPacket(boolean all) implements CustomPacketPayload {
-    public static final Type<MoveIToInventoryC2SPacket> ID =
-            new Type<>(Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "movei_to_inventory"));
+public record MoveCToBackpackC2SPacket(boolean all) implements CustomPacketPayload {
+    public static final Type<MoveCToBackpackC2SPacket> ID =
+            new Type<>(Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "movec_to_backpack"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, MoveIToInventoryC2SPacket> CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, MoveCToBackpackC2SPacket> CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.BOOL, MoveIToInventoryC2SPacket::all,
-                    MoveIToInventoryC2SPacket::new
+                    ByteBufCodecs.BOOL, MoveCToBackpackC2SPacket::all,
+                    MoveCToBackpackC2SPacket::new
             );
 
     @Override

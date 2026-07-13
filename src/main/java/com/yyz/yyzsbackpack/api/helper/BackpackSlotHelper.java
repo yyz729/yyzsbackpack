@@ -4,6 +4,7 @@ import com.yyz.yyzsbackpack.api.IBackpackSlots;
 import com.yyz.yyzsbackpack.api.IBackpackSlot;
 import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.provider.VanillaBackpackSlotProvider;
+import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -104,5 +105,16 @@ public final class BackpackSlotHelper {
             return backpackData.yyzsbackpack$getSyncedBackpack();
         }
         return ItemStack.EMPTY;
+    }
+
+    public static int getBackpackSize(Player player) {
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        if (backpack.getItem() instanceof BackpackItem backpackItem) {
+            BackpackData data = backpackItem.getData();
+            if (data != null) {
+                return data.size();
+            }
+        }
+        return 0;
     }
 }

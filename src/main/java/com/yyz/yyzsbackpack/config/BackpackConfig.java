@@ -17,6 +17,8 @@ public class BackpackConfig {
     public Map<String, List<int[]>> controlOffsets = new HashMap<>() {{
         put("net.minecraft.client.gui.screens.inventory.InventoryScreen",
                 Collections.singletonList(new int[]{0, 0}));
+        put("net.minecraft.client.gui.screens.inventory.CraftingScreen",
+                Collections.singletonList(new int[]{0, 0}));
         put("net.minecraft.client.gui.screens.inventory.ContainerScreen",
                 Arrays.asList(new int[]{0, 0}, new int[]{0, 0}));
     }};

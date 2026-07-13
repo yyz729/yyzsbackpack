@@ -1,7 +1,8 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.network.MoveIToInventoryC2SPacket;
+import com.yyz.yyzsbackpack.network.control.MoveBToContainerC2SPacket;
+import com.yyz.yyzsbackpack.network.control.MoveCToInventoryC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -14,13 +15,13 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
-public class BackpackMoveIButton extends Button {
+public class BackpackMoveBCButton extends Button {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack_buttons.png");
 
     private static final int U_BASE = 50;
     private static final int HOVER_OFFSET = 20;
 
-    public BackpackMoveIButton(int x, int y) {
+    public BackpackMoveBCButton(int x, int y) {
         super(x, y, 6, 6, Component.empty(), btn -> {}, DEFAULT_NARRATION);
     }
 
@@ -36,8 +37,8 @@ public class BackpackMoveIButton extends Button {
         if (this.isHovered()) {
 
             List<FormattedCharSequence> tooltipLines = List.of(
-                    Component.translatable("yyzsbackpack.button.movei.line1").getVisualOrderText(),
-                    Component.translatable("yyzsbackpack.button.movei.line2").getVisualOrderText()
+                    Component.translatable("yyzsbackpack.button.movebc.line1").getVisualOrderText(),
+                    Component.translatable("yyzsbackpack.button.movebc.line2").getVisualOrderText()
             );
             graphics.setTooltipForNextFrame(tooltipLines, mouseX, mouseY);
         }
@@ -45,6 +46,6 @@ public class BackpackMoveIButton extends Button {
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
         boolean shift = event.hasShiftDown();
-        ClientPlayNetworking.send(new MoveIToInventoryC2SPacket(shift));
+        ClientPlayNetworking.send(new MoveBToContainerC2SPacket(shift));
     }
 }

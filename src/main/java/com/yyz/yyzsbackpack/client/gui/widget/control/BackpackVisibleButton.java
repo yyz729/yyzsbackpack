@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.IBackpackToggle;
+import com.yyz.yyzsbackpack.api.IBackpackVisible;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -12,9 +12,9 @@ import org.jspecify.annotations.NonNull;
 
 public class BackpackVisibleButton extends Button {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack_buttons.png");
-    private final IBackpackToggle handler;
+    private final IBackpackVisible handler;
 
-    public BackpackVisibleButton(int x, int y, IBackpackToggle handler) {
+    public BackpackVisibleButton(int x, int y, IBackpackVisible handler) {
         super(x, y, 6, 6, Component.empty(), btn -> handler.yyzsbackpack$toggleBackpackVisible(), DEFAULT_NARRATION);
         this.handler = handler;
     }

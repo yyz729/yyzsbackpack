@@ -2,13 +2,14 @@ package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.yyz.yyzsbackpack.api.IBackpackScroll;
 import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
-import com.yyz.yyzsbackpack.api.IBackpackToggle;
+import com.yyz.yyzsbackpack.api.IBackpackVisible;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.client.BackpackKeyBinding;
+import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
@@ -36,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(AbstractContainerScreen.class)
-public abstract class AbstractContainerScreenMixin implements IBackpackToggle, IBackpackScroll, IBackpackTabScroll {
+public abstract class AbstractContainerScreenMixin implements IBackpackVisible, IBackpackScroll, IBackpackTabScroll {
 
     @Shadow
     protected abstract boolean hasClickedOutside(double mx, double my, int xo, int yo);
@@ -130,6 +131,19 @@ public abstract class AbstractContainerScreenMixin implements IBackpackToggle, I
 
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
     private void onMouseScrolled(double x, double y, double scrollX, double scrollY, CallbackInfoReturnable<Boolean> cir) {
+
+        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
+
+        for (var child : screen.children()) {
+            if (child instanceof BackpackSortButton btn) {
+                if (btn.isMouseOver(x, y)) {
+                    BackpackSortButton.cycleAlgorithm();
+                    cir.setReturnValue(true);
+                    return;
+                }
+            }
+        }
+
         int segmentIndex = getSegmentAtPosition(x, y);
         if (segmentIndex >= 0) {
             int delta = (int)Math.signum(scrollY);
@@ -139,7 +153,6 @@ public abstract class AbstractContainerScreenMixin implements IBackpackToggle, I
             cir.setReturnValue(true);
         }
 
-        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
         boolean mouseOverTab = screen.children().stream()
                 .filter(w -> w instanceof BackpackTabWidget)
                 .anyMatch(w -> w.isMouseOver(x, y));

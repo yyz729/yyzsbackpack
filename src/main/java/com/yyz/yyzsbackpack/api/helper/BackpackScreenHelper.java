@@ -6,10 +6,7 @@ import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
-import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackMoveBButton;
-import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackMoveIButton;
-import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
-import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackVisibleButton;
+import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
@@ -53,7 +50,7 @@ public final class BackpackScreenHelper {
         if (start < 0) return;
 
         // 可见性检查
-        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        boolean visible = !(screen instanceof IBackpackVisible handler) || handler.yyzsbackpack$isBackpackVisible();
         if (!visible) {
             for (int i = start; i < menu.slots.size(); i++) {
                 Slot slot = menu.slots.get(i);
@@ -185,7 +182,7 @@ public final class BackpackScreenHelper {
                                              GuiGraphicsExtractor graphics,
                                              int mouseX, int mouseY, float partialTick) {
         // 可见性检查
-        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
+        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) {
             return;
         }
 
@@ -237,7 +234,7 @@ public final class BackpackScreenHelper {
      */
     @Nullable
     public static Rectangle getBackpackBackgroundBounds(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackToggle handler && !handler.yyzsbackpack$isBackpackVisible()) {
+        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) {
             return null;
         }
 
@@ -284,7 +281,7 @@ public final class BackpackScreenHelper {
                 .map(w -> (BackpackTabWidget) w)
                 .toList();
 
-        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        boolean visible = !(screen instanceof IBackpackVisible handler) || handler.yyzsbackpack$isBackpackVisible();
         List<ItemStack> stacks = BackpackSlotHelper.getAllBackpackStacks(mc.player);
 
         if (!visible || stacks.isEmpty()) {
@@ -378,7 +375,7 @@ public final class BackpackScreenHelper {
 
     public static void addBackpackScrollbar(AbstractContainerScreen<?> screen) {
         // 可见性检查
-        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        boolean visible = !(screen instanceof IBackpackVisible handler) || handler.yyzsbackpack$isBackpackVisible();
         if (!visible) {
             for (BackpackScrollWidget bar : screen.children().stream()
                     .filter(w -> w instanceof BackpackScrollWidget)
@@ -530,7 +527,7 @@ public final class BackpackScreenHelper {
     public static void addBackpackTitle(AbstractContainerScreen<?> screen,
                                         GuiGraphicsExtractor graphics,
                                         float partialTick) {
-        boolean visible = !(screen instanceof IBackpackToggle handler) || handler.yyzsbackpack$isBackpackVisible();
+        boolean visible = !(screen instanceof IBackpackVisible handler) || handler.yyzsbackpack$isBackpackVisible();
         if (!visible) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -642,20 +639,20 @@ public final class BackpackScreenHelper {
      * @param x     按钮的 X 坐标（左上角）
      * @param y     按钮的 Y 坐标（左上角）
      */
-    public static void addBackpackMoveBButton(AbstractContainerScreen<?> screen, int x, int y) {
+    public static void addBackpackMoveIToBButton(AbstractContainerScreen<?> screen, int x, int y) {
 
         // 查找已有排序按钮
-        Optional<BackpackMoveBButton> existing = screen.children().stream()
-                .filter(w -> w instanceof BackpackMoveBButton)
-                .map(w -> (BackpackMoveBButton) w)
+        Optional<BackpackMoveIBButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveIBButton)
+                .map(w -> (BackpackMoveIBButton) w)
                 .findFirst();
 
         if (existing.isPresent()) {
-            BackpackMoveBButton btn = existing.get();
+            BackpackMoveIBButton btn = existing.get();
             btn.setX(x);
             btn.setY(y);
         } else {
-            BackpackMoveBButton btn = new BackpackMoveBButton(x, y);
+            BackpackMoveIBButton btn = new BackpackMoveIBButton(x, y);
             ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
         }
     }
@@ -668,20 +665,20 @@ public final class BackpackScreenHelper {
      * @param x     按钮的 X 坐标（左上角）
      * @param y     按钮的 Y 坐标（左上角）
      */
-    public static void addBackpackMoveIButton(AbstractContainerScreen<?> screen, int x, int y) {
+    public static void addBackpackMoveBToIButton(AbstractContainerScreen<?> screen, int x, int y) {
 
         // 查找已有排序按钮
-        Optional<BackpackMoveIButton> existing = screen.children().stream()
-                .filter(w -> w instanceof BackpackMoveIButton)
-                .map(w -> (BackpackMoveIButton) w)
+        Optional<BackpackMoveBIButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveBIButton)
+                .map(w -> (BackpackMoveBIButton) w)
                 .findFirst();
 
         if (existing.isPresent()) {
-            BackpackMoveIButton btn = existing.get();
+            BackpackMoveBIButton btn = existing.get();
             btn.setX(x);
             btn.setY(y);
         } else {
-            BackpackMoveIButton btn = new BackpackMoveIButton(x, y);
+            BackpackMoveBIButton btn = new BackpackMoveBIButton(x, y);
             ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
         }
     }
@@ -695,7 +692,6 @@ public final class BackpackScreenHelper {
      */
     public static void addBackpackSortButton(AbstractContainerScreen<?> screen, int x, int y) {
 
-        // 查找已有排序按钮
         Optional<BackpackSortButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackSortButton)
                 .map(w -> (BackpackSortButton) w)
@@ -711,7 +707,7 @@ public final class BackpackScreenHelper {
         }
     }
 
-    public static void addBackpackVisible(AbstractContainerScreen<?> screen, int x, int y) {
+    public static void addBackpackVisibleButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackVisibleButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackVisibleButton)
                 .map(w -> (BackpackVisibleButton) w)
@@ -720,7 +716,7 @@ public final class BackpackScreenHelper {
         if (existing.isPresent()) {
             existing.get().setPosition(x, y);
         } else {
-            BackpackVisibleButton btn = new BackpackVisibleButton(x, y, (IBackpackToggle) screen);
+            BackpackVisibleButton btn = new BackpackVisibleButton(x, y, (IBackpackVisible) screen);
             ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
         }
     }
@@ -733,7 +729,7 @@ public final class BackpackScreenHelper {
         int screenHeight = screen.height;
         int recipeBookRight = leftPos + 124;
         int recipeBookBottom = screenHeight / 2 - 4;
-        int spacing = 16;
+        int spacing = 15;
         int size = 6;
         int gap = 2;
 
@@ -743,24 +739,92 @@ public final class BackpackScreenHelper {
             int offsetX = offset[0];
             int offsetY = offset[1];
 
-            // 计算该组起始坐标（与之前相同，但每个组独立）
+            // 计算该组起始坐标
             int toggleX = recipeBookRight + spacing + offsetX;
             int toggleY = recipeBookBottom - size + offsetY;
 
             if (groupIdx == 0) {
-                // 基础组：toggle, sort, moveI, moveB
-                addBackpackVisible(screen, toggleX, toggleY);
+                addBackpackVisibleButton(screen, toggleX, toggleY);
                 addBackpackSortButton(screen, toggleX + size + gap - 1, toggleY);
-                addBackpackMoveIButton(screen, toggleX + 2*(size + gap) - 1, toggleY);
-                addBackpackMoveBButton(screen, toggleX + 3*(size + gap) - 1, toggleY);
+                addBackpackMoveBToIButton(screen, toggleX + 2*(size + gap), toggleY);
+                addBackpackMoveIToBButton(screen, toggleX + 3*(size + gap), toggleY);
             } else if (groupIdx == 1) {
-                // 扩展组：例如两个新按钮（需定义 BackpackQuickStoreButton 和 BackpackQuickTakeButton）
-                // 这里先使用占位，您可替换为实际按钮类
-//                addBackpackQuickStoreButton(screen, toggleX, toggleY);
-//                addBackpackQuickTakeButton(screen, toggleX + size + gap, toggleY);
+                toggleY = toggleY - 67;
+                addBackpackMoveBToCButton(screen, toggleX, toggleY);
+                addBackpackMoveCToBButton(screen, toggleX + size + gap, toggleY);
+
+                addBackpackMoveIToCButton(screen, toggleX + 2*(size + gap), toggleY);
+                addBackpackMoveCToIButton(screen, toggleX + 3*(size + gap), toggleY);
+
             }
-            // 如需更多组，可继续添加 else if
         }
     }
+
+    private static void addBackpackMoveBToCButton(AbstractContainerScreen<?> screen, int x, int y) {
+
+        Optional<BackpackMoveBCButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveBCButton)
+                .map(w -> (BackpackMoveBCButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveBCButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveBCButton btn = new BackpackMoveBCButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    private static void addBackpackMoveCToBButton(AbstractContainerScreen<?> screen, int x, int y) {
+        Optional<BackpackMoveCBButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveCBButton)
+                .map(w -> (BackpackMoveCBButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveCBButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveCBButton btn = new BackpackMoveCBButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    private static void addBackpackMoveIToCButton(AbstractContainerScreen<?> screen, int x, int y) {
+        Optional<BackpackMoveICButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveICButton)
+                .map(w -> (BackpackMoveICButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveICButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveICButton btn = new BackpackMoveICButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
+    private static void addBackpackMoveCToIButton(AbstractContainerScreen<?> screen, int x, int y) {
+
+        Optional<BackpackMoveCIButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackMoveCIButton)
+                .map(w -> (BackpackMoveCIButton) w)
+                .findFirst();
+
+        if (existing.isPresent()) {
+            BackpackMoveCIButton btn = existing.get();
+            btn.setX(x);
+            btn.setY(y);
+        } else {
+            BackpackMoveCIButton btn = new BackpackMoveCIButton(x, y);
+            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
+        }
+    }
+
 
 }

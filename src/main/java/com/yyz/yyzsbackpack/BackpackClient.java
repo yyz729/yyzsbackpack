@@ -1,8 +1,7 @@
 package com.yyz.yyzsbackpack;
 
-import com.yyz.yyzsbackpack.client.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
-import com.yyz.yyzsbackpack.network.ClientPacketHandler;
+import com.yyz.yyzsbackpack.network.handler.ClientPacketHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.resources.Identifier;

@@ -14,7 +14,7 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
-import com.yyz.yyzsbackpack.network.SwitchBackpackC2SPacket;
+import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -726,10 +726,8 @@ public final class BackpackScreenHelper {
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
-        int screenHeight = screen.height;
-        int recipeBookRight = leftPos + 124;
-        int recipeBookBottom = screenHeight / 2 - 4;
-        int spacing = 15;
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
+//        int spacing = 15;
         int size = 6;
         int gap = 2;
 
@@ -740,8 +738,8 @@ public final class BackpackScreenHelper {
             int offsetY = offset[1];
 
             // 计算该组起始坐标
-            int toggleX = recipeBookRight + spacing + offsetX;
-            int toggleY = recipeBookBottom - size + offsetY;
+            int toggleX = leftPos +  offsetX;
+            int toggleY = topPos - size + offsetY;
 
             if (groupIdx == 0) {
                 addBackpackVisibleButton(screen, toggleX, toggleY);
@@ -749,10 +747,8 @@ public final class BackpackScreenHelper {
                 addBackpackMoveBToIButton(screen, toggleX + 2*(size + gap), toggleY);
                 addBackpackMoveIToBButton(screen, toggleX + 3*(size + gap), toggleY);
             } else if (groupIdx == 1) {
-                toggleY = toggleY - 67;
                 addBackpackMoveBToCButton(screen, toggleX, toggleY);
                 addBackpackMoveCToBButton(screen, toggleX + size + gap, toggleY);
-
                 addBackpackMoveIToCButton(screen, toggleX + 2*(size + gap), toggleY);
                 addBackpackMoveCToIButton(screen, toggleX + 3*(size + gap), toggleY);
 

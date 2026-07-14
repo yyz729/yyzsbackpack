@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.network.control.MoveCToInventoryC2SPacket;
+import com.yyz.yyzsbackpack.network.packets.control.MoveCToInventoryC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

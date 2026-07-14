@@ -15,10 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingScreen.class)
-public abstract class CraftingScreenMixin extends AbstractRecipeBookScreen<CraftingMenu> {
-    public CraftingScreenMixin(CraftingMenu menu, RecipeBookComponent<?> recipeBookComponent, Inventory inventory, Component title) {
-        super(menu, recipeBookComponent, inventory, title);
-    }
+public class CraftingScreenMixin{
 
     @Inject(method = "extractBackground", at = @At("RETURN"))
     private void onExtractBackgroundReturn(CallbackInfo ci) {

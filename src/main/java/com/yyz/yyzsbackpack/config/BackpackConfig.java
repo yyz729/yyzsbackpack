@@ -2,7 +2,6 @@ package com.yyz.yyzsbackpack.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.yyz.yyzsbackpack.client.BackpackKeyBinding;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,11 +15,45 @@ public class BackpackConfig {
 
     public Map<String, List<int[]>> controlOffsets = new HashMap<>() {{
         put("net.minecraft.client.gui.screens.inventory.InventoryScreen",
-                Collections.singletonList(new int[]{0, 0}));
+                Collections.singletonList(new int[]{139, 80}));
         put("net.minecraft.client.gui.screens.inventory.CraftingScreen",
-                Collections.singletonList(new int[]{0, 0}));
+                Collections.singletonList(new int[]{139, 80}));
         put("net.minecraft.client.gui.screens.inventory.ContainerScreen",
-                Arrays.asList(new int[]{0, 0}, new int[]{0, 0}));
+                Arrays.asList(new int[]{139, 80}, new int[]{139, 12}));
+        put("net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.FurnaceScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.SmokerScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.BeaconScreen",
+                Collections.singletonList(new int[]{188, 96}));
+        put("net.minecraft.client.gui.screens.inventory.BrewingStandScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.CartographyTableScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.CrafterScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.DispenserScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.EnchantmentScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.GrindstoneScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.HopperScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.LoomScreen",
+                Collections.singletonList(new int[]{105, 80}));
+        put("net.minecraft.client.gui.screens.inventory.MerchantScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.SmithingScreen",
+                Collections.singletonList(new int[]{139, 81}));
+        put("net.minecraft.client.gui.screens.inventory.AnvilScreen",
+                Collections.singletonList(new int[]{139, 80}));
+        put("net.minecraft.client.gui.screens.inventory.StonecutterScreen",
+                Collections.singletonList(new int[]{139, 81}));
     }};
 
 

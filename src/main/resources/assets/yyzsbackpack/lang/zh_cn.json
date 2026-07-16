@@ -23,14 +23,17 @@
 
   "yyzsbackpack.button.sort.tooltip.line1": "§6当前排序顺序§r：%s",
   "yyzsbackpack.button.sort.tooltip.line2": "§5滚轮§r：切换排序顺序",
-  "yyzsbackpack.button.sort.tooltip.line3": "§5单击§r：整理全部",
-  "yyzsbackpack.button.sort.tooltip.line4": "§5Shift+单击§r：整理背包",
-  "yyzsbackpack.button.sort.tooltip.line5": "§5Alt+单击§r：整理物品栏",
-  "yyzsbackpack.button.sort.tooltip.line6": "§5Ctrl+单击§r：整理容器",
+  "yyzsbackpack.button.sort.tooltip.line3": "§5点击§r：整理全部",
+  "yyzsbackpack.button.sort.tooltip.line4": "§5Shift+点击§r：整理背包",
+  "yyzsbackpack.button.sort.tooltip.line5": "§5Alt+点击§r：整理物品栏",
+  "yyzsbackpack.button.sort.tooltip.line6": "§5Ctrl+点击§r：整理容器",
 
   "sort.algorithm.creative": "按创造模式物品栏",
   "sort.algorithm.name": "按名称",
   "sort.algorithm.id": "按ID",
   "sort.algorithm.count": "按数量",
-  "sort.algorithm.mod": "按模组"
+  "sort.algorithm.mod": "按模组",
+
+  "yyzsbackpack.button.hide": "隐藏背包界面",
+  "yyzsbackpack.button.show": "显示背包界面"
 }

@@ -34,5 +34,8 @@
   "sort.algorithm.name": "By Name",
   "sort.algorithm.id": "By ID",
   "sort.algorithm.count": "By Count",
-  "sort.algorithm.mod": "By Mod"
+  "sort.algorithm.mod": "By Mod",
+
+  "yyzsbackpack.button.hide": "Hide Backpack GUI",
+  "yyzsbackpack.button.show": "Show Backpack Gui"
 }

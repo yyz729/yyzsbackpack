@@ -14,6 +14,7 @@ import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
+import com.yyz.yyzsbackpack.network.packets.control.SortRequestC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -252,7 +253,22 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
     private void onKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         // 排序键
         if (BackpackKeyBinding.KEY_SORT.matches(event)) {
-            System.out.println("按下了排序键！");
+            int algorithm = BackpackSortButton.getCurrentAlgorithmIndex();
+
+            boolean shift = event.hasShiftDown();
+            boolean alt = event.hasAltDown();
+            boolean ctrl = event.hasControlDown();
+            int mask;
+            if (!shift && !alt && !ctrl) {
+                mask = 7; // 无修饰键，排序所有分区
+            } else {
+                mask = 0;
+                if (shift) mask |= 1;
+                if (alt)   mask |= 2;
+                if (ctrl)  mask |= 4;
+            }
+
+            ClientPlayNetworking.send(new SortRequestC2SPacket(algorithm, mask));
             cir.setReturnValue(true);
             return;
         }

@@ -2,6 +2,8 @@ package com.yyz.yyzsbackpack.api;
 
 import net.minecraft.world.item.ItemStack;
 
+import java.util.UUID;
+
 public interface IBackpackData {
     /** 获取同步来的背包堆（客户端可用） */
     ItemStack yyzsbackpack$getSyncedBackpack();
@@ -11,4 +13,7 @@ public interface IBackpackData {
 
     int yyzsbackpack$getSyncedBackpackIndex();
     void yyzsbackpack$setSyncedBackpackIndex(int index);
+
+    String yyzsbackpack$getSelectedBackpackUuid();
+    void yyzsbackpack$setSelectedBackpackUuid(String uuid);
 }

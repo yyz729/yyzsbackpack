@@ -10,6 +10,7 @@ import com.yyz.yyzsbackpack.data.BackpackDataLoader;
 import com.yyz.yyzsbackpack.network.packets.data.BackpackDataSyncS2CPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.control.*;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,6 +52,7 @@ public class ServerPacketHandler {
                 data.yyzsbackpack$setSyncedBackpack(selected);
             }
         });
+
 
         // 接收 MoveB 请求
         ServerPlayNetworking.registerGlobalReceiver(MoveIToBackpackC2SPacket.ID, (packet, context) -> {

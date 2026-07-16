@@ -34,6 +34,10 @@ public class BackpackSortButton extends Button {
         currentAlgorithmIndex = (currentAlgorithmIndex + 1) % ALGORITHM_COUNT;
     }
 
+    public static int getCurrentAlgorithmIndex() {
+        return  currentAlgorithmIndex;
+    }
+
     @Override
     protected void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = U_BASE + 3;

@@ -9,6 +9,7 @@ import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
+import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -70,8 +71,8 @@ public final class BackpackScreenHelper {
 
         if (!(screen instanceof IBackpackScroll scrollable)) return;
 
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int slotCount = menu.slots.size();
 
         // 获取所有段的列表
@@ -209,8 +210,8 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
 
         int x = ((ScreenAccessor<?>) screen).getLeftPos() + data.backgroundX() + offsetX;
         int y = ((ScreenAccessor<?>) screen).getTopPos() + data.backgroundY() + offsetY;
@@ -257,8 +258,8 @@ public final class BackpackScreenHelper {
             return null;
         }
 
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
 
         int x = ((ScreenAccessor<?>) screen).getLeftPos() + data.backgroundX() + offsetX;
         int y = ((ScreenAccessor<?>) screen).getTopPos() + data.backgroundY() + offsetY;
@@ -314,8 +315,8 @@ public final class BackpackScreenHelper {
 
         int left = ((ScreenAccessor<?>) screen).getLeftPos();
         int top = ((ScreenAccessor<?>) screen).getTopPos();
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
 
         int tabHeight = 18;
         int baseY = top - tabHeight - 2 + offsetY;
@@ -408,8 +409,8 @@ public final class BackpackScreenHelper {
         }
 
         List<LayoutSegment> segments = data.segments();
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
@@ -541,8 +542,8 @@ public final class BackpackScreenHelper {
         Font font = mc.font;
         String title = backpackStack.getHoverName().getString();
 
-        int offsetX = getOffsetX(screen);
-        int offsetY = getOffsetY(screen);
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
@@ -722,7 +723,7 @@ public final class BackpackScreenHelper {
     }
     public static void addBackpackControls(AbstractContainerScreen<?> screen) {
         String className = screen.getClass().getName();
-        List<int[]> offsets = Backpack.getConfig().controlOffsets.get(className);
+        List<int[]> offsets = Backpack.getConfig().controlPoss.get(className);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -822,5 +823,20 @@ public final class BackpackScreenHelper {
         }
     }
 
+    private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
+        BackpackConfig config = Backpack.getConfig();
+        if (config == null) return new int[]{0, 0};
+        List<int[]> offsets = config.uiOffsets.get(screen.getClass().getName());
+        if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
+        return offsets.getFirst();
+    }
+
+    private static int getUiOffsetX(AbstractContainerScreen<?> screen) {
+        return getUiOffset(screen)[0];
+    }
+
+    private static int getUiOffsetY(AbstractContainerScreen<?> screen) {
+        return getUiOffset(screen)[1];
+    }
 
 }

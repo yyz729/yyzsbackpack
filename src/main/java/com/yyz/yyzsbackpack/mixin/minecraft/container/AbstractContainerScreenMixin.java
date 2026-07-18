@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackScroll;
 import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
 import com.yyz.yyzsbackpack.api.IBackpackVisible;
@@ -21,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -30,6 +32,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
@@ -307,4 +310,29 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
             return;
         }
     }
+
+//    @Inject(method = "slotClicked", at = @At("HEAD"))
+//    private void onSlotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
+//        // 获取屏幕实例
+//        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
+//        // 构造槽位信息
+//        String slotInfo;
+//        if (slot != null) {
+//            ItemStack stack = slot.getItem();
+//            slotInfo = String.format("Slot[%d] (%s) = %s",
+//                    slot.index,
+//                    slot.getClass().getSimpleName(),
+//                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
+//        } else {
+//            slotInfo = "null (outside)";
+//        }
+//        // 记录日志
+//        Backpack.LOGGER.info("Screen Slot Clicked -  Slot: {}, Button: {}, Input: {}, Carried: {}",
+//                slotInfo,
+//                buttonNum,
+//                containerInput,
+//                screen.getMenu().getCarried().isEmpty() ? "empty" :
+//                        screen.getMenu().getCarried().getDisplayName().getString() + " x" + screen.getMenu().getCarried().getCount()
+//        );
+//    }
 }

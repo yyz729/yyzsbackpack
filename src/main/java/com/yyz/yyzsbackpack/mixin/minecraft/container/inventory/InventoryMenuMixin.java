@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryMenu.class)
-public abstract class InventoryMenuMixin{
+public class InventoryMenuMixin{
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstruct(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {

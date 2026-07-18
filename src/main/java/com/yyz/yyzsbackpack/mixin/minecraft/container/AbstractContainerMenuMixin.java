@@ -19,19 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerMenu.class)
 public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
 
-    @Unique
-    private int backpackSlotStart;
-
-    @Override
-    public int yyzsbackpack$getBackpackSlotStart() {
-        return backpackSlotStart;
-    }
-
-    @Override
-    public void yyzsbackpack$setBackpackSlotStart(int start) {
-        this.backpackSlotStart = start;
-    }
-
     @Override
     public boolean yyzsbackpack$moveItemStackTo(ItemStack stack, int start, int end, boolean reverse) {
         return this.moveItemStackTo(stack, start, end, reverse);
@@ -73,6 +60,7 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
         // 记录原物品，用于后续更新
         ItemStack original = slot.getItem().copy();
         int originalCount = original.getCount();
+
 
         // 尝试将物品移入背包槽位（从 backpackStart 到 slots.size()）
         boolean moved = moveItemStackTo(original, backpackStart, self.slots.size(), false);

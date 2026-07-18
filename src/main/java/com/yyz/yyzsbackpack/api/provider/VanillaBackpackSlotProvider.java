@@ -12,19 +12,7 @@ import java.util.List;
 public class VanillaBackpackSlotProvider implements IBackpackSlots {
     @Override
     public List<IBackpackSlot> getSlots(Player player) {
-//        return List.of(new BackpackSlotReference() {
-//            @Override
-//            public ItemStack getStack() {
-//                return player.getItemBySlot(EquipmentSlot.CHEST);
-//            }
-//            @Override
-//            public void setStack(ItemStack stack) {
-//                player.setItemSlot(EquipmentSlot.CHEST, stack);
-//            }
-//        });
-
         List<IBackpackSlot> slots = new ArrayList<>();
-
         //所有物品栏
         for (int i = 0; i < 36; i++) {
             final int index = i;
@@ -54,17 +42,6 @@ public class VanillaBackpackSlotProvider implements IBackpackSlots {
             }
         });
 
-//        slots.add(new IBackpackSlot() {
-//            @Override
-//            public ItemStack getStack() {
-//                return player.containerMenu.getCarried();
-//            }
-//
-//            @Override
-//            public void setStack(ItemStack stack) {
-//                player.containerMenu.setCarried(stack);
-//            }
-//        });
         return slots;
     }
 }

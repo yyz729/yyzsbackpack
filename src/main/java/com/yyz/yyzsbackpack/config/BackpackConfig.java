@@ -140,4 +140,27 @@ public class BackpackConfig {
             throw new RuntimeException("Failed to load config", e);
         }
     }
+
+    public Set<String> disabledScreens = new HashSet<>();
+
+    /**
+     * 判断某个屏幕是否启用
+     */
+    public boolean isScreenEnabled(String screenClassName) {
+        return !disabledScreens.contains(screenClassName);
+    }
+
+    /**
+     * 启用某个屏幕
+     */
+    public void enableScreen(String screenClassName) {
+        disabledScreens.remove(screenClassName);
+    }
+
+    /**
+     * 禁用某个屏幕
+     */
+    public void disableScreen(String screenClassName) {
+        disabledScreens.add(screenClassName);
+    }
 }

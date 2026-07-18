@@ -5,13 +5,9 @@ import com.yyz.yyzsbackpack.api.IBackpackMenu;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -23,12 +19,9 @@ import java.util.List;
 public final class BackpackMenuHelper {
     private BackpackMenuHelper() {}
 
-    public static void addBackpackSlotsIfPresent(AbstractContainerMenu menu, Inventory playerInv) {
-        int start = menu.slots.size();
-        if (menu instanceof IBackpackMenu backpackMenu) {
-            backpackMenu.yyzsbackpack$setBackpackSlotStart(start);
-        }
 
+
+    public static void addBackpackSlotsIfPresent(AbstractContainerMenu menu, Inventory playerInv) {
         // 添加 256 个槽位，但操作时会按实际容量限制
         for (int i = 0; i < 256; i++) {
             ((MenuAccessor)menu).invokeAddSlot(new BackpackSlot(playerInv, playerInv.getContainerSize() + i, -1000, -1000, playerInv.getContainerSize()));
@@ -36,8 +29,10 @@ public final class BackpackMenuHelper {
     }
 
     public static int getBackpackSlotStart(AbstractContainerMenu menu) {
-        if (menu instanceof IBackpackMenu backpackMenu) {
-            return backpackMenu.yyzsbackpack$getBackpackSlotStart();
+        for (int i = 0; i < menu.slots.size(); i++) {
+            if (menu.slots.get(i) instanceof BackpackSlot) {
+                return i;
+            }
         }
         return -1;
     }

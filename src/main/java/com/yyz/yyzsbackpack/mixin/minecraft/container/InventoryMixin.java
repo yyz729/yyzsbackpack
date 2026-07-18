@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
@@ -137,7 +138,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Inject(method = "setItem", at = @At("HEAD"), cancellable = true)
     private void onSetItem(int slot, ItemStack stack, CallbackInfo ci) {
-
         if (isExtraSlot(slot)) {
             extraItems.set(getExtraIndex(slot), stack);
             yyzsbackpack$syncToBackpack();
@@ -163,10 +163,10 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-    @ModifyReturnValue(method = "getContainerSize", at = @At("RETURN"))
-    private int modifyContainerSize(int original) {
-        return original + EXTRA_SLOT_COUNT;
-    }
+//    @ModifyReturnValue(method = "getContainerSize", at = @At("RETURN"))
+//    private int modifyContainerSize(int original) {
+//        return original + EXTRA_SLOT_COUNT;
+//    }
 
     @ModifyReturnValue(method = "isEmpty", at = @At("RETURN"))
     private boolean modifyIsEmpty(boolean original) {

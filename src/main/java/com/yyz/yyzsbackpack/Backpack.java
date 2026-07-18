@@ -3,7 +3,6 @@ package com.yyz.yyzsbackpack;
 import com.yyz.yyzsbackpack.component.ModComponents;
 import com.yyz.yyzsbackpack.config.BackpackConfig;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
-import com.yyz.yyzsbackpack.effect.HeavyEffect;
 import com.yyz.yyzsbackpack.effect.ModEffects;
 import com.yyz.yyzsbackpack.item.ModItems;
 import com.yyz.yyzsbackpack.network.*;
@@ -12,12 +11,8 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.effect.MobEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +35,6 @@ public class Backpack implements ModInitializer {
 
 		ServerPacketHandler.register();
 		ModComponents.register();
-
 	}
 
 

@@ -6,6 +6,7 @@ import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.storage.ValueInput;
@@ -30,6 +32,9 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Shadow
     public abstract int getContainerSize();
+
+    @Shadow
+    public abstract ItemStack getItem(int slot);
 
     @Unique
     private static final int EXTRA_SLOT_COUNT = 256;
@@ -344,6 +349,30 @@ public abstract class InventoryMixin implements IExtendedInventory {
                     yyzsbackpack$syncToBackpack();
                     break;
                 }
+            }
+        }
+    }
+
+    @Inject(method = "findSlotMatchingItem", at = @At("HEAD"), cancellable = true)
+    private void onFindSlotMatchingItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        for (int i = 0; i < extraItems.size(); i++) {
+            if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
+                    && ItemStack.isSameItemSameComponents(stack, extraItems.get(i))) {
+                cir.setReturnValue(getContainerSize() + i);
+                return;
+            }
+        }
+    }
+
+    @Inject(method = "findSlotMatchingCraftingIngredient", at = @At("HEAD"), cancellable = true)
+    private void onFindSlotMatchingCraftingIngredient(Holder<Item> item, ItemStack existingItem, CallbackInfoReturnable<Integer> cir) {
+        for (int i = 0; i < extraItems.size(); i++) {
+            ItemStack stack = extraItems.get(i);
+            if (extraSlotEnabled[i] && !stack.isEmpty() && stack.is(item)
+                    && Inventory.isUsableForCrafting(stack)
+                    && (existingItem.isEmpty() || ItemStack.isSameItemSameComponents(existingItem, stack))) {
+                cir.setReturnValue(getContainerSize() + i);
+                return;
             }
         }
     }

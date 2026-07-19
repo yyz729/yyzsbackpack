@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -29,6 +30,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.awt.*;
 import java.util.*;
@@ -36,9 +38,11 @@ import java.util.List;
 
 public final class BackpackScreenHelper {
 
-    private BackpackScreenHelper() {
-    }
+    private BackpackScreenHelper() {}
 
+    private static final float TITLE_SCROLL_SPEED = 5.0f;
+    private static final float STOP_DURATION = 0.8f;       // 两端停留时间（秒）
+    private static final int   RIGHT_PADDING = 2;          // 右侧安全间距，防止文字紧贴标签
     /**
      * 根据背包数据重新计算所有背包槽位的实际显示位置，并设置到对应的 Slot 中。
      * 如果当前屏幕实现了 BackpackVisibilityHandler 且背包不可见，则将所有槽位移出屏幕。
@@ -498,33 +502,6 @@ public final class BackpackScreenHelper {
         private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {
     }
 
-    // ---------- 辅助方法 ----------
-
-    public static BackpackData getBackpackData(ItemStack stack) {
-        if (stack.getItem() instanceof BackpackItem backpackItem) {
-            return backpackItem.getData();
-        }
-        return null;
-    }
-
-    public static int getOffsetX(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffset provider) {
-            return provider.yyzsbackpack$getBackpackOffsetX();
-        }
-        return 0;
-    }
-
-    public static int getOffsetY(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffset provider) {
-            return provider.yyzsbackpack$getBackpackOffsetY();
-        }
-        return 0;
-    }
-
-    private static final float TITLE_SCROLL_SPEED = 5.0f;
-    private static final float STOP_DURATION = 0.8f;       // 两端停留时间（秒）
-    private static final int   RIGHT_PADDING = 2;          // 右侧安全间距，防止文字紧贴标签
-
     public static void addBackpackTitle(AbstractContainerScreen<?> screen,
                                         GuiGraphicsExtractor graphics,
                                         float partialTick) {
@@ -587,7 +564,7 @@ public final class BackpackScreenHelper {
             return;
         }
 
-        // ---------- 带停留的来回滚动 ----------
+        //带停留的来回滚动
         int maxScroll = titleWidth - availableWidth;                     // 需要滚动的最大像素
         float moveTime = maxScroll / TITLE_SCROLL_SPEED;                 // 单向移动耗时（秒）
         float halfCycle = moveTime + STOP_DURATION;                      // 半周期：移动 + 停留
@@ -728,7 +705,6 @@ public final class BackpackScreenHelper {
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).getTopPos();
-//        int spacing = 15;
         int size = 6;
         int gap = 2;
 
@@ -821,6 +797,60 @@ public final class BackpackScreenHelper {
             BackpackMoveCIButton btn = new BackpackMoveCIButton(x, y);
             ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
         }
+    }
+
+    // 根据鼠标位置确定所在的段索引
+    public static int getSegmentAtPosition(AbstractContainerScreen<?> screen, double mouseX, double mouseY) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return -1;
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null) return -1;
+
+        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
+        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
+
+        List<LayoutSegment> segments = data.segments();
+        for (int i = 0; i < segments.size(); i++) {
+            LayoutSegment seg = segments.get(i);
+            if (seg.order() == LayoutOrder.CUSTOM) continue;
+            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
+
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+            int width = seg.columns().get() * 18;
+            int height = seg.rows().get() * 18; // 可视区域高度
+
+            // 扩大一点点击区域，方便操作
+            Rectangle rect = new Rectangle(segStartX, segStartY, width, height);
+            if (rect.contains(mouseX, mouseY)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static BackpackData getBackpackData(ItemStack stack) {
+        if (stack.getItem() instanceof BackpackItem backpackItem) {
+            return backpackItem.getData();
+        }
+        return null;
+    }
+
+    public static int getOffsetX(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IBackpackOffset provider) {
+            return provider.yyzsbackpack$getBackpackOffsetX();
+        }
+        return 0;
+    }
+
+    public static int getOffsetY(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IBackpackOffset provider) {
+            return provider.yyzsbackpack$getBackpackOffsetY();
+        }
+        return 0;
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {

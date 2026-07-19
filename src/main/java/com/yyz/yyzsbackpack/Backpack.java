@@ -11,6 +11,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.recipebook.ServerPlaceRecipe;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;

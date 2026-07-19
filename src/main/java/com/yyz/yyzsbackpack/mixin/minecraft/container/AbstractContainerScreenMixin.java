@@ -148,7 +148,7 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
             }
         }
 
-        int segmentIndex = getSegmentAtPosition(x, y);
+        int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, x, y);
         if (segmentIndex >= 0) {
             int delta = (int)Math.signum(scrollY);
             int oldOffset = yyzsbackpack$getSegmentScrollOffset(segmentIndex);
@@ -171,39 +171,7 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
         }
     }
 
-    // 根据鼠标位置确定所在的段索引
-    @Unique
-    private int getSegmentAtPosition(double mouseX, double mouseY) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return -1;
-        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
-        BackpackData data = BackpackScreenHelper.getBackpackData(backpack);
-        if (data == null) return -1;
 
-        int offsetX = BackpackScreenHelper.getOffsetX((AbstractContainerScreen<?>) (Object) this);
-        int offsetY = BackpackScreenHelper.getOffsetY((AbstractContainerScreen<?>) (Object) this);
-        int leftPos = ((ScreenAccessor<?>) this).getLeftPos();
-        int topPos = ((ScreenAccessor<?>) this).getTopPos();
-
-        List<LayoutSegment> segments = data.segments();
-        for (int i = 0; i < segments.size(); i++) {
-            LayoutSegment seg = segments.get(i);
-            if (seg.order() == LayoutOrder.CUSTOM) continue;
-            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
-
-            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
-            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
-            int width = seg.columns().get() * 18;
-            int height = seg.rows().get() * 18; // 可视区域高度
-
-            // 扩大一点点击区域，方便操作
-            Rectangle rect = new Rectangle(segStartX, segStartY, width, height);
-            if (rect.contains(mouseX, mouseY)) {
-                return i;
-            }
-        }
-        return -1;
-    }
     @Redirect(
             method = "mouseClicked",
             at = @At(

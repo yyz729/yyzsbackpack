@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "yyzsbackpack",
+  "version": "${version}",
+  "name": "yyzsbackpack",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/yyzsbackpack/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.yyz.yyzsbackpack.BackpackClient"
+    ],
+    "main": [
+      "com.yyz.yyzsbackpack.Backpack"
+    ]
+  },
+  "mixins": [
+    "yyzsbackpack.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

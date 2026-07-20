@@ -1,0 +1,41 @@
+{
+  "item.yyzsbackpack.woolen_backpack": "Wooden Backpack",
+  "item.yyzsbackpack.stone_backpack": "Stone Backpack",
+  "item.yyzsbackpack.iron_backpack": "Iron Backpack",
+  "item.yyzsbackpack.gold_backpack": "Gold Backpack",
+  "item.yyzsbackpack.diamond_backpack": "Diamond Backpack",
+  "item.yyzsbackpack.netherite_backpack": "Netherite Backpack",
+
+  "effect.yyzsbackpack.heavy": "Heavy",
+
+  "itemGroup.yyzsbackpack.title": "yyz's backpack",
+
+  "yyzsbackpack.button.moveib.line1": "§5Click§r: Move matching items from inventory to backpack",
+  "yyzsbackpack.button.moveib.line2": "§5Shift+Click§r: Move all items from inventory to backpack",
+  "yyzsbackpack.button.movebi.line1": "§5Click§r: Move matching items from backpack to inventory",
+  "yyzsbackpack.button.movebi.line2": "§5Shift+Click§r: Move all items from backpack to inventory",
+  "yyzsbackpack.button.moveci.line1": "§5Click§r: Move matching items from container to inventory",
+  "yyzsbackpack.button.moveci.line2": "§5Shift+Click§r: Move all items from container to inventory",
+  "yyzsbackpack.button.moveic.line1": "§5Click§r: Move matching items from inventory to container",
+  "yyzsbackpack.button.moveic.line2": "§5Shift+Click§r: Move all items from inventory to container",
+  "yyzsbackpack.button.movecb.line1": "§5Click§r: Move matching items from container to backpack",
+  "yyzsbackpack.button.movecb.line2": "§5Shift+Click§r: Move all items from container to backpack",
+  "yyzsbackpack.button.movebc.line1": "§5Click§r: Move matching items from backpack to container",
+  "yyzsbackpack.button.movebc.line2": "§5Shift+Click§r: Move all items from backpack to container",
+
+  "yyzsbackpack.button.sort.tooltip.line1": "§6Current sorting order§r: %s",
+  "yyzsbackpack.button.sort.tooltip.line2": "§5Scroll§r: Switch sorting order",
+  "yyzsbackpack.button.sort.tooltip.line3": "§5Click§r: Sort all",
+  "yyzsbackpack.button.sort.tooltip.line4": "§5Shift+Click§r: Sort backpack",
+  "yyzsbackpack.button.sort.tooltip.line5": "§5Alt+Click§r: Sort inventory",
+  "yyzsbackpack.button.sort.tooltip.line6": "§5Ctrl+Click§r: Sort container",
+
+  "sort.algorithm.creative": "By Creative Tab",
+  "sort.algorithm.name": "By Name",
+  "sort.algorithm.id": "By ID",
+  "sort.algorithm.count": "By Count",
+  "sort.algorithm.mod": "By Mod",
+
+  "yyzsbackpack.button.hide": "Hide Backpack GUI",
+  "yyzsbackpack.button.show": "Show Backpack Gui"
+}

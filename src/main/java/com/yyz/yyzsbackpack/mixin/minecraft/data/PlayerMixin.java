@@ -35,8 +35,7 @@ public abstract class PlayerMixin implements IBackpackData {
     private static final EntityDataAccessor<String> DATA_SELECTED_UUID =
             SynchedEntityData.defineId(Player.class, EntityDataSerializers.STRING);
 
-    @Unique
-    Player player = (Player) (Object) this;
+
 
     @Inject(method = "defineSynchedData", at = @At("RETURN"))
     private void defineBackpackData(SynchedEntityData.Builder builder, CallbackInfo ci) {
@@ -103,6 +102,7 @@ public abstract class PlayerMixin implements IBackpackData {
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTick(CallbackInfo ci) {
+        Player player = (Player) (Object) this;
         BackpackSlotHelper.updateWeightEffect(player);
         ((IExtendedInventory) player.getInventory()).yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
     }

@@ -4,6 +4,8 @@ import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackMenu;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -553,5 +555,98 @@ public final class BackpackMenuHelper {
                 break;
             }
         }
+    }
+
+    /**
+     * 将物品堆尝试移动到指定的三个区域中，支持自定义各区域范围和优先级顺序。
+     * 注意：三个区间应当互不重叠，且按实际槽位顺序排列（主物品栏 → 快捷栏 → 背包）。
+     *
+     * @param itemStack   要移动的物品堆（会被修改）
+     * @param mainStart   主物品栏起始索引
+     * @param mainEnd     主物品栏结束索引（不包含）
+     * @param hotbarStart  快捷栏起始索引
+     * @param hotbarEnd    快捷栏结束索引（不包含）
+     * @param backpackStart    背包起始索引
+     * @param backpackEnd      背包结束索引（不包含）
+     * @param backwards   true 表示启用优先策略，false 表示按普通正序处理所有指定区间
+     * @return 是否发生了任何移动（合并或放入空槽）
+     */
+    public static boolean moveItemStackToWithBackpack(AbstractContainerMenu menu, ItemStack itemStack,
+                                                      int mainStart, int mainEnd,
+                                                      int hotbarStart, int hotbarEnd,
+                                                      int backpackStart, int backpackEnd,
+                                                      boolean backwards) {
+        if (itemStack.isEmpty()) {
+            return false;
+        }
+
+        boolean anyMoved = false;
+
+        // 构建槽位遍历列表
+        IntList slotsToProcess = new IntArrayList();
+        if (backwards) {
+            // 快捷栏倒序 → 主物品栏倒序 → 背包正序
+            for (int i = hotbarEnd - 1; i >= hotbarStart; i--) slotsToProcess.add(i);
+            for (int i = mainEnd - 1; i >= mainStart; i--) slotsToProcess.add(i);
+            for (int i = backpackStart; i < backpackEnd; i++) slotsToProcess.add(i);
+        } else {
+            // 按主物品栏 → 快捷栏 → 背包 的正序
+            for (int i = mainStart; i < mainEnd; i++) slotsToProcess.add(i);
+            for (int i = hotbarStart; i < hotbarEnd; i++) slotsToProcess.add(i);
+            for (int i = backpackStart; i < backpackEnd; i++) slotsToProcess.add(i);
+        }
+
+        // 尝试合并到已有相同物品的槽位
+        for (int idx : slotsToProcess) {
+            if (tryMergeIntoSlot(menu, itemStack, idx)) {
+                anyMoved = true;
+                if (itemStack.isEmpty()) break;
+            }
+        }
+
+        // 尝试放入空槽位
+        if (!itemStack.isEmpty()) {
+            for (int idx : slotsToProcess) {
+                if (tryPlaceIntoEmptySlot(menu, itemStack, idx)) {
+                    anyMoved = true;
+                    if (itemStack.isEmpty()) break;
+                }
+            }
+        }
+
+        return anyMoved;
+    }
+    
+    private static boolean tryMergeIntoSlot(AbstractContainerMenu menu, ItemStack itemStack, int slotIndex) {
+        Slot slot = menu.slots.get(slotIndex);
+        ItemStack slotStack = slot.getItem();
+        if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, slotStack)) {
+            int maxStack = Math.min(slot.getMaxStackSize(slotStack), itemStack.getMaxStackSize());
+            int total = slotStack.getCount() + itemStack.getCount();
+            if (total <= maxStack) {
+                itemStack.setCount(0);
+                slotStack.setCount(total);
+                slot.setChanged();
+                return true;
+            } else if (slotStack.getCount() < maxStack) {
+                int toAdd = maxStack - slotStack.getCount();
+                itemStack.shrink(toAdd);
+                slotStack.setCount(maxStack);
+                slot.setChanged();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static boolean tryPlaceIntoEmptySlot(AbstractContainerMenu menu, ItemStack itemStack, int slotIndex) {
+        Slot slot = menu.slots.get(slotIndex);
+        if (!slot.hasItem() && slot.mayPlace(itemStack)) {
+            int maxStack = Math.min(slot.getMaxStackSize(itemStack), itemStack.getMaxStackSize());
+            slot.setByPlayer(itemStack.split(Math.min(itemStack.getCount(), maxStack)));
+            slot.setChanged();
+            return true;
+        }
+        return false;
     }
 }

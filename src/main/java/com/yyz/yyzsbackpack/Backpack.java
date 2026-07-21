@@ -36,8 +36,8 @@ public class Backpack implements ModInitializer {
 
 		ServerPacketHandler.register();
 		ModComponents.register();
-	}
 
+	}
 
 	public static BackpackConfig getConfig() {
 		return config;

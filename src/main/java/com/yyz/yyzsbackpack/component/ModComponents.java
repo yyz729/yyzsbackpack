@@ -1,4 +1,3 @@
-// 假设类名为 ModComponents
 package com.yyz.yyzsbackpack.component;
 
 import com.yyz.yyzsbackpack.Backpack;

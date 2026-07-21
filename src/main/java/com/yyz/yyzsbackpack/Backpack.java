@@ -48,12 +48,6 @@ public class Backpack {
         NeoForge.EVENT_BUS.register(this);
     }
 
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("服务器启动时的问候");
-    }
-
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();

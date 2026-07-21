@@ -28,3 +28,9 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Artifacts
+          path: build/libs/

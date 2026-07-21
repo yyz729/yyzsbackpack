@@ -1,0 +1,20 @@
+{
+  "type": "iron",
+  "size": 18,
+  "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
+  "backgroundX": -50,
+  "backgroundY": 0,
+  "force_server": false,
+  "maxVisibleTabs": 2,
+  "segments": [
+    {
+      "startSlot": 0,
+      "endSlot": 18,
+      "order": "DEFAULT",
+      "startX": -42,
+      "startY": 17,
+      "columns": 2,
+      "rows": 8
+    }
+  ]
+}

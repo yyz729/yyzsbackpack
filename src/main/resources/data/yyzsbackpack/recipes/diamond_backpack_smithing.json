@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:diamond"
+  },
+  "base": {
+    "item": "yyzsbackpack:gold_backpack"
+  },
+  "result": {
+    "item": "yyzsbackpack:diamond_backpack",
+    "count": 1
+  },
+  "template": {
+    "item": "minecraft:shulker_box"
+  }
+}

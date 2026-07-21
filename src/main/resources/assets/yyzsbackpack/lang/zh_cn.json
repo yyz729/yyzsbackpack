@@ -1,0 +1,39 @@
+{
+  "item.yyzsbackpack.iron_backpack": "铁背包",
+  "item.yyzsbackpack.gold_backpack": "金背包",
+  "item.yyzsbackpack.diamond_backpack": "钻石背包",
+  "item.yyzsbackpack.netherite_backpack": "下界合金背包",
+
+  "effect.yyzsbackpack.heavy": "负重",
+
+  "itemGroup.yyzsbackpack.title": "yyz的背包",
+
+  "yyzsbackpack.button.moveib.line1": "§5点击§r：将物品栏中相符物品移动到背包",
+  "yyzsbackpack.button.moveib.line2": "§5Shift+点击§r：将物品栏中所有物品移动到背包",
+  "yyzsbackpack.button.movebi.line1": "§5点击§r：将背包中相符物品移动到物品栏",
+  "yyzsbackpack.button.movebi.line2": "§5Shift+点击§r：将背包中所有物品移动到物品栏",
+  "yyzsbackpack.button.moveci.line1": "§5点击§r：将容器中相符物品移动到物品栏",
+  "yyzsbackpack.button.moveci.line2": "§5Shift+点击§r：将容器中所有物品移动到物品栏",
+  "yyzsbackpack.button.moveic.line1": "§5点击§r：将物品栏中相符物品移动到容器",
+  "yyzsbackpack.button.moveic.line2": "§5Shift+点击§r：将物品栏中所有物品移动到容器",
+  "yyzsbackpack.button.movecb.line1": "§5点击§r：将容器中相符物品移动到背包",
+  "yyzsbackpack.button.movecb.line2": "§5Shift+点击§r：将容器中所有物品移动到背包",
+  "yyzsbackpack.button.movebc.line1": "§5点击§r：将背包中相符物品移动到容器",
+  "yyzsbackpack.button.movebc.line2": "§5Shift+点击§r：将背包中所有物品移动到容器",
+
+  "yyzsbackpack.button.sort.tooltip.line1": "§6当前排序顺序§r：%s",
+  "yyzsbackpack.button.sort.tooltip.line2": "§5滚轮§r：切换排序顺序",
+  "yyzsbackpack.button.sort.tooltip.line3": "§5点击§r：整理全部",
+  "yyzsbackpack.button.sort.tooltip.line4": "§5Shift+点击§r：整理背包",
+  "yyzsbackpack.button.sort.tooltip.line5": "§5Alt+点击§r：整理物品栏",
+  "yyzsbackpack.button.sort.tooltip.line6": "§5Ctrl+点击§r：整理容器",
+
+  "sort.algorithm.creative": "按创造模式物品栏",
+  "sort.algorithm.name": "按名称",
+  "sort.algorithm.id": "按ID",
+  "sort.algorithm.count": "按数量",
+  "sort.algorithm.mod": "按模组",
+
+  "yyzsbackpack.button.hide": "隐藏背包界面",
+  "yyzsbackpack.button.show": "显示背包界面"
+}

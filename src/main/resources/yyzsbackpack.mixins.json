@@ -1,0 +1,61 @@
+{
+  "required": true,
+  "package": "com.yyz.yyzsbackpack.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "minecraft.accessor.MenuAccessor",
+    "minecraft.accessor.SlotAccessor",
+    "minecraft.container.AbstractContainerMenuMixin",
+    "minecraft.container.InventoryMixin",
+    "minecraft.container.beacon.BeaconMenuMixin",
+    "minecraft.container.brewing.BrewingStandMenuMixin",
+    "minecraft.container.cartography.CartographyTableMenuMixin",
+    "minecraft.container.chest.ChestMenuMixin",
+    "minecraft.container.combiner.ItemCombinerMenuMixin",
+    "minecraft.container.crafter.CrafterMenuMixin",
+    "minecraft.container.crafting.CraftingMenuMixin",
+    "minecraft.container.dispenser.DispenserMenuMixin",
+    "minecraft.container.enchantment.EnchantmentMenuMixin",
+    "minecraft.container.furnace.AbstractFurnaceMenuMixin",
+    "minecraft.container.grindstone.GrindstoneMenuMixin",
+    "minecraft.container.hopper.HopperMenuMixin",
+    "minecraft.container.inventory.InventoryMenuMixin",
+    "minecraft.container.loom.LoomMenuMixin",
+    "minecraft.container.merchant.MerchantMenuMixin",
+    "minecraft.container.mount.AbstractMountInventoryMenuMixin",
+    "minecraft.container.shulker.ShulkerBoxMenuMixin",
+    "minecraft.container.stonecutter.StonecutterMenuMixin",
+    "minecraft.data.PlayerMixin"
+  ],
+  "client": [
+    "minecraft.accessor.ScreenAccessor",
+    "minecraft.accessor.ScreenInvoker",
+    "minecraft.container.AbstractContainerScreenMixin",
+    "minecraft.container.beacon.BeaconScreenMixin",
+    "minecraft.container.brewing.BrewingStandScreenMixin",
+    "minecraft.container.cartography.CartographyTableScreenMixin",
+    "minecraft.container.chest.ContainerScreenMixin",
+    "minecraft.container.combiner.ItemCombinerScreenMixin",
+    "minecraft.container.crafter.CrafterScreenMixin",
+    "minecraft.container.crafting.CraftingScreenMixin",
+    "minecraft.container.dispenser.DispenserScreenMixin",
+    "minecraft.container.enchantment.EnchantmentScreenMixin",
+    "minecraft.container.furnace.AbstractFurnaceScreenMixin",
+    "minecraft.container.grindstone.GrindstoneScreenMixin",
+    "minecraft.container.hopper.HopperScreenMixin",
+    "minecraft.container.inventory.InventoryScreenMixin",
+    "minecraft.container.loom.LoomScreenMixin",
+    "minecraft.container.merchant.MerchantScreenMixin",
+    "minecraft.container.mount.AbstractMountInventoryScreenMixin",
+    "minecraft.container.shulker.ShulkerBoxScreenMixin",
+    "minecraft.container.stonecutter.StonecutterScreenMixin",
+    "minecraft.key.GameOptionsMixin",
+    "minecraft.model.PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

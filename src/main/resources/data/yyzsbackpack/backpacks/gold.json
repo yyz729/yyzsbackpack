@@ -1,0 +1,20 @@
+{
+  "type": "gold",
+  "size": 36,
+  "guiTexture": "yyzsbackpack:textures/gui/4x9backpack.png",
+  "backgroundX": -86,
+  "backgroundY": 0,
+  "force_server": false,
+  "maxVisibleTabs": 2,
+  "segments": [
+    {
+      "startSlot": 0,
+      "endSlot": 36,
+      "order": "DEFAULT",
+      "startX": -78,
+      "startY": 17,
+      "columns": 4,
+      "rows": 8
+    }
+  ]
+}

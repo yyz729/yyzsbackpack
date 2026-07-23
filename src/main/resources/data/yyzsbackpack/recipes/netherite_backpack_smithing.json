@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "yyzsbackpack:diamond_backpack"
+  },
+  "result": {
+    "item": "yyzsbackpack:netherite_backpack",
+    "count": 1
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

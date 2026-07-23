@@ -1,0 +1,350 @@
+{
+  "mappings": {
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/merchant/MerchantMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/trading/Merchant;)V": "Lnet/minecraft/world/inventory/MerchantMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/trading/Merchant;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/enchantment/EnchantmentMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/EnchantmentMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/AbstractContainerScreenMixin": {
+      "mouseReleased": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_6348_(DDI)Z",
+      "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_7467_(DDIII)Z",
+      "keyPressed": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_7933_(III)Z",
+      "mouseClicked": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_6375_(DDI)Z"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/grindstone/GrindstoneScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/GrindstoneScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/enchantment/EnchantmentScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/EnchantmentScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ShulkerBoxScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/crafting/CraftingScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CraftingScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/dispenser/DispenserScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/DispenserScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/furnace/AbstractFurnaceMenuMixin": {
+      "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+      "quickMoveStack": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+      "<init>(Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/inventory/RecipeBookType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;<init>(Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/inventory/RecipeBookType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/hopper/HopperScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/HopperScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/hopper/HopperMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/HopperMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/accessor/ScreenInvoker": {
+      "removeWidget": "m_169411_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V",
+      "addRenderableWidget": "Lnet/minecraft/client/gui/screens/Screen;m_142416_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/stonecutter/StonecutterMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/StonecutterMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/AbstractContainerMenuMixin": {
+      "doClick": "Lnet/minecraft/world/inventory/AbstractContainerMenu;m_150430_(IILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/combiner/ItemCombinerScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ItemCombinerScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/brewing/BrewingStandMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;)V": "Lnet/minecraft/world/inventory/BrewingStandMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/dispenser/DispenserMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/DispenserMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/crafting/CraftingMenuMixin": {
+      "Lnet/minecraft/world/inventory/CraftingMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/CraftingMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+      "quickMoveStack": "Lnet/minecraft/world/inventory/CraftingMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/CraftingMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/merchant/MerchantScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280398_(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/cartography/CartographyTableMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/CartographyTableMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/chest/ChestMenuMixin": {
+      "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/ChestMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+      "quickMoveStack": "Lnet/minecraft/world/inventory/ChestMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+      "<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V": "Lnet/minecraft/world/inventory/ChestMenu;<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/accessor/MenuAccessor": {
+      "addSlot": "m_38897_(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/loom/LoomMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/LoomMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/ShulkerBoxMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/key/GameOptionsMixin": {
+      "load()V": "Lnet/minecraft/client/Options;m_92140_()V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryMenuMixin": {
+      "Lnet/minecraft/world/inventory/InventoryMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/InventoryMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+      "quickMoveStack": "Lnet/minecraft/world/inventory/InventoryMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/grindstone/GrindstoneMenuMixin": {
+      "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/GrindstoneMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/loom/LoomScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/LoomScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/beacon/BeaconMenuMixin": {
+      "<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/BeaconMenu;<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/beacon/BeaconScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/BeaconScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/data/PlayerMixin": {
+      "addAdditionalSaveData": "Lnet/minecraft/world/entity/player/Player;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V",
+      "defineSynchedData": "Lnet/minecraft/world/entity/player/Player;m_8097_()V",
+      "tick": "Lnet/minecraft/world/entity/player/Player;m_8119_()V",
+      "readAdditionalSaveData": "Lnet/minecraft/world/entity/player/Player;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/accessor/SlotAccessor": {
+      "x": "f_40220_:I",
+      "y": "f_40221_:I"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/brewing/BrewingStandScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/BrewingStandScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/stonecutter/StonecutterScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/StonecutterScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/horse/HorseInventoryScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/HorseInventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/cartography/CartographyTableScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CartographyTableScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/InventoryMixin": {
+      "removeItemNoUpdate": "Lnet/minecraft/world/entity/player/Inventory;m_8016_(I)Lnet/minecraft/world/item/ItemStack;",
+      "fillStackedContents": "Lnet/minecraft/world/entity/player/Inventory;m_36010_(Lnet/minecraft/world/entity/player/StackedContents;)V",
+      "add(Lnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36054_(Lnet/minecraft/world/item/ItemStack;)Z",
+      "clearContent": "Lnet/minecraft/world/entity/player/Inventory;m_6211_()V",
+      "isEmpty": "Lnet/minecraft/world/entity/player/Inventory;m_7983_()Z",
+      "getFreeSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36062_()I",
+      "getItem": "Lnet/minecraft/world/entity/player/Inventory;m_8020_(I)Lnet/minecraft/world/item/ItemStack;",
+      "findSlotMatchingItem": "Lnet/minecraft/world/entity/player/Inventory;m_36030_(Lnet/minecraft/world/item/ItemStack;)I",
+      "add(ILnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36040_(ILnet/minecraft/world/item/ItemStack;)Z",
+      "removeItem(II)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/entity/player/Inventory;m_7407_(II)Lnet/minecraft/world/item/ItemStack;",
+      "getSlotWithRemainingSpace": "Lnet/minecraft/world/entity/player/Inventory;m_36050_(Lnet/minecraft/world/item/ItemStack;)I",
+      "load": "Lnet/minecraft/world/entity/player/Inventory;m_36035_(Lnet/minecraft/nbt/ListTag;)V",
+      "setChanged": "Lnet/minecraft/world/entity/player/Inventory;m_6596_()V",
+      "setItem": "Lnet/minecraft/world/entity/player/Inventory;m_6836_(ILnet/minecraft/world/item/ItemStack;)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/furnace/AbstractFurnaceScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/AbstractFurnaceScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/accessor/ScreenAccessor": {
+      "leftPos": "f_97735_:I",
+      "imageWidth": "f_97726_:I",
+      "topPos": "f_97736_:I",
+      "imageHeight": "f_97727_:I"
+    },
+    "com/yyz/yyzsbackpack/mixin/minecraft/container/chest/ContainerScreenMixin": {
+      "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ContainerScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+      "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/merchant/MerchantMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/trading/Merchant;)V": "Lnet/minecraft/world/inventory/MerchantMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/trading/Merchant;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/enchantment/EnchantmentMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/EnchantmentMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/AbstractContainerScreenMixin": {
+        "mouseReleased": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_6348_(DDI)Z",
+        "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;hasClickedOutside(DDIII)Z": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_7467_(DDIII)Z",
+        "keyPressed": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_7933_(III)Z",
+        "mouseClicked": "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;m_6375_(DDI)Z"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/grindstone/GrindstoneScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/GrindstoneScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/enchantment/EnchantmentScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/EnchantmentScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ShulkerBoxScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/crafting/CraftingScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CraftingScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/dispenser/DispenserScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/DispenserScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/furnace/AbstractFurnaceMenuMixin": {
+        "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+        "quickMoveStack": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+        "<init>(Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/inventory/RecipeBookType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V": "Lnet/minecraft/world/inventory/AbstractFurnaceMenu;<init>(Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/inventory/RecipeBookType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/hopper/HopperScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/HopperScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/hopper/HopperMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/HopperMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/accessor/ScreenInvoker": {
+        "removeWidget": "m_169411_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)V",
+        "addRenderableWidget": "Lnet/minecraft/client/gui/screens/Screen;m_142416_(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/stonecutter/StonecutterMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/StonecutterMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/AbstractContainerMenuMixin": {
+        "doClick": "Lnet/minecraft/world/inventory/AbstractContainerMenu;m_150430_(IILnet/minecraft/world/inventory/ClickType;Lnet/minecraft/world/entity/player/Player;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/combiner/ItemCombinerScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ItemCombinerScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/brewing/BrewingStandMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;)V": "Lnet/minecraft/world/inventory/BrewingStandMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/dispenser/DispenserMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/DispenserMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/crafting/CraftingMenuMixin": {
+        "Lnet/minecraft/world/inventory/CraftingMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/CraftingMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+        "quickMoveStack": "Lnet/minecraft/world/inventory/CraftingMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/CraftingMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/merchant/MerchantScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/MerchantScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280398_(Lnet/minecraft/resources/ResourceLocation;IIIFFIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/cartography/CartographyTableMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/CartographyTableMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/chest/ChestMenuMixin": {
+        "Lnet/minecraft/world/inventory/ChestMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/ChestMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+        "quickMoveStack": "Lnet/minecraft/world/inventory/ChestMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;",
+        "<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V": "Lnet/minecraft/world/inventory/ChestMenu;<init>(Lnet/minecraft/world/inventory/MenuType;ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;I)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/accessor/MenuAccessor": {
+        "addSlot": "m_38897_(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/loom/LoomMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/LoomMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/ShulkerBoxMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/key/GameOptionsMixin": {
+        "load()V": "Lnet/minecraft/client/Options;m_92140_()V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryMenuMixin": {
+        "Lnet/minecraft/world/inventory/InventoryMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/InventoryMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+        "quickMoveStack": "Lnet/minecraft/world/inventory/InventoryMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/grindstone/GrindstoneMenuMixin": {
+        "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/GrindstoneMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/loom/LoomScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/LoomScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/beacon/BeaconMenuMixin": {
+        "<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V": "Lnet/minecraft/world/inventory/BeaconMenu;<init>(ILnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/beacon/BeaconScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/BeaconScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/data/PlayerMixin": {
+        "addAdditionalSaveData": "Lnet/minecraft/world/entity/player/Player;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V",
+        "defineSynchedData": "Lnet/minecraft/world/entity/player/Player;m_8097_()V",
+        "tick": "Lnet/minecraft/world/entity/player/Player;m_8119_()V",
+        "readAdditionalSaveData": "Lnet/minecraft/world/entity/player/Player;m_7378_(Lnet/minecraft/nbt/CompoundTag;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/accessor/SlotAccessor": {
+        "x": "f_40220_:I",
+        "y": "f_40221_:I"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/brewing/BrewingStandScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/BrewingStandScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/stonecutter/StonecutterScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/StonecutterScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/horse/HorseInventoryScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/HorseInventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/cartography/CartographyTableScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/CartographyTableScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/InventoryMixin": {
+        "removeItemNoUpdate": "Lnet/minecraft/world/entity/player/Inventory;m_8016_(I)Lnet/minecraft/world/item/ItemStack;",
+        "fillStackedContents": "Lnet/minecraft/world/entity/player/Inventory;m_36010_(Lnet/minecraft/world/entity/player/StackedContents;)V",
+        "add(Lnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36054_(Lnet/minecraft/world/item/ItemStack;)Z",
+        "clearContent": "Lnet/minecraft/world/entity/player/Inventory;m_6211_()V",
+        "isEmpty": "Lnet/minecraft/world/entity/player/Inventory;m_7983_()Z",
+        "getFreeSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36062_()I",
+        "getItem": "Lnet/minecraft/world/entity/player/Inventory;m_8020_(I)Lnet/minecraft/world/item/ItemStack;",
+        "findSlotMatchingItem": "Lnet/minecraft/world/entity/player/Inventory;m_36030_(Lnet/minecraft/world/item/ItemStack;)I",
+        "add(ILnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36040_(ILnet/minecraft/world/item/ItemStack;)Z",
+        "removeItem(II)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/entity/player/Inventory;m_7407_(II)Lnet/minecraft/world/item/ItemStack;",
+        "getSlotWithRemainingSpace": "Lnet/minecraft/world/entity/player/Inventory;m_36050_(Lnet/minecraft/world/item/ItemStack;)I",
+        "load": "Lnet/minecraft/world/entity/player/Inventory;m_36035_(Lnet/minecraft/nbt/ListTag;)V",
+        "setChanged": "Lnet/minecraft/world/entity/player/Inventory;m_6596_()V",
+        "setItem": "Lnet/minecraft/world/entity/player/Inventory;m_6836_(ILnet/minecraft/world/item/ItemStack;)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/furnace/AbstractFurnaceScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/AbstractFurnaceScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/accessor/ScreenAccessor": {
+        "leftPos": "f_97735_:I",
+        "imageWidth": "f_97726_:I",
+        "topPos": "f_97736_:I",
+        "imageHeight": "f_97727_:I"
+      },
+      "com/yyz/yyzsbackpack/mixin/minecraft/container/chest/ContainerScreenMixin": {
+        "renderBg": "Lnet/minecraft/client/gui/screens/inventory/ContainerScreen;m_7286_(Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+        "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V": "Lnet/minecraft/client/gui/GuiGraphics;m_280218_(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+      }
+    }
+  }
+}

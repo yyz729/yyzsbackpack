@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:gold_ingot"
+  },
+  "base": {
+    "item": "yyzsbackpack:iron_backpack"
+  },
+  "result": {
+    "item": "yyzsbackpack:gold_backpack",
+    "count": 1
+  },
+  "template": {
+    "item": "minecraft:ender_chest"
+  }
+}

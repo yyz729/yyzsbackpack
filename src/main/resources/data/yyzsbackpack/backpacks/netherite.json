@@ -1,0 +1,20 @@
+{
+  "type": "netherite",
+  "size": 54,
+  "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
+  "backgroundX": -122,
+  "backgroundY": 0,
+  "force_server": false,
+  "maxVisibleTabs": 2,
+  "segments": [
+    {
+      "startSlot": 0,
+      "endSlot": 54,
+      "order": "DEFAULT",
+      "startX": -114,
+      "startY": 17,
+      "columns": 6,
+      "rows": 8
+    }
+  ]
+}

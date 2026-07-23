@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LIL",
+    "ICI",
+    "LLL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "I": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "minecraft:shulker_box"
+    }
+  },
+  "result": {
+    "item": "yyzsbackpack:diamond_backpack",
+    "count": 1
+  }
+}

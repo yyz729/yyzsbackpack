@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_diamond": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:diamond"]
+          }
+        ]
+      }
+    },
+    "has_leather": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["minecraft:leather"]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_diamond", "has_leather"]
+  ],
+  "rewards": {
+    "recipes": ["yyzsbackpack:diamond_backpack"]
+  },
+  "sends_telemetry_event": false
+}

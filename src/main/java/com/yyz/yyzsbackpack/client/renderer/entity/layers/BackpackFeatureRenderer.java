@@ -26,7 +26,7 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
                        AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float partialTick,
                        float ageInTicks, float netHeadYaw, float headPitch) {
         // 1. 配置开关（新版本逻辑）
-        if (!Backpack.getConfig().model) return;
+        if (!Backpack.getMainConfig().model) return;
 
         // 2. 通过实体 ID 获取背包（新版本使用 BackpackSlotHelper，替代旧版 BackpackPlatform）
         ItemStack backpack = BackpackSlotHelper.getSyncedBackpack(entity.getId());

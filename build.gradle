@@ -47,6 +47,10 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -81,6 +85,8 @@ dependencies {
     // modRuntimeOnly "mezz.jei:jei-1.20.1:${jei_version}"
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
+
+    include "yyz729:yyzsbackpackcompat:${project.yyzsbackpackcompat_version}"
 }
 
 processResources {

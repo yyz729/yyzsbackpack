@@ -9,7 +9,8 @@ import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
-import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -696,7 +697,7 @@ public final class BackpackScreenHelper {
     }
     public static void addBackpackControls(AbstractContainerScreen<?> screen) {
         String className = screen.getClass().getName();
-        List<int[]> offsets = Backpack.getConfig().controlPoss.get(className);
+        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(className);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -850,9 +851,9 @@ public final class BackpackScreenHelper {
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        BackpackConfig config = Backpack.getConfig();
+        BackpackUiConfig config = Backpack.getUiConfig();
         if (config == null) return new int[]{0, 0};
-        List<int[]> offsets = config.uiOffsets.get(screen.getClass().getName());
+        List<int[]> offsets = config.getUiOffsets().get(screen.getClass().getName());
         if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
         return offsets.get(0);
     }

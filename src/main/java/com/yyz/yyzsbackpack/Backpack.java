@@ -3,7 +3,9 @@ package com.yyz.yyzsbackpack;
 import com.mojang.logging.LogUtils;
 import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
-import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.config.BackpackControlConfig;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
 import com.yyz.yyzsbackpack.effect.ModEffects;
@@ -31,7 +33,10 @@ import java.util.Map;
 @Mod(Backpack.MOD_ID)
 public class Backpack {
     public static final String MOD_ID = "yyzsbackpack";
-    private static BackpackConfig config;
+    private static BackpackMainConfig mainConfig;
+    private static BackpackControlConfig controlConfig;
+    private static BackpackUiConfig uiConfig;
+
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Backpack() {
@@ -50,7 +55,12 @@ public class Backpack {
         modEventBus.addListener(this::commonSetup);
 
         // 加载配置
-        config = BackpackConfig.loadConfig(new File(FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack.json").toString()));
+        File mainfile = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/yyzsbackpack.json").toFile();
+        mainConfig = BackpackMainConfig.loadConfig(mainfile);
+        File controlDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/control").toFile();
+        controlConfig = BackpackControlConfig.loadConfig(controlDir);
+        File uiDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/ui").toFile();
+        uiConfig = BackpackUiConfig.loadConfig(uiDir);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -82,7 +92,14 @@ public class Backpack {
         ));
     }
 
-    public static BackpackConfig getConfig() {
-        return config;
+    public static BackpackMainConfig getMainConfig() {
+        return mainConfig;
+    }
+
+    public static BackpackControlConfig getControlConfig() {
+        return controlConfig;
+    }
+    public static BackpackUiConfig getUiConfig() {
+        return uiConfig;
     }
 }

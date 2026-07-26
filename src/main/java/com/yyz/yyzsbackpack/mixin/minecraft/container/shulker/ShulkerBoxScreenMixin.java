@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.shulker;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ShulkerBoxScreen.class)
-public class ShulkerBoxScreenMixin {
+public class ShulkerBoxScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "ShulkerBoxScreen";
+    }
    
 
     @Inject(method = "extractBackground", at = @At("RETURN"))

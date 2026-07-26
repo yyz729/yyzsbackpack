@@ -1,15 +1,12 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
-import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
-import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +15,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMenu> {
+public abstract class InventoryScreenMixin extends AbstractRecipeBookScreen<InventoryMenu> implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "InventoryScreen";
+    }
 
     public InventoryScreenMixin(InventoryMenu menu, RecipeBookComponent<?> recipeBookComponent, Inventory inventory, Component title) {
         super(menu, recipeBookComponent, inventory, title);

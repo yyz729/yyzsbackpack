@@ -1,10 +1,9 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.crafter;
 
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.CrafterMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.CrafterMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

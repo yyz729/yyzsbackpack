@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.loom;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LoomScreen.class)
-public class LoomScreenMixin {
+public class LoomScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "LoomScreen";
+    }
    
 
     @Inject(method = "extractBackground", at = @At("RETURN"))

@@ -1,8 +1,5 @@
 {
   "type": "iron",
-  "guiTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
-  "backgroundX": -50,
-  "backgroundY": 0,
   "maxVisibleTabs": 2,
   "segments": [
     {
@@ -12,7 +9,10 @@
       "startX": -42,
       "startY": 17,
       "columns": 2,
-      "rows": 8
+      "rows": 8,
+      "backgroundTexture": "yyzsbackpack:textures/gui/2x9backpack.png",
+      "backgroundX": -8,
+      "backgroundY": -17
     }
   ]
 }

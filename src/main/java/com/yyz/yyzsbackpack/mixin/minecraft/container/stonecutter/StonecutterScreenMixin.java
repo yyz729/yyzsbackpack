@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.stonecutter;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(StonecutterScreen.class)
-public class StonecutterScreenMixin {
+public class StonecutterScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "StonecutterScreen";
+    }
    
 
     @Inject(method = "extractBackground", at = @At("RETURN"))

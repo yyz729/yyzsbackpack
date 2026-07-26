@@ -7,6 +7,7 @@ import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -18,12 +19,19 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 
+import java.util.function.Predicate;
+
 public class BackpackFeatureRenderer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
     private final ItemModelResolver itemModelResolver;
     private final ItemStackRenderState backpackRenderState = new ItemStackRenderState();
     private final Minecraft minecraft =  Minecraft.getInstance();
 
+    private static Predicate<AbstractClientPlayer> renderCondition = player -> true;
+
+    public static void setRenderCondition(Predicate<AbstractClientPlayer> condition) {
+        renderCondition = condition != null ? condition : player -> true;
+    }
     public BackpackFeatureRenderer(RenderLayerParent<AvatarRenderState, PlayerModel> parent,ItemModelResolver itemModelResolver) {
         super(parent);
         this.itemModelResolver = itemModelResolver;
@@ -38,8 +46,11 @@ public class BackpackFeatureRenderer extends RenderLayer<AvatarRenderState, Play
 
     private void renderBackpack(PoseStack matrices, SubmitNodeCollector submitNodeCollector,
                                 int light, AvatarRenderState state, ItemStack stack) {
-        if(!Backpack.getConfig().model) return;
+        if(!Backpack.getMainConfig().model) return;
         if(minecraft.player == null) return;
+        
+        if (!renderCondition.test(minecraft.player)) return;
+
         if (!(stack.getItem() instanceof BackpackItem)) return;
 
         // 更新物品渲染状态

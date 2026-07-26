@@ -9,7 +9,8 @@ import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
-import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -20,7 +21,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -30,7 +30,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.awt.*;
 import java.util.*;
@@ -43,6 +42,7 @@ public final class BackpackScreenHelper {
     private static final float TITLE_SCROLL_SPEED = 5.0f;
     private static final float STOP_DURATION = 0.8f;       // 两端停留时间（秒）
     private static final int   RIGHT_PADDING = 2;          // 右侧安全间距，防止文字紧贴标签
+
     /**
      * 根据背包数据重新计算所有背包槽位的实际显示位置，并设置到对应的 Slot 中。
      * 如果当前屏幕实现了 BackpackVisibilityHandler 且背包不可见，则将所有槽位移出屏幕。
@@ -174,7 +174,7 @@ public final class BackpackScreenHelper {
     }
 
     /**
-     * 在屏幕背景之上绘制自定义背包 GUI 纹理。
+     * 在屏幕背景之上绘制自定义背包 GUI 纹理（每个段独立绘制）。
      * 如果当前屏幕实现了 BackpackVisibilityHandler 且背包不可见，则不绘制。
      *
      * @param screen      目标容器屏幕
@@ -193,49 +193,55 @@ public final class BackpackScreenHelper {
 
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        if (player == null) {
-            return;
-        }
+        if (player == null) return;
 
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
-        if (data == null || data.guiTexture() == null) {
-            return;
-        }
-
-        int texWidth, texHeight;
-        try {
-            Resource resource = minecraft.getResourceManager().getResource(data.guiTexture()).orElseThrow();
-            try (NativeImage image = NativeImage.read(resource.open())) {
-                texWidth = image.getWidth();
-                texHeight = image.getHeight();
-            }
-        } catch (Exception e) {
-            return;
-        }
+        if (data == null) return;
 
         int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
         int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
-        int x = ((ScreenAccessor<?>) screen).getLeftPos() + data.backgroundX() + offsetX;
-        int y = ((ScreenAccessor<?>) screen).getTopPos() + data.backgroundY() + offsetY;
+        // 遍历所有段，每个段绘制自己的背景
+        for (LayoutSegment seg : data.segments()) {
+            if (seg.backgroundTexture().isEmpty()) continue; // 没有背景则跳过
 
-        graphics.blit(
-                RenderPipelines.GUI_TEXTURED,
-                data.guiTexture(),
-                x, y,
-                0.0F, 0.0F,
-                texWidth, texHeight,
-                texWidth, texHeight
-        );
+            Identifier tex = seg.backgroundTexture().get();
+            // 计算该段的起始位置（基于段自身的布局起始点）
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+
+            // 背景偏移（相对于段起始）
+            int bgOffX = seg.backgroundX().orElse(0);
+            int bgOffY = seg.backgroundY().orElse(0);
+
+            int x = segStartX + bgOffX;
+            int y = segStartY + bgOffY;
+
+            // 读取纹理尺寸
+            Dimension texSize = getTextureSize(minecraft, tex);
+            if (texSize == null || texSize.width == 0 || texSize.height == 0) continue;
+
+            // 高版本使用 RenderPipelines.GUI_TEXTURED
+            graphics.blit(
+                    RenderPipelines.GUI_TEXTURED,
+                    tex,
+                    x, y,
+                    0.0F, 0.0F,
+                    texSize.width, texSize.height,
+                    texSize.width, texSize.height
+            );
+        }
     }
 
     /**
-     * 计算当前背包背景纹理在屏幕上的矩形区域。
+     * 计算所有段背景纹理在屏幕上的合并矩形区域。
      * 如果当前屏幕实现了 BackpackVisibilityHandler 且背包不可见，返回 null。
      *
      * @param screen 当前容器屏幕
-     * @return 矩形对象，若无背包背景或不可见则返回 null
+     * @return 矩形对象，若无任何段背景或不可见则返回 null
      */
     @Nullable
     public static Rectangle getBackpackBackgroundBounds(AbstractContainerScreen<?> screen) {
@@ -249,26 +255,46 @@ public final class BackpackScreenHelper {
 
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
-        if (data == null || data.guiTexture() == null) return null;
-
-        int texWidth, texHeight;
-        try {
-            Resource resource = minecraft.getResourceManager().getResource(data.guiTexture()).orElseThrow();
-            try (NativeImage image = NativeImage.read(resource.open())) {
-                texWidth = image.getWidth();
-                texHeight = image.getHeight();
-            }
-        } catch (Exception e) {
-            return null;
-        }
+        if (data == null) return null;
 
         int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
         int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
+        int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
-        int x = ((ScreenAccessor<?>) screen).getLeftPos() + data.backgroundX() + offsetX;
-        int y = ((ScreenAccessor<?>) screen).getTopPos() + data.backgroundY() + offsetY;
+        // 遍历所有段，收集有背景的段的矩形并求并集
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        boolean hasAny = false;
 
-        return new Rectangle(x, y, texWidth, texHeight);
+        for (LayoutSegment seg : data.segments()) {
+            if (seg.backgroundTexture().isEmpty()) continue;
+
+            Identifier tex = seg.backgroundTexture().get();
+            Dimension texSize = getTextureSize(minecraft, tex);
+            if (texSize == null || texSize.width == 0 || texSize.height == 0) continue;
+
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+            int bgOffX = seg.backgroundX().orElse(0);
+            int bgOffY = seg.backgroundY().orElse(0);
+
+            int x = segStartX + bgOffX;
+            int y = segStartY + bgOffY;
+            int w = texSize.width;
+            int h = texSize.height;
+
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + w);
+            maxY = Math.max(maxY, y + h);
+            hasAny = true;
+        }
+
+        if (!hasAny) return null;
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 
     /**
@@ -499,9 +525,12 @@ public final class BackpackScreenHelper {
     }
 
     // 辅助记录预期滚动条信息
-        private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {
+    private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {
     }
 
+    /**
+     * 绘制背包标题，锚点位于第一个段的背景区域（若有），否则使用段网格区域。
+     */
     public static void addBackpackTitle(AbstractContainerScreen<?> screen,
                                         GuiGraphicsExtractor graphics,
                                         float partialTick) {
@@ -514,7 +543,7 @@ public final class BackpackScreenHelper {
 
         ItemStack backpackStack = BackpackSlotHelper.getSelectedBackpack(player);
         BackpackData data = getBackpackData(backpackStack);
-        if (data == null || data.guiTexture() == null) return;
+        if (data == null || data.segments().isEmpty()) return;
 
         Font font = mc.font;
         String title = backpackStack.getHoverName().getString();
@@ -524,12 +553,45 @@ public final class BackpackScreenHelper {
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).getTopPos();
 
-        int bgX = leftPos + data.backgroundX() + offsetX;
-        int bgY = topPos + data.backgroundY() + offsetY;
-        int textX = bgX + 7;
-        int textY = bgY + 5;
+        // 选取第一个段作为标题锚点
+        LayoutSegment firstSeg = data.segments().get(0);
+        int segStartX = leftPos + firstSeg.getEffectiveStartX() + offsetX;
+        int segStartY = topPos + firstSeg.getEffectiveStartY() + offsetY;
 
-        // 计算右边界（最左侧标签左边缘 - 安全间距）
+        // 计算锚点区域（背景优先，否则用网格区域）
+        int baseX, baseY, areaWidth, areaHeight;
+        if (firstSeg.backgroundTexture().isPresent()) {
+            int bgOffX = firstSeg.backgroundX().orElse(0);
+            int bgOffY = firstSeg.backgroundY().orElse(0);
+            Dimension texSize = getTextureSize(mc, firstSeg.backgroundTexture().get());
+            if (texSize == null || texSize.width == 0 || texSize.height == 0) {
+                // 背景加载失败，回退到段网格区域
+                int cols = firstSeg.columns().orElse(1);
+                int rows = firstSeg.rows().orElse(9);
+                areaWidth = cols * 18;
+                areaHeight = rows * 18;
+                baseX = segStartX;
+                baseY = segStartY;
+            } else {
+                baseX = segStartX + bgOffX;
+                baseY = segStartY + bgOffY;
+                areaWidth = texSize.width;
+                areaHeight = texSize.height;
+            }
+        } else {
+            // 无背景，使用段网格区域
+            int cols = firstSeg.columns().orElse(1);
+            int rows = firstSeg.rows().orElse(9);
+            areaWidth = cols * 18;
+            areaHeight = rows * 18;
+            baseX = segStartX;
+            baseY = segStartY;
+        }
+
+        int textX = baseX + 7;
+        int textY = baseY + 5;
+
+        // 计算右边界（标签区域）
         List<ItemStack> allBackpacks = BackpackSlotHelper.getAllBackpackStacks(player);
         int totalTabs = allBackpacks.size();
         int maxVisibleTabs = (data.maxVisibleTabs() > 0) ? data.maxVisibleTabs() : totalTabs;
@@ -544,13 +606,12 @@ public final class BackpackScreenHelper {
 
         int rightBoundary;
         if (visibleTabCount == 0) {
-            Dimension texSize = getTextureSize(mc, data.guiTexture());
-            if (texSize == null) return;
-            rightBoundary = bgX + texSize.width - 7 - RIGHT_PADDING; // 背景右内边距 - 安全间距
+            // 没有标签，使用锚点区域的右边界
+            rightBoundary = baseX + areaWidth - 7 - RIGHT_PADDING;
         } else {
             int lastJ = visibleTabCount - 1;
             int tabLeftX = leftPos - (lastJ + 1) * 9 + offsetX - 7;
-            rightBoundary = tabLeftX - RIGHT_PADDING; // 标签左边缘再向左留出空隙
+            rightBoundary = tabLeftX - RIGHT_PADDING;
         }
 
         int availableWidth = rightBoundary - textX;
@@ -559,31 +620,31 @@ public final class BackpackScreenHelper {
         int titleWidth = font.width(title);
 
         if (titleWidth <= availableWidth) {
-            // 文字不超宽，静态绘制
+            // 静态绘制（高版本使用 graphics.text）
             graphics.text(font, title, textX, textY, -12566464, false);
             return;
         }
 
-        //带停留的来回滚动
-        int maxScroll = titleWidth - availableWidth;                     // 需要滚动的最大像素
-        float moveTime = maxScroll / TITLE_SCROLL_SPEED;                 // 单向移动耗时（秒）
-        float halfCycle = moveTime + STOP_DURATION;                      // 半周期：移动 + 停留
-        float totalCycle = halfCycle * 2;                                // 完整周期：去 + 回
+        // 滚动效果
+        int maxScroll = titleWidth - availableWidth;
+        float moveTime = maxScroll / TITLE_SCROLL_SPEED;
+        float halfCycle = moveTime + STOP_DURATION;
+        float totalCycle = halfCycle * 2;
 
         float elapsed = (System.currentTimeMillis() % 100000L) / 1000.0f;
-        float t = elapsed % totalCycle;                                  // 当前周期内时间
+        float t = elapsed % totalCycle;
         float offset;
 
         if (t < STOP_DURATION) {
-            offset = 0;                                                  // 右端停留（文字右对齐）
+            offset = 0;
         } else if (t < halfCycle) {
             float moveProgress = (t - STOP_DURATION) / moveTime;
-            offset = moveProgress * maxScroll;                           // 向右 → 左移动
+            offset = moveProgress * maxScroll;
         } else if (t < halfCycle + STOP_DURATION) {
-            offset = maxScroll;                                          // 左端停留（文字左对齐）
+            offset = maxScroll;
         } else {
             float moveProgress = (t - halfCycle - STOP_DURATION) / moveTime;
-            offset = maxScroll * (1.0f - moveProgress);                  // 向左 → 右移动
+            offset = maxScroll * (1.0f - moveProgress);
         }
 
         int drawX = textX + availableWidth - titleWidth + (int) offset;
@@ -593,7 +654,7 @@ public final class BackpackScreenHelper {
         graphics.disableScissor();
     }
 
-    // 纹理尺寸缓存
+    // 纹理尺寸缓存（高版本使用 Identifier）
     private static final Map<Identifier, Dimension> TEXTURE_SIZE_CACHE = new HashMap<>();
     private static Dimension getTextureSize(Minecraft mc, Identifier texId) {
         return TEXTURE_SIZE_CACHE.computeIfAbsent(texId, id -> {
@@ -699,8 +760,8 @@ public final class BackpackScreenHelper {
         }
     }
     public static void addBackpackControls(AbstractContainerScreen<?> screen) {
-        String className = screen.getClass().getName();
-        List<int[]> offsets = Backpack.getConfig().controlPoss.get(className);
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(screenType);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -854,9 +915,10 @@ public final class BackpackScreenHelper {
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        BackpackConfig config = Backpack.getConfig();
+        BackpackUiConfig config = Backpack.getUiConfig();
         if (config == null) return new int[]{0, 0};
-        List<int[]> offsets = config.uiOffsets.get(screen.getClass().getName());
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = config.getUiOffsets().get(screenType);
         if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
         return offsets.getFirst();
     }
@@ -869,4 +931,10 @@ public final class BackpackScreenHelper {
         return getUiOffset(screen)[1];
     }
 
+    private static String getScreenType(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IScreenType provider) {
+            return provider.yyzsbackpack$getScreenType();
+        }
+        return screen.getClass().getSimpleName();
+    }
 }

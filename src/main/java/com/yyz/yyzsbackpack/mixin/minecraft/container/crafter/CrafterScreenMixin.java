@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.crafter;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.CrafterScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CrafterScreen.class)
-public class CrafterScreenMixin {
+public class CrafterScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "CrafterScreen";
+    }
    
 
     @Inject(method = "extractBackground", at = @At("RETURN"))

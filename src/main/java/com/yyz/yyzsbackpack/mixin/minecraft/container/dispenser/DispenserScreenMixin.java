@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.dispenser;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.DispenserScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DispenserScreen.class)
-public class DispenserScreenMixin {
+public class DispenserScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "DispenserScreen";
+    }
    
 
     @Inject(method = "extractBackground", at = @At("RETURN"))

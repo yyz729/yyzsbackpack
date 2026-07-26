@@ -64,14 +64,24 @@
 
 ### 模组配置
 
-配置文件路径：`/config/yyzsbackpack.json`
+**主配置** `/config/yyzsbackpack.json`
 
-| 配置项 | 说明 |
-|--------|------|
-| `model` | 是否显示玩家背上的背包模型（true/false） |
-| `heavy` | 背负多少个背包后玩家会获得“负重”效果 |
-| `controlPoss` | 背包整理、快速移动等按钮在各类界面中的坐标。若某个界面不需要，可直接删除对应的条目 |
-| `uiOffsets` | 背包界面在各个容器界面中的整体偏移量 |
+| 配置项 | 类型 | 说明 |
+|--------|------|------|
+| `model` | boolean | 是否显示玩家背上的背包模型 |
+| `heavy` | int | 背负多少个背包后获得"负重"效果 |
+
+**按钮位置配置** `/config/yyzsbackpack/control/default.json`
+
+| 配置项 | 类型 | 说明 |
+|--------|------|------|
+| `controlPoss` | object | 背包整理、快速移动等按钮在各类界面中的坐标 |
+
+**界面偏移配置** `/config/yyzsbackpack/ui/default.json`
+
+| 配置项 | 类型 | 说明 |
+|--------|------|------|
+| `uiOffsets` | object | 背包界面在各个容器界面中的整体偏移量 |
 
 ### 背包自定义（材质包与数据包）
 你可以完全重设背包的 GUI 布局、槽位位置及容量，具体可以参考模组文件或Github内的例子。
@@ -83,9 +93,6 @@
 | 属性 | 说明 |
 |------|------|
 | `type` | 背包材料：`iron`、`gold`、`diamond`、`netherite` |
-| `guiTexture` | 自定义 GUI 纹理路径 |
-| `backgroundX`, `backgroundY` | 背景相对于原 GUI 左上角的偏移 |
-| `maxVisibleTabs` | 同时可见的背包切换标签数量（超出可通过滚轮翻页） |
 | `segments` | 槽位布局分段列表 |
 
 #### 分段属性
@@ -96,6 +103,9 @@
 | `startX`, `startY` | 起始坐标（DEFAULT 模式） |
 | `columns`, `rows` | 网格行数、列数（DEFAULT 模式）当槽位数量大于网格数时可滚动显示 |
 | `customPositions` | 每个槽位的 `{"x": 数字, "y": 数字}` 数组（CUSTOM 模式）。*注意：CUSTOM 模式下无法使用滚动显示。* |
+| `guiTexture` | 自定义 GUI 纹理路径 |
+| `backgroundX`, `backgroundY` | 背景相对于原 GUI 左上角的偏移 |
+| `maxVisibleTabs` | 同时可见的背包切换标签数量（超出可通过滚轮翻页） |
 
 #### 仅数据包可用的属性
 | 属性 | 说明 |

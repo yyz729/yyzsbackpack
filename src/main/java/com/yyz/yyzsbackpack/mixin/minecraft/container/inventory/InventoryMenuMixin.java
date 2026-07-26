@@ -1,12 +1,12 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

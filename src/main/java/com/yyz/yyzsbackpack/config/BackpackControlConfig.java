@@ -16,50 +16,27 @@ public class BackpackControlConfig {
 
     // 内置默认值，仅在生成 default.json 时使用
     public Map<String, List<int[]>> controlPoss = new HashMap<>() {{
-        put("net.minecraft.client.gui.screens.inventory.InventoryScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.CraftingScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.ContainerScreen",
-                Arrays.asList(new int[]{139, 80}, new int[]{139, 12}));
-        put("net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.FurnaceScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.SmokerScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.BeaconScreen",
-                Collections.singletonList(new int[]{188, 96}));
-        put("net.minecraft.client.gui.screens.inventory.BrewingStandScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.CartographyTableScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.CrafterScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.DispenserScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.EnchantmentScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.GrindstoneScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.HopperScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.LoomScreen",
-                Collections.singletonList(new int[]{105, 80}));
-        put("net.minecraft.client.gui.screens.inventory.MerchantScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.SmithingScreen",
-                Collections.singletonList(new int[]{139, 81}));
-        put("net.minecraft.client.gui.screens.inventory.AnvilScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.StonecutterScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.NautilusInventoryScreen",
-                Collections.singletonList(new int[]{139, 80}));
-        put("net.minecraft.client.gui.screens.inventory.HorseInventoryScreen",
-                Collections.singletonList(new int[]{139, 80}));
+        put("InventoryScreen", Collections.singletonList(new int[]{139, 80}));
+        put("CraftingScreen", Collections.singletonList(new int[]{139, 80}));
+        put("ContainerScreen", Arrays.asList(new int[]{139, 80}, new int[]{139, 12}));
+        put("BlastFurnaceScreen", Collections.singletonList(new int[]{139, 80}));
+        put("FurnaceScreen", Collections.singletonList(new int[]{139, 80}));
+        put("SmokerScreen", Collections.singletonList(new int[]{139, 80}));
+        put("BeaconScreen", Collections.singletonList(new int[]{188, 96}));
+        put("BrewingStandScreen", Collections.singletonList(new int[]{139, 80}));
+        put("CartographyTableScreen", Collections.singletonList(new int[]{139, 80}));
+        put("CrafterScreen", Collections.singletonList(new int[]{139, 80}));
+        put("DispenserScreen", Collections.singletonList(new int[]{139, 80}));
+        put("EnchantmentScreen", Collections.singletonList(new int[]{139, 80}));
+        put("GrindstoneScreen", Collections.singletonList(new int[]{139, 80}));
+        put("HopperScreen", Collections.singletonList(new int[]{139, 80}));
+        put("LoomScreen", Collections.singletonList(new int[]{105, 80}));
+        put("MerchantScreen", Collections.singletonList(new int[]{139, 80}));
+        put("ShulkerBoxScreen", Arrays.asList(new int[]{139, 80}, new int[]{139, 12}));
+        put("SmithingScreen", Collections.singletonList(new int[]{139, 81}));
+        put("AnvilScreen", Collections.singletonList(new int[]{139, 80}));
+        put("StonecutterScreen", Collections.singletonList(new int[]{139, 80}));
+        put("HorseInventoryScreen", Collections.singletonList(new int[]{139, 80}));
     }};
 
     /**

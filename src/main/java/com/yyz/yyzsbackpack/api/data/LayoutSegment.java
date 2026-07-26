@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.api.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,10 @@ public record LayoutSegment(
         Optional<Integer> startY,
         Optional<Integer> columns,
         Optional<Integer> rows,
-        Optional<List<BackpackSlotPos>> customPositions
+        Optional<List<BackpackSlotPos>> customPositions,
+        Optional<ResourceLocation> backgroundTexture,
+        Optional<Integer> backgroundX,
+        Optional<Integer> backgroundY
 ) {
     public int getSlotCount() {
         if (order == LayoutOrder.CUSTOM) {
@@ -46,7 +50,10 @@ public record LayoutSegment(
                     Codec.INT.optionalFieldOf("startY").forGetter(LayoutSegment::startY),
                     Codec.INT.optionalFieldOf("columns").forGetter(LayoutSegment::columns),
                     Codec.INT.optionalFieldOf("rows").forGetter(LayoutSegment::rows),
-                    Codec.list(BackpackSlotPos.CODEC).optionalFieldOf("customPositions").forGetter(LayoutSegment::customPositions)
+                    Codec.list(BackpackSlotPos.CODEC).optionalFieldOf("customPositions").forGetter(LayoutSegment::customPositions),
+                    ResourceLocation.CODEC.optionalFieldOf("backgroundTexture").forGetter(LayoutSegment::backgroundTexture),
+                    Codec.INT.optionalFieldOf("backgroundX").forGetter(LayoutSegment::backgroundX),
+                    Codec.INT.optionalFieldOf("backgroundY").forGetter(LayoutSegment::backgroundY)
             ).apply(instance, LayoutSegment::new)
     );
 }

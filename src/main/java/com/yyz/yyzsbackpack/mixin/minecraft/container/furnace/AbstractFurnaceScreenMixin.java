@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.furnace;
 
 import com.yyz.yyzsbackpack.api.IBackpackOffset;
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractFurnaceScreen.class)
-public abstract class AbstractFurnaceScreenMixin implements IBackpackOffset {
+public abstract class AbstractFurnaceScreenMixin implements IBackpackOffset{
 
     @Shadow
     public abstract RecipeBookComponent getRecipeBookComponent();

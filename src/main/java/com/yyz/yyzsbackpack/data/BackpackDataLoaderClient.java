@@ -46,9 +46,9 @@ public class BackpackDataLoaderClient {
                     BackpackData combined = new BackpackData(
                             clientEntry.type(),
                             serverEntry.size(),
-                            clientEntry.guiTexture(),
-                            clientEntry.backgroundX(),
-                            clientEntry.backgroundY(),
+//                            clientEntry.guiTexture(),
+//                            clientEntry.backgroundX(),
+//                            clientEntry.backgroundY(),
                             false,
                             clientEntry.maxVisibleTabs(),
                             clientEntry.segments()

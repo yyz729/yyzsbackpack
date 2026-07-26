@@ -21,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 public final class BackpackSlotHelper {
     private static final String BACKPACK_ID_KEY = "BackpackId"; // NBT 键名
@@ -227,7 +226,7 @@ public final class BackpackSlotHelper {
         int backpackCount = BackpackSlotHelper.countBackpacks(player);
         boolean hasEffect = player.hasEffect(ModEffects.HEAVY);
 
-        if (backpackCount > Backpack.getConfig().heavy) {
+        if (backpackCount > Backpack.getMainConfig().heavy) {
             if (!hasEffect) {
                 player.addEffect(new MobEffectInstance(
                         ModEffects.HEAVY,

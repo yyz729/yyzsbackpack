@@ -9,7 +9,8 @@ import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
-import com.yyz.yyzsbackpack.config.BackpackConfig;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
@@ -695,8 +696,8 @@ public final class BackpackScreenHelper {
         }
     }
     public static void addBackpackControls(AbstractContainerScreen<?> screen) {
-        String className = screen.getClass().getName();
-        List<int[]> offsets = Backpack.getConfig().controlPoss.get(className);
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(screenType);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -850,9 +851,10 @@ public final class BackpackScreenHelper {
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        BackpackConfig config = Backpack.getConfig();
+        BackpackUiConfig config = Backpack.getUiConfig();
         if (config == null) return new int[]{0, 0};
-        List<int[]> offsets = config.uiOffsets.get(screen.getClass().getName());
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = config.getUiOffsets().get(screenType);
         if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
         return offsets.getFirst();
     }
@@ -863,6 +865,13 @@ public final class BackpackScreenHelper {
 
     private static int getUiOffsetY(AbstractContainerScreen<?> screen) {
         return getUiOffset(screen)[1];
+    }
+
+    private static String getScreenType(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IScreenType provider) {
+            return provider.yyzsbackpack$getScreenType();
+        }
+        return screen.getClass().getSimpleName();
     }
 
 }

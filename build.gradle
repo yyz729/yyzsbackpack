@@ -28,6 +28,9 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 base {
@@ -139,6 +142,7 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    jarJar "yyz729:yyzsbackpackcompat:${project.yyzsbackpackcompat_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

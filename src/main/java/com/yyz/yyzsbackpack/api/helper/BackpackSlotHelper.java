@@ -217,7 +217,7 @@ public final class BackpackSlotHelper {
         int backpackCount = BackpackSlotHelper.countBackpacks(player);
         boolean hasEffect = player.hasEffect(ModEffects.HEAVY);
 
-        if (backpackCount > Backpack.getConfig().heavy) {
+        if (backpackCount > Backpack.getMainConfig().heavy) {
             if (!hasEffect) {
                 player.addEffect(new MobEffectInstance(
                         ModEffects.HEAVY,

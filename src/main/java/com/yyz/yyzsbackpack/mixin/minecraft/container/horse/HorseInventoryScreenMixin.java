@@ -1,5 +1,6 @@
-package com.yyz.yyzsbackpack.mixin.minecraft.container.mount;
+package com.yyz.yyzsbackpack.mixin.minecraft.container.horse;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
@@ -9,7 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HorseInventoryScreen.class)
-public class AbstractMountInventoryScreenMixin {
+public class HorseInventoryScreenMixin implements IScreenType {
+
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "HorseInventoryScreen";
+    }
    
 
     @Inject(method = "renderBg", at = @At("RETURN"))

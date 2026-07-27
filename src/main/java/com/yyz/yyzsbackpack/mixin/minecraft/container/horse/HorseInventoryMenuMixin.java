@@ -1,4 +1,4 @@
-package com.yyz.yyzsbackpack.mixin.minecraft.container.mount;
+package com.yyz.yyzsbackpack.mixin.minecraft.container.horse;
 
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import net.minecraft.world.Container;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HorseInventoryMenu.class)
-public class AbstractMountInventoryMenuMixin {
+public class HorseInventoryMenuMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstruct(int i, Inventory inventory, Container container, AbstractHorse abstractHorse, int j, CallbackInfo ci) {

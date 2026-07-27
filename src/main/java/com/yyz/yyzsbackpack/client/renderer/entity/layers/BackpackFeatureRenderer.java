@@ -15,7 +15,15 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.function.Predicate;
+
 public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+
+    private static Predicate<AbstractClientPlayer> renderCondition = player -> true;
+
+    public static void setRenderCondition(Predicate<AbstractClientPlayer> condition) {
+        renderCondition = condition != null ? condition : player -> true;
+    }
 
     public BackpackFeatureRenderer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
@@ -25,21 +33,23 @@ public class BackpackFeatureRenderer extends RenderLayer<AbstractClientPlayer, P
     public void render(PoseStack poseStack, MultiBufferSource buffer, int light,
                        AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float partialTick,
                        float ageInTicks, float netHeadYaw, float headPitch) {
-        // 1. 配置开关（新版本逻辑）
-        if (!Backpack.getConfig().model) return;
+        // 配置开关
+        if (!Backpack.getMainConfig().model) return;
 
-        // 2. 通过实体 ID 获取背包（新版本使用 BackpackSlotHelper，替代旧版 BackpackPlatform）
+        if (!renderCondition.test(entity)) return;
+
+        //通过实体 ID 获取背包
         ItemStack backpack = BackpackSlotHelper.getSyncedBackpack(entity.getId());
         if (!(backpack.getItem() instanceof BackpackItem)) return;
 
-        // 3. 开始渲染
+        // 开始渲染
         poseStack.pushPose();
         this.getParentModel().body.translateAndRotate(poseStack);
         poseStack.scale(0.8F, 0.8F, 0.8F);
         poseStack.translate(0.0F, 7.0F / 16.0F, 6.0F / 16.0F);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
-        // 4. 使用 1.21.1 的 ItemRenderer 渲染物品（替代新版的 ItemStackRenderState）
+        //渲染物品
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 backpack,
                 ItemDisplayContext.NONE,

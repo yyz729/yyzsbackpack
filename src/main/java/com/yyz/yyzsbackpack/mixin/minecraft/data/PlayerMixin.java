@@ -40,14 +40,24 @@ public abstract class PlayerMixin implements IBackpackData {
     @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
     private void saveBackpackData(CompoundTag compoundTag, CallbackInfo ci) {
         Player player = (Player) (Object) this;
-        compoundTag.putInt("BackpackSelectedIndex", player.getEntityData().get(DATA_BACKPACK_INDEX));
 
-        // 保存 ItemStack
-        compoundTag.put("BackpackItem", player.getEntityData().get(DATA_BACKPACK_STACK).save(player.registryAccess()));
+        int idx = compoundTag.contains("BackpackSelectedIndex") ? compoundTag.getInt("BackpackSelectedIndex") : 0;
+        player.getEntityData().set(DATA_BACKPACK_INDEX, idx);
 
-        String uuid = player.getEntityData().get(DATA_SELECTED_UUID);
+        ItemStack stack = ItemStack.EMPTY;
+        if (compoundTag.contains("BackpackItem")) {
+            stack = ItemStack.parse(player.registryAccess(), compoundTag.getCompound("BackpackItem"))
+                    .orElse(ItemStack.EMPTY);
+        }
+        player.getEntityData().set(DATA_BACKPACK_STACK, stack);
+
+        // 读取后同步背包
+        ItemStack selected = BackpackSlotHelper.getSelectedBackpack(player);
+        ((IExtendedInventory) player.getInventory()).yyzsbackpack$syncFromBackpack(selected);
+
+        String uuid = compoundTag.getString("BackpackSelectedUuid"); // 不存在返回 ""
         if (!uuid.isEmpty()) {
-            compoundTag.putString("BackpackSelectedUuid", uuid);
+            player.getEntityData().set(DATA_SELECTED_UUID, uuid);
         }
     }
 

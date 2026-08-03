@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
@@ -9,7 +8,6 @@ import com.yyz.yyzsbackpack.item.BackpackItem;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -235,7 +233,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
     @Inject(method = "add(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     private void onAdd(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
+        if (inv.player != null) {
             cir.setReturnValue(addInternal(-1, stack));
             yyzsbackpack$syncToBackpack();
         }
@@ -244,7 +242,7 @@ public abstract class InventoryMixin implements IExtendedInventory {
     @Inject(method = "add(ILnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
     private void onAddWithSlot(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         Inventory inv = (Inventory)(Object)this;
-        if (inv.player != null && !inv.player.level().isClientSide()) {
+        if (inv.player != null) {
             cir.setReturnValue(addInternal(slot, stack));
             yyzsbackpack$syncToBackpack();
         }

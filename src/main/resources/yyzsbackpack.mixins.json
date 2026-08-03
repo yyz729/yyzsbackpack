@@ -25,7 +25,8 @@
     "minecraft.container.mount.AbstractMountInventoryMenuMixin",
     "minecraft.container.shulker.ShulkerBoxMenuMixin",
     "minecraft.container.stonecutter.StonecutterMenuMixin",
-    "minecraft.data.PlayerMixin"
+    "minecraft.data.PlayerMixin",
+    "minecraft.data.ServerPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

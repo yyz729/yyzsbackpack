@@ -1,9 +1,12 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.inventory;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
+import com.yyz.yyzsbackpack.network.packets.control.MoveCToInventoryC2SPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -19,7 +22,9 @@ public class InventoryMenuMixin{
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstruct(Inventory inventory, boolean active, Player owner, CallbackInfo ci) {
-        BackpackMenuHelper.addBackpackSlotsIfPresent((AbstractContainerMenu)(Object)this, inventory);
+        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
+        BackpackMenuHelper.addBackpackSlotsIfPresent(menu, inventory);
+
     }
 
 

@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Mixin(AbstractContainerMenu.class)
 public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
 
@@ -84,34 +87,4 @@ public abstract class AbstractContainerMenuMixin implements IBackpackMenu {
         // 不再执行原版
         ci.cancel();
     }
-
-//    @Inject(method = "clicked", at = @At("HEAD"))
-//    private void logClick(int slotIndex, int buttonNum, ContainerInput containerInput,
-//                          Player player, CallbackInfo ci) {
-//        // 获取当前菜单实例（混入对象）
-//        AbstractContainerMenu menu = (AbstractContainerMenu) (Object) this;
-//
-//        // 构造槽位信息
-//        String slotInfo;
-//        if (slotIndex >= 0 && slotIndex < menu.slots.size()) {
-//            Slot slot = menu.slots.get(slotIndex);
-//            ItemStack stack = slot.getItem();
-//            slotInfo = String.format("Slot[%d] (%s) = %s",
-//                    slotIndex,
-//                    slot.getClass().getSimpleName(),
-//                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
-//        } else {
-//            slotInfo = "Slot index " + slotIndex + " (outside)";
-//        }
-//
-//        // 打印日志
-//        Backpack.LOGGER.info("Container Click - Player: {}, Slot: {}, Button: {}, Input: {}, Carried: {}",
-//                player.getName().getString(),
-//                slotInfo,
-//                buttonNum,
-//                containerInput,
-//                menu.getCarried().isEmpty() ? "empty" :
-//                        menu.getCarried().getDisplayName().getString() + " x" + menu.getCarried().getCount()
-//        );
-//    }
 }

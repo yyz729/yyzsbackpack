@@ -33,5 +33,4 @@ public class BackpackSlot extends Slot {
         int extraIndex = slotIndex - EXTRA_SLOT_START;
         return ext.yyzsbackpack$isExtraSlotEnabled(extraIndex);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -10,6 +11,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -18,11 +20,17 @@ import net.neoforged.neoforge.common.NeoForge;
 @EventBusSubscriber(modid = Backpack.MOD_ID, value = Dist.CLIENT)
 public class BackpackClient {
     public BackpackClient(ModContainer container) {
-
     }
 
     @SubscribeEvent
     public static void registerClientReloadListeners(AddClientReloadListenersEvent event) {
         event.addListener(Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "client_backpack_data"),new BackpackDataLoaderClient.ReloadListener());
+    }
+
+    @SubscribeEvent
+    public static void registerBindings(RegisterKeyMappingsEvent event) {
+        event.registerCategory(BackpackKeyBinding.CATEGORY);
+        event.register(BackpackKeyBinding.KEY_SORT);
+        event.register(BackpackKeyBinding.KEY_OPEN);
     }
 }

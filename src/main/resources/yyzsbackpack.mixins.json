@@ -62,7 +62,6 @@
     "minecraft.container.mount.AbstractMountInventoryScreenMixin",
     "minecraft.container.shulker.ShulkerBoxScreenMixin",
     "minecraft.container.stonecutter.StonecutterScreenMixin",
-    "minecraft.key.GameOptionsMixin",
     "minecraft.model.AvatarRendererMixin"
   ]
 }

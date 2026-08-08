@@ -8,6 +8,10 @@
 
   "effect.yyzsbackpack.heavy": "Heavy",
 
+  "key.yyzsbackpack.sort": "Sort",
+  "key.yyzsbackpack.open": "Open",
+  "key.category.yyzsbackpack.category": "yyz's backpack",
+
   "itemGroup.yyzsbackpack.title": "yyz's backpack",
 
   "yyzsbackpack.button.moveib.line1": "§5Click§r: Move matching items from inventory to backpack",

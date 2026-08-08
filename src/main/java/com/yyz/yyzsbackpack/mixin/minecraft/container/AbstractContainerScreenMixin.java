@@ -16,11 +16,15 @@ import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,6 +37,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin implements IBackpackVisible, IBackpackScroll, IBackpackTabScroll {
@@ -43,6 +48,17 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
     @Shadow
     @Nullable
     protected Slot hoveredSlot;
+    @Shadow
+    protected boolean isQuickCrafting;
+    @Shadow
+    @Final
+    protected Set<Slot> quickCraftSlots;
+
+    @Shadow
+    protected abstract void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput);
+
+    @Shadow
+    private @MouseButtonInfo.MouseButton int quickCraftingButton;
     @Unique
     private static boolean backpackVisible = true; // 默认可见
 
@@ -273,28 +289,26 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
         }
     }
 
-//    @Inject(method = "slotClicked", at = @At("HEAD"))
-//    private void onSlotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
-//        // 获取屏幕实例
-//        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-//        // 构造槽位信息
-//        String slotInfo;
-//        if (slot != null) {
-//            ItemStack stack = slot.getItem();
-//            slotInfo = String.format("Slot[%d] (%s) = %s",
-//                    slot.index,
-//                    slot.getClass().getSimpleName(),
-//                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
-//        } else {
-//            slotInfo = "null (outside)";
-//        }
-//        // 记录日志
-//        Backpack.LOGGER.info("Screen Slot Clicked -  Slot: {}, Button: {}, Input: {}, Carried: {}",
-//                slotInfo,
-//                buttonNum,
-//                containerInput,
-//                screen.getMenu().getCarried().isEmpty() ? "empty" :
-//                        screen.getMenu().getCarried().getDisplayName().getString() + " x" + screen.getMenu().getCarried().getCount()
-//        );
-//    }
+    /**
+     * 在 mouseReleased 中调用 quickCraftToSlots() 之前拦截。
+     * 如果快速合成仅涉及一个槽位，则改为执行普通点击（PICKUP），
+     * 并取消原快速合成调用，避免进入快速合成流程。
+     */
+    @Inject(
+            method = "mouseReleased",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;quickCraftToSlots()V"
+            ),
+            cancellable = true
+    )
+    private void onMouseReleasedBeforeQuickCraft(MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isQuickCrafting && this.quickCraftSlots.size() == 1) {
+            Slot slot = this.quickCraftSlots.iterator().next();
+            this.slotClicked(slot, slot.index, this.quickCraftingButton, ContainerInput.PICKUP);
+            this.isQuickCrafting = false;
+            this.quickCraftSlots.clear();
+            cir.cancel();
+        }
+    }
 }

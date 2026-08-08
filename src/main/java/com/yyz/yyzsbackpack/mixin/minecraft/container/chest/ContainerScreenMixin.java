@@ -43,6 +43,9 @@ public abstract class ContainerScreenMixin extends AbstractContainerScreen<Chest
         BackpackScreenHelper.addBackpackTabs((ContainerScreen) (Object) this);
         BackpackScreenHelper.addBackpackScrollbar((ContainerScreen) (Object) this);
         BackpackScreenHelper.addBackpackTitle((ContainerScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((ContainerScreen) (Object) this);
+
+        int rows = this.menu.getRowCount();
+        int extraYOffset = (rows - 3) * 18;
+        BackpackScreenHelper.addBackpackControls((ContainerScreen) (Object) this, extraYOffset);
     }
 }

@@ -1,14 +1,16 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.item.ModItems;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Backpack.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientBackpackEvents {
+public class BackpackClientEvents {
 
     @SubscribeEvent
     public static void onItemColor(RegisterColorHandlersEvent.Item event) {
@@ -21,5 +23,11 @@ public class ClientBackpackEvents {
            ModItems.GOLD_BACKPACK.get(),
            ModItems.DIAMOND_BACKPACK.get(),
            ModItems.NETHERITE_BACKPACK.get());
+    }
+
+    @SubscribeEvent
+    public static void registerBindings(RegisterKeyMappingsEvent event) {
+        event.register(BackpackKeyBinding.KEY_SORT);
+        event.register(BackpackKeyBinding.KEY_OPEN);
     }
 }

@@ -14,7 +14,7 @@ modId = "yyzsbackpack"
 # The version number of the mod - unlike in the Forge MDK,
 # we'll use the processResources task to replace this for us
 version = "${version}"
-displayName = "yyzsbackpack"
+displayName = "Yyz's Backpack"
 # This URL will be queried by the Forge update checker in order to find the latest version of your mod.
 # If an update is found, you'll see a little blinking "emerald" symbol on your Mods button!
 # updateJSONURL="https://changeme.dev/updates.json" #optional

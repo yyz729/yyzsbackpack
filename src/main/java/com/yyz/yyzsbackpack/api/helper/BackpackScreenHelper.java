@@ -762,8 +762,19 @@ public final class BackpackScreenHelper {
         }
     }
     public static void addBackpackControls(AbstractContainerScreen<?> screen) {
-        String className = getScreenType(screen); // 修改此行
-        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(className);
+        addBackpackControls(screen, 0);
+    }
+
+    /**
+     * 添加背包控制按钮，支持额外的Y轴偏移（用于多行容器屏幕）。
+     * 如果按钮已存在则更新位置，否则创建新按钮。
+     *
+     * @param screen        目标容器屏幕
+     * @param extraYOffset  额外的Y轴偏移量
+     */
+    public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset) {
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(screenType);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -777,21 +788,21 @@ public final class BackpackScreenHelper {
             int offsetX = offset[0];
             int offsetY = offset[1];
 
-            // 计算该组起始坐标
-            int toggleX = leftPos +  offsetX;
-            int toggleY = topPos - size + offsetY;
+            // 只有第一组应用额外偏移
+            int finalExtraOffset = (groupIdx == 0) ? extraYOffset : 0;
+            int toggleX = leftPos + offsetX;
+            int toggleY = topPos - size + offsetY + finalExtraOffset;
 
             if (groupIdx == 0) {
                 addBackpackVisibleButton(screen, toggleX, toggleY);
                 addBackpackSortButton(screen, toggleX + size + gap - 1, toggleY);
-                addBackpackMoveBToIButton(screen, toggleX + 2*(size + gap), toggleY);
-                addBackpackMoveIToBButton(screen, toggleX + 3*(size + gap), toggleY);
+                addBackpackMoveBToIButton(screen, toggleX + 2 * (size + gap), toggleY);
+                addBackpackMoveIToBButton(screen, toggleX + 3 * (size + gap), toggleY);
             } else if (groupIdx == 1) {
                 addBackpackMoveBToCButton(screen, toggleX, toggleY);
                 addBackpackMoveCToBButton(screen, toggleX + size + gap, toggleY);
-                addBackpackMoveIToCButton(screen, toggleX + 2*(size + gap), toggleY);
-                addBackpackMoveCToIButton(screen, toggleX + 3*(size + gap), toggleY);
-
+                addBackpackMoveIToCButton(screen, toggleX + 2 * (size + gap), toggleY);
+                addBackpackMoveCToIButton(screen, toggleX + 3 * (size + gap), toggleY);
             }
         }
     }

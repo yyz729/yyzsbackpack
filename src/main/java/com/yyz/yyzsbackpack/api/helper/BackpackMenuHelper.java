@@ -3,10 +3,12 @@ package com.yyz.yyzsbackpack.api.helper;
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackMenu;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
+import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -466,7 +468,7 @@ public final class BackpackMenuHelper {
         int start = -1, end = -1;
         for (int i = 0; i < menu.slots.size(); i++) {
             Slot slot = menu.slots.get(i);
-            if (slot.container instanceof BaseContainerBlockEntity) {
+            if (slot.container instanceof BaseContainerBlockEntity || slot.container instanceof CompoundContainer) {
                 if (start == -1) start = i;
                 end = i;
             }
@@ -499,6 +501,7 @@ public final class BackpackMenuHelper {
         for (int i = start; i < end; i++) {
             Slot slot = menu.slots.get(i);
             ItemStack stack = slot.getItem();
+            if (stack.getItem() instanceof BackpackItem) continue;
             if (!stack.isEmpty()) {
                 items.add(stack.copy());
             }
@@ -533,27 +536,33 @@ public final class BackpackMenuHelper {
         int itemIdx = 0;
         for (int slotIdx = start; slotIdx < end && itemIdx < items.size(); slotIdx++) {
             Slot slot = menu.slots.get(slotIdx);
+            // 如果槽位非空，跳过
+            if (slot.hasItem()) continue;
+
             ItemStack toPlace = items.get(itemIdx);
             int remaining = toPlace.getCount();
             int maxStack = toPlace.getMaxStackSize();
+
             while (remaining > 0 && slotIdx < end) {
+                Slot currentSlot = menu.slots.get(slotIdx);
+                // 再次检查是否为空，非空则推进
+                if (currentSlot.hasItem()) {
+                    slotIdx++;
+                    continue;
+                }
                 int put = Math.min(remaining, maxStack);
                 ItemStack putStack = toPlace.copyWithCount(put);
-                slot.set(putStack);
+                currentSlot.set(putStack);
                 remaining -= put;
                 if (remaining > 0) {
                     slotIdx++;
                     if (slotIdx >= end) break;
-                    slot = menu.slots.get(slotIdx);
                 } else {
                     itemIdx++;
                     break;
                 }
             }
-            if (remaining > 0) {
-                // 理论上不会发生（总槽位 >= 物品种类数）
-                break;
-            }
+            if (remaining > 0) break;
         }
     }
 

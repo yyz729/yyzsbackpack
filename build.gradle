@@ -86,7 +86,7 @@ dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
 
-    include "yyz729:yyzsbackpackcompat:${project.yyzsbackpackcompat_version}"
+    include "yyz729:yyzsbackpackdefaultcompat:${project.yyzsbackpackdefaultcompat_version}"
 }
 
 processResources {

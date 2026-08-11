@@ -42,7 +42,6 @@ public class ModItems {
                     "backpack_tab",
                     () -> CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup.yyzsbackpack.title"))
-                            .withTabsBefore(CreativeModeTabs.COMBAT)
                             .icon(() -> GOLD_BACKPACK.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(IRON_BACKPACK.get());

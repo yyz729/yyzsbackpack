@@ -54,7 +54,6 @@
     "minecraft.container.horse.HorseInventoryScreenMixin",
     "minecraft.container.shulker.ShulkerBoxScreenMixin",
     "minecraft.container.stonecutter.StonecutterScreenMixin",
-    "minecraft.key.GameOptionsMixin",
     "minecraft.model.PlayerRendererMixin"
   ],
   "injectors": {

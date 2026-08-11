@@ -6,6 +6,10 @@
 
   "effect.yyzsbackpack.heavy": "负重",
 
+  "key.yyzsbackpack.sort": "排序",
+  "key.yyzsbackpack.open": "打开",
+  "key.category.yyzsbackpack.category": "yyz的背包",
+
   "itemGroup.yyzsbackpack.title": "yyz的背包",
 
   "yyzsbackpack.button.moveib.line1": "§5点击§r：将物品栏中相符物品移动到背包",

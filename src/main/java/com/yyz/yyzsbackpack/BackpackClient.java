@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
 import com.yyz.yyzsbackpack.item.ModItems;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +11,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 @Mod(value = Backpack.MOD_ID, dist = Dist.CLIENT)
@@ -33,5 +35,11 @@ public class BackpackClient {
                     return -1;
                 }, ModItems.IRON_BACKPACK, ModItems.GOLD_BACKPACK,
                 ModItems.DIAMOND_BACKPACK, ModItems.NETHERITE_BACKPACK);
+    }
+
+    @SubscribeEvent
+    public static void registerBindings(RegisterKeyMappingsEvent event) {
+        event.register(BackpackKeyBinding.KEY_SORT);
+        event.register(BackpackKeyBinding.KEY_OPEN);
     }
 }

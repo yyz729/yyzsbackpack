@@ -52,7 +52,6 @@
     "container.merchant.MerchantScreenMixin",
     "container.shulker.ShulkerBoxScreenMixin",
     "container.stonecutter.StonecutterScreenMixin",
-    "key.GameOptionsMixin",
     "model.PlayerRendererMixin"
   ],
   "injectors": {

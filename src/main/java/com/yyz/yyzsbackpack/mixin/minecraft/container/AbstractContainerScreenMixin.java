@@ -288,27 +288,4 @@ public abstract class AbstractContainerScreenMixin implements IBackpackVisible, 
             return;
         }
     }
-
-    /**
-     * 在 mouseReleased 中调用 quickCraftToSlots() 之前拦截。
-     * 如果快速合成仅涉及一个槽位，则改为执行普通点击（PICKUP），
-     * 并取消原快速合成调用，避免进入快速合成流程。
-     */
-    @Inject(
-            method = "mouseReleased",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;quickCraftToSlots()V"
-            ),
-            cancellable = true
-    )
-    private void onMouseReleasedBeforeQuickCraft(MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir) {
-        if (this.isQuickCrafting && this.quickCraftSlots.size() == 1) {
-            Slot slot = this.quickCraftSlots.iterator().next();
-            this.slotClicked(slot, slot.index, this.quickCraftingButton, ContainerInput.PICKUP);
-            this.isQuickCrafting = false;
-            this.quickCraftSlots.clear();
-            cir.cancel();
-        }
-    }
 }

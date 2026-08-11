@@ -31,7 +31,7 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    include "yyz729:yyzsbackpackcompat:${project.yyzsbackpackcompat_version}"
+    include "yyz729:yyzsbackpackdefaultcompat:${project.yyzsbackpackdefaultcompat_version}"
 }
 
 processResources {

@@ -3,9 +3,14 @@
   "id": "yyzsbackpack",
   "version": "${version}",
   "name": "yyzsbackpack",
-  "description": "",
-  "authors": [],
-  "contact": {},
+  "description": "A new backpack mod may be more suitable for you",
+  "authors": [
+    "yyz729"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/yyzsbackpack",
+    "sources": "https://github.com/yyz729/yyzsbackpack"
+  },
   "license": "MIT",
   "icon": "assets/yyzsbackpack/icon.png",
   "environment": "*",

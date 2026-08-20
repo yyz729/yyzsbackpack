@@ -3,6 +3,8 @@ package com.yyz.yyzsbackpack.mixin.minecraft.data;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.IBackpackData;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
+import com.yyz.yyzsbackpack.component.BackpackIdComponent;
+import com.yyz.yyzsbackpack.component.ModComponents;
 import com.yyz.yyzsbackpack.effect.ModEffects;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -105,5 +107,23 @@ public abstract class PlayerMixin implements IBackpackData {
         Player player = (Player) (Object) this;
         BackpackSlotHelper.updateWeightEffect(player);
         ((IExtendedInventory) player.getInventory()).yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
+
+        ItemStack current = BackpackSlotHelper.getSelectedBackpack(player);
+        ItemStack synced = this.yyzsbackpack$getSyncedBackpack();
+
+        boolean needUpdate = false;
+        if (current.isEmpty() != synced.isEmpty()) {
+            needUpdate = true;
+        } else if (!current.isEmpty()) {
+            BackpackIdComponent curId = current.get(ModComponents.BACKPACK_ID);
+            BackpackIdComponent syncedId = synced.get(ModComponents.BACKPACK_ID);
+            if (curId == null || syncedId == null || !curId.id().equals(syncedId.id())) {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate) {
+            this.yyzsbackpack$setSyncedBackpack(current);
+        }
     }
 }

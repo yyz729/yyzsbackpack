@@ -24,7 +24,7 @@ public class ServerPacketHandler {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             BackpackSlotHelper.setSelectedIndex(player, packet.index());
-            if (player.getInventory() instanceof IExtendedInventory extInv) {
+            if (player != null && player.getInventory() instanceof IExtendedInventory extInv) {
                 extInv.yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
             }
             ItemStack selected = BackpackSlotHelper.getSelectedBackpack(player);

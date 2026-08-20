@@ -73,7 +73,7 @@ public final class BackpackSlotHelper {
         }
     }
 
-    private static String getBackpackId(ItemStack stack) {
+    public static String getBackpackId(ItemStack stack) {
         if (stack.isEmpty() || !(stack.getItem() instanceof BackpackItem)) return null;
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(BACKPACK_ID_KEY)) {
@@ -111,7 +111,7 @@ public final class BackpackSlotHelper {
             for (int i = 0; i < slots.size(); i++) {
                 ItemStack stack = slots.get(i).getStack();
                 String id = getBackpackId(stack);
-                if (id != null && expectedUUID.equals(id)) {
+                if (expectedUUID.equals(id)) {
                     setSelectedIndex(player, i);
                     return stack;
                 }

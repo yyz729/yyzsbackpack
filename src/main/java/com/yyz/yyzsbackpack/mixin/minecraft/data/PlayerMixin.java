@@ -127,5 +127,23 @@ public abstract class PlayerMixin extends LivingEntity implements IBackpackData 
     private void onTick(CallbackInfo ci) {
         BackpackSlotHelper.updateWeightEffect(player);
         ((IExtendedInventory) player.getInventory()).yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
+
+        ItemStack current = BackpackSlotHelper.getSelectedBackpack(player);
+        ItemStack synced = this.yyzsbackpack$getSyncedBackpack();
+
+        boolean needUpdate = false;
+        if (current.isEmpty() != synced.isEmpty()) {
+            needUpdate = true;
+        } else if (!current.isEmpty()) {
+            String curId = BackpackSlotHelper.getBackpackId(current);
+            String syncedId = BackpackSlotHelper.getBackpackId(synced);
+            if (curId == null || !curId.equals(syncedId)) {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate) {
+            this.yyzsbackpack$setSyncedBackpack(current);
+        }
     }
 }

@@ -73,7 +73,7 @@ public final class BackpackSlotHelper {
         }
     }
 
-    private static String getBackpackId(ItemStack stack) {
+    public static String getBackpackId(ItemStack stack) {
         if (stack.isEmpty() || !(stack.getItem() instanceof BackpackItem)) return null;
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(BACKPACK_ID_KEY)) {

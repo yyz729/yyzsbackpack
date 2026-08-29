@@ -275,29 +275,4 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
             return;
         }
     }
-
-//    @Inject(method = "slotClicked", at = @At("HEAD"))
-//    private void onSlotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
-//        // 获取屏幕实例
-//        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-//        // 构造槽位信息
-//        String slotInfo;
-//        if (slot != null) {
-//            ItemStack stack = slot.getItem();
-//            slotInfo = String.format("Slot[%d] (%s) = %s",
-//                    slot.index,
-//                    slot.getClass().getSimpleName(),
-//                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
-//        } else {
-//            slotInfo = "null (outside)";
-//        }
-//        // 记录日志
-//        Backpack.LOGGER.info("Screen Slot Clicked -  Slot: {}, Button: {}, Input: {}, Carried: {}",
-//                slotInfo,
-//                buttonNum,
-//                containerInput,
-//                screen.getMenu().getCarried().isEmpty() ? "empty" :
-//                        screen.getMenu().getCarried().getDisplayName().getString() + " x" + screen.getMenu().getCarried().getCount()
-//        );
-//    }
 }

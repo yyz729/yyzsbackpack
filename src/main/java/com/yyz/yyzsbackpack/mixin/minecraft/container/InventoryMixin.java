@@ -350,8 +350,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-    @Inject(method = "findSlotMatchingItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "findSlotMatchingItem", at = @At("RETURN"), cancellable = true)
     private void onFindSlotMatchingItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
         for (int i = 0; i < extraItems.size(); i++) {
             if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
                     && ItemStack.isSameItemSameComponents(stack, extraItems.get(i))) {
@@ -361,16 +365,64 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-//    @Inject(method = "findSlotMatchingCraftingIngredient", at = @At("HEAD"), cancellable = true)
-//    private void onFindSlotMatchingCraftingIngredient(Holder<Item> item, ItemStack existingItem, CallbackInfoReturnable<Integer> cir) {
-//        for (int i = 0; i < extraItems.size(); i++) {
-//            ItemStack stack = extraItems.get(i);
-//            if (extraSlotEnabled[i] && !stack.isEmpty() && stack.is(item)
-//                    && Inventory.isUsableForCrafting(stack)
-//                    && (existingItem.isEmpty() || ItemStack.isSameItemSameComponents(existingItem, stack))) {
-//                cir.setReturnValue(getContainerSize() + i);
-//                return;
-//            }
-//        }
-//    }
+    @Inject(method = "findSlotMatchingUnusedItem", at = @At("RETURN"), cancellable = true)
+    private void onFindSlotMatchingUnusedItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
+        for (int i = 0; i < extraItems.size(); i++) {
+            if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
+                    && ItemStack.isSameItemSameComponents(stack, extraItems.get(i))
+                    && !extraItems.get(i).isDamaged()
+                    && !extraItems.get(i).isEnchanted()
+                    && !extraItems.get(i).has(DataComponents.CUSTOM_NAME)) {
+                cir.setReturnValue(getContainerSize() + i);
+                return;
+            }
+        }
+    }
+
+    @Inject(method = "pickSlot", at = @At("HEAD"), cancellable = true)
+    private void onPickSlot(int slot, CallbackInfo ci) {
+        Inventory inv = (Inventory)(Object)this;
+
+        int selected = inv.getSuitableHotbarSlot();
+        inv.selected = selected;
+
+        ItemStack selectedStack = inv.getItem(selected);
+        ItemStack targetStack = inv.getItem(slot);
+
+        inv.setItem(selected, targetStack);
+        inv.setItem(slot, selectedStack);
+
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
+    }
+
+    @Inject(method = "setPickedItem", at = @At("HEAD"), cancellable = true)
+    private void onSetPickedItem(ItemStack stack, CallbackInfo ci) {
+        Inventory inv = (Inventory)(Object)this;
+
+        int i = inv.findSlotMatchingItem(stack);
+        if (Inventory.isHotbarSlot(i)) {
+            inv.selected = i;
+        } else if (i == -1) {
+            inv.selected = inv.getSuitableHotbarSlot();
+            if (!inv.getItem(inv.selected).isEmpty()) {
+                int j = inv.getFreeSlot();
+                if (j != -1) {
+                    inv.setItem(j, inv.getItem(inv.selected));
+                }
+            }
+            inv.setItem(inv.selected, stack);
+        } else {
+            inv.pickSlot(i);
+        }
+
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
+    }
 }

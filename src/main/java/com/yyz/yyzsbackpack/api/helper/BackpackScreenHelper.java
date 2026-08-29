@@ -12,12 +12,15 @@ import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
+import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.SlotAccessor;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.MappingResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,8 +60,10 @@ public final class BackpackScreenHelper {
         if (!visible) {
             for (int i = start; i < menu.slots.size(); i++) {
                 Slot slot = menu.slots.get(i);
-                ((SlotAccessor) slot).setX(-1000);
-                ((SlotAccessor) slot).setY(-1000);
+                if (slot instanceof BackpackSlot) {
+                    ((SlotAccessor) slot).setX(-1000);
+                    ((SlotAccessor) slot).setY(-1000);
+                }
             }
             return;
         }
@@ -155,6 +160,7 @@ public final class BackpackScreenHelper {
                 int slotIndex = start + segStart + j;
                 if (slotIndex >= slotCount) break;
                 Slot slot = menu.slots.get(slotIndex);
+                if (!(slot instanceof BackpackSlot)) continue;
                 int originalX = origX[slotIndex];
                 int originalY = origY[slotIndex];
                 int newY = originalY - pixelOffset;
@@ -878,10 +884,8 @@ public final class BackpackScreenHelper {
         return getUiOffset(screen)[1];
     }
 
+
     private static String getScreenType(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IScreenType provider) {
-            return provider.yyzsbackpack$getScreenType();
-        }
         return screen.getClass().getSimpleName();
     }
 

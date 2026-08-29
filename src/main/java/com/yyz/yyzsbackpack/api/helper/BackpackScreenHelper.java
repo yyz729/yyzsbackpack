@@ -11,6 +11,7 @@ import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
+import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenInvoker;
@@ -54,8 +55,10 @@ public final class BackpackScreenHelper {
         if (!visible) {
             for (int i = start; i < menu.slots.size(); i++) {
                 Slot slot = menu.slots.get(i);
-                ((SlotAccessor) slot).setX(-1000);
-                ((SlotAccessor) slot).setY(-1000);
+                if (slot instanceof BackpackSlot) {
+                    ((SlotAccessor) slot).setX(-1000);
+                    ((SlotAccessor) slot).setY(-1000);
+                }
             }
             return;
         }
@@ -144,6 +147,7 @@ public final class BackpackScreenHelper {
                 int slotIndex = start + segStart + j;
                 if (slotIndex >= slotCount) break;
                 Slot slot = menu.slots.get(slotIndex);
+                if (!(slot instanceof BackpackSlot)) continue;
                 int originalX = origX[slotIndex];
                 int originalY = origY[slotIndex];
                 int newY = originalY - pixelOffset;

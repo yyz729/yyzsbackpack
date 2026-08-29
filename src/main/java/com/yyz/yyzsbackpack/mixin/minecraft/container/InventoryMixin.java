@@ -351,8 +351,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-    @Inject(method = "findSlotMatchingItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "findSlotMatchingItem", at = @At("RETURN"), cancellable = true)
     private void onFindSlotMatchingItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
         for (int i = 0; i < extraItems.size(); i++) {
             if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
                     && ItemStack.isSameItemSameComponents(stack, extraItems.get(i))) {
@@ -362,8 +366,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-    @Inject(method = "findSlotMatchingCraftingIngredient", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "findSlotMatchingCraftingIngredient", at = @At("RETURN"), cancellable = true)
     private void onFindSlotMatchingCraftingIngredient(Holder<Item> item, ItemStack existingItem, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
         for (int i = 0; i < extraItems.size(); i++) {
             ItemStack stack = extraItems.get(i);
             if (extraSlotEnabled[i] && !stack.isEmpty() && stack.is(item)
@@ -374,4 +382,44 @@ public abstract class InventoryMixin implements IExtendedInventory {
             }
         }
     }
+
+    @Inject(method = "pickSlot", at = @At("HEAD"), cancellable = true)
+    private void onPickSlot(int slot, CallbackInfo ci) {
+        Inventory inv = (Inventory) (Object) this;
+
+        int selected = inv.getSuitableHotbarSlot();
+        inv.setSelectedSlot(selected);
+
+        ItemStack selectedStack = inv.getItem(selected);
+        ItemStack targetStack = inv.getItem(slot);
+
+        inv.setItem(selected, targetStack);
+        inv.setItem(slot, selectedStack);
+
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
+    }
+
+    @Inject(method = "addAndPickItem", at = @At("HEAD"), cancellable = true)
+    private void onAddAndPickItem(ItemStack itemStack, CallbackInfo ci) {
+        Inventory inv = (Inventory) (Object) this;
+
+        int selected = inv.getSuitableHotbarSlot();
+        inv.setSelectedSlot(selected);
+
+        ItemStack selectedStack = inv.getItem(selected);
+        if (!selectedStack.isEmpty()) {
+            int freeSlot = inv.getFreeSlot();
+            if (freeSlot != -1) {
+                inv.setItem(freeSlot, selectedStack);
+            }
+        }
+
+        inv.setItem(selected, itemStack);
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
+    }
+
 }

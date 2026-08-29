@@ -50,7 +50,7 @@ public abstract class PlayerMixin implements IBackpackData {
     private void saveBackpackData(ValueOutput output, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         output.putInt("BackpackSelectedIndex", player.getEntityData().get(DATA_BACKPACK_INDEX));
-        output.store("BackpackItem", ItemStack.CODEC, player.getEntityData().get(DATA_BACKPACK_STACK));
+        output.store("BackpackItem", ItemStack.OPTIONAL_CODEC, player.getEntityData().get(DATA_BACKPACK_STACK));
 
         String uuid = player.getEntityData().get(DATA_SELECTED_UUID);
         if (!uuid.isEmpty()) output.putString("BackpackSelectedUuid", uuid);
@@ -60,7 +60,7 @@ public abstract class PlayerMixin implements IBackpackData {
     private void loadBackpackData(ValueInput input, CallbackInfo ci) {
         Player player = (Player) (Object) this;
         int idx = input.getIntOr("BackpackSelectedIndex",0);
-        Optional<ItemStack> optionalStack = input.read("BackpackItem", ItemStack.CODEC);
+        Optional<ItemStack> optionalStack = input.read("BackpackItem", ItemStack.OPTIONAL_CODEC);
         player.getEntityData().set(DATA_BACKPACK_INDEX, idx);
         player.getEntityData().set(DATA_BACKPACK_STACK, optionalStack.orElse(ItemStack.EMPTY));
 

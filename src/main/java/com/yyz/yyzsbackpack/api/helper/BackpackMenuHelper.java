@@ -222,7 +222,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, invStart, invEnd, false)) {
@@ -247,7 +247,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     boolean matches = inventoryTypes.stream()
@@ -300,7 +300,7 @@ public final class BackpackMenuHelper {
             List<ItemStack> containerTypes = new ArrayList<>();
             for (int i = containerStart; i < containerEnd; i++) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                 ItemStack stack = slot.getItem();
                 if (!stack.isEmpty()) containerTypes.add(stack.copy());
             }
@@ -352,7 +352,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
@@ -377,7 +377,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     boolean matches = backpackTypes.stream()
@@ -432,7 +432,7 @@ public final class BackpackMenuHelper {
             List<ItemStack> containerTypes = new ArrayList<>();
             for (int i = containerStart; i < containerEnd; i++) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot.container instanceof BaseContainerBlockEntity)) continue;
+                if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
                 ItemStack stack = slot.getItem();
                 if (!stack.isEmpty()) containerTypes.add(stack.copy());
             }
@@ -625,7 +625,7 @@ public final class BackpackMenuHelper {
 
         return anyMoved;
     }
-    
+
     private static boolean tryMergeIntoSlot(AbstractContainerMenu menu, ItemStack itemStack, int slotIndex) {
         Slot slot = menu.slots.get(slotIndex);
         ItemStack slotStack = slot.getItem();
@@ -647,7 +647,7 @@ public final class BackpackMenuHelper {
         }
         return false;
     }
-    
+
     private static boolean tryPlaceIntoEmptySlot(AbstractContainerMenu menu, ItemStack itemStack, int slotIndex) {
         Slot slot = menu.slots.get(slotIndex);
         if (!slot.hasItem() && slot.mayPlace(itemStack)) {

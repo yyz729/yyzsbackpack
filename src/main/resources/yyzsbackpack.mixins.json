@@ -19,10 +19,10 @@
     "minecraft.container.furnace.AbstractFurnaceMenuMixin",
     "minecraft.container.grindstone.GrindstoneMenuMixin",
     "minecraft.container.hopper.HopperMenuMixin",
+    "minecraft.container.horse.HorseInventoryMenuMixin",
     "minecraft.container.inventory.InventoryMenuMixin",
     "minecraft.container.loom.LoomMenuMixin",
     "minecraft.container.merchant.MerchantMenuMixin",
-    "minecraft.container.horse.HorseInventoryMenuMixin",
     "minecraft.container.shulker.ShulkerBoxMenuMixin",
     "minecraft.container.stonecutter.StonecutterMenuMixin",
     "minecraft.data.PlayerMixin"
@@ -48,10 +48,10 @@
     "minecraft.container.furnace.SmokerScreenMixin",
     "minecraft.container.grindstone.GrindstoneScreenMixin",
     "minecraft.container.hopper.HopperScreenMixin",
+    "minecraft.container.horse.HorseInventoryScreenMixin",
     "minecraft.container.inventory.InventoryScreenMixin",
     "minecraft.container.loom.LoomScreenMixin",
     "minecraft.container.merchant.MerchantScreenMixin",
-    "minecraft.container.horse.HorseInventoryScreenMixin",
     "minecraft.container.shulker.ShulkerBoxScreenMixin",
     "minecraft.container.stonecutter.StonecutterScreenMixin",
     "minecraft.model.PlayerRendererMixin"

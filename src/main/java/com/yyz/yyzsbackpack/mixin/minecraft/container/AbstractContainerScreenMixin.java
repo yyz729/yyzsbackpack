@@ -133,42 +133,12 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-
-        // 排序按钮
-        for (var child : screen.children()) {
-            if (child instanceof BackpackSortButton btn) {
-                if (btn.isMouseOver(mouseX, mouseY)) {
-                    BackpackSortButton.cycleAlgorithm();
-                    return true;
-                }
-            }
-        }
-
-        // 段内滚动
-        int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, mouseX, mouseY);
-        if (segmentIndex >= 0) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getSegmentScrollOffset(segmentIndex);
-            int newOffset = oldOffset - delta;
-            yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
+        // 先尝试处理背包逻辑
+        if (BackpackScreenHelper.handleMouseScrolled(
+                (AbstractContainerScreen<?>) (Object) this, mouseX, mouseY, scrollX, scrollY)) {
             return true;
         }
-
-        // 标签页滚动
-        boolean mouseOverTab = screen.children().stream()
-                .filter(w -> w instanceof BackpackTabWidget)
-                .anyMatch(w -> w.isMouseOver(mouseX, mouseY));
-        if (mouseOverTab) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getTabScrollOffset();
-            int newOffset = oldOffset - delta;
-            yyzsbackpack$setTabScrollOffset(newOffset);
-            BackpackScreenHelper.addBackpackTabs(screen);
-            return true;
-        }
-
-        // 未处理，交给父类
+        // 未处理则交给父类
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
@@ -275,29 +245,4 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
             return;
         }
     }
-
-//    @Inject(method = "slotClicked", at = @At("HEAD"))
-//    private void onSlotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
-//        // 获取屏幕实例
-//        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-//        // 构造槽位信息
-//        String slotInfo;
-//        if (slot != null) {
-//            ItemStack stack = slot.getItem();
-//            slotInfo = String.format("Slot[%d] (%s) = %s",
-//                    slot.index,
-//                    slot.getClass().getSimpleName(),
-//                    stack.isEmpty() ? "empty" : stack.getDisplayName().getString() + " x" + stack.getCount());
-//        } else {
-//            slotInfo = "null (outside)";
-//        }
-//        // 记录日志
-//        Backpack.LOGGER.info("Screen Slot Clicked -  Slot: {}, Button: {}, Input: {}, Carried: {}",
-//                slotInfo,
-//                buttonNum,
-//                containerInput,
-//                screen.getMenu().getCarried().isEmpty() ? "empty" :
-//                        screen.getMenu().getCarried().getDisplayName().getString() + " x" + screen.getMenu().getCarried().getCount()
-//        );
-//    }
 }

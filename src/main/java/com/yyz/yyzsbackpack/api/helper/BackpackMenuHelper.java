@@ -8,13 +8,12 @@ import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.CompoundContainer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,7 +22,13 @@ import java.util.List;
 public final class BackpackMenuHelper {
     private BackpackMenuHelper() {}
 
-
+    /**
+     * 判断一个槽位是否属于外部容器（非玩家背包）。
+     * 所有容器识别逻辑集中在此，便于统一修改。
+     */
+    private static boolean isExternalContainer(Slot slot) {
+        return slot.container instanceof Container && !(slot.container instanceof Inventory);
+    }
 
     public static void addBackpackSlotsIfPresent(AbstractContainerMenu menu, Inventory playerInv) {
         // 添加 256 个槽位，但操作时会按实际容量限制
@@ -199,7 +204,7 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * 将容器（BaseContainerBlockEntity）中的物品移至玩家主物品栏（9~35）
+     * 将外部容器中的物品移至玩家主物品栏（9~35）
      * @param all true=全部移动，false=只移动与主物品栏内已有物品同类型的
      */
     public static void moveCToInventory(boolean all, ServerPlayer player) {
@@ -222,7 +227,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                    if (!isExternalContainer(slot)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, invStart, invEnd, false)) {
@@ -247,7 +252,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                    if (!isExternalContainer(slot)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     boolean matches = inventoryTypes.stream()
@@ -265,7 +270,7 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * 将玩家主物品栏（9~35）中的物品移至容器
+     * 将玩家主物品栏（9~35）中的物品移至外部容器
      */
     public static void moveIToContainer(boolean all, ServerPlayer player) {
         Backpack.LOGGER.info("Moving I to Container");
@@ -300,7 +305,7 @@ public final class BackpackMenuHelper {
             List<ItemStack> containerTypes = new ArrayList<>();
             for (int i = containerStart; i < containerEnd; i++) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                if (!isExternalContainer(slot)) continue;
                 ItemStack stack = slot.getItem();
                 if (!stack.isEmpty()) containerTypes.add(stack.copy());
             }
@@ -329,7 +334,7 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * 将容器中的物品移至背包
+     * 将外部容器中的物品移至背包
      */
     public static void moveCToBackpack(boolean all, ServerPlayer player) {
         Backpack.LOGGER.info("Moving C to Backpack");
@@ -352,7 +357,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                    if (!isExternalContainer(slot)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
@@ -377,7 +382,7 @@ public final class BackpackMenuHelper {
                 moved = false;
                 for (int i = containerStart; i < containerEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                    if (!isExternalContainer(slot)) continue;
                     ItemStack stack = slot.getItem();
                     if (stack.isEmpty()) continue;
                     boolean matches = backpackTypes.stream()
@@ -395,7 +400,7 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * 将背包中的物品移至容器
+     * 将背包中的物品移至外部容器
      */
     public static void moveBToContainer(boolean all, ServerPlayer player) {
         Backpack.LOGGER.info("Moving B to Container");
@@ -432,7 +437,7 @@ public final class BackpackMenuHelper {
             List<ItemStack> containerTypes = new ArrayList<>();
             for (int i = containerStart; i < containerEnd; i++) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot.container instanceof BaseContainerBlockEntity) && !(slot.container instanceof CompoundContainer)) continue;
+                if (!isExternalContainer(slot)) continue;
                 ItemStack stack = slot.getItem();
                 if (!stack.isEmpty()) containerTypes.add(stack.copy());
             }
@@ -460,15 +465,14 @@ public final class BackpackMenuHelper {
         }
     }
 
-
     /**
-     * 查找菜单中所有属于 BaseContainerBlockEntity 的槽位范围（连续）
+     * 查找菜单中所有属于外部容器（非玩家背包）的槽位范围（连续）
      */
     public static int[] findContainerRange(AbstractContainerMenu menu, ServerPlayer player) {
         int start = -1, end = -1;
         for (int i = 0; i < menu.slots.size(); i++) {
             Slot slot = menu.slots.get(i);
-            if (slot.container instanceof BaseContainerBlockEntity || slot.container instanceof CompoundContainer) {
+            if (isExternalContainer(slot)) {
                 if (start == -1) start = i;
                 end = i;
             }

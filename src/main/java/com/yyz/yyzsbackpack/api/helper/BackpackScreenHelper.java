@@ -886,6 +886,9 @@ public final class BackpackScreenHelper {
 
 
     private static String getScreenType(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IScreenType provider) {
+            return provider.yyzsbackpack$getScreenType();
+        }
         return screen.getClass().getSimpleName();
     }
 

@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.chest;
 
+import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -13,8 +14,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ContainerScreen.class)
-public abstract class ContainerScreenMixin extends AbstractContainerScreen<ChestMenu> {
+public abstract class ContainerScreenMixin extends AbstractContainerScreen<ChestMenu> implements IScreenType {
 
+    @Override
+    public String yyzsbackpack$getScreenType() {
+        return "ContainerScreen";
+    }
     public ContainerScreenMixin(ChestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
     }

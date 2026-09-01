@@ -90,9 +90,6 @@
     "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxMenuMixin": {
       "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/ShulkerBoxMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
     },
-    "com/yyz/yyzsbackpack/mixin/minecraft/key/GameOptionsMixin": {
-      "load()V": "Lnet/minecraft/client/Options;m_92140_()V"
-    },
     "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryMenuMixin": {
       "Lnet/minecraft/world/inventory/InventoryMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/InventoryMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
       "quickMoveStack": "Lnet/minecraft/world/inventory/InventoryMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;"
@@ -149,10 +146,13 @@
       "isEmpty": "Lnet/minecraft/world/entity/player/Inventory;m_7983_()Z",
       "getFreeSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36062_()I",
       "getItem": "Lnet/minecraft/world/entity/player/Inventory;m_8020_(I)Lnet/minecraft/world/item/ItemStack;",
+      "findSlotMatchingUnusedItem": "Lnet/minecraft/world/entity/player/Inventory;m_36043_(Lnet/minecraft/world/item/ItemStack;)I",
       "findSlotMatchingItem": "Lnet/minecraft/world/entity/player/Inventory;m_36030_(Lnet/minecraft/world/item/ItemStack;)I",
       "add(ILnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36040_(ILnet/minecraft/world/item/ItemStack;)Z",
       "removeItem(II)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/entity/player/Inventory;m_7407_(II)Lnet/minecraft/world/item/ItemStack;",
       "getSlotWithRemainingSpace": "Lnet/minecraft/world/entity/player/Inventory;m_36050_(Lnet/minecraft/world/item/ItemStack;)I",
+      "setPickedItem": "Lnet/minecraft/world/entity/player/Inventory;m_36012_(Lnet/minecraft/world/item/ItemStack;)V",
+      "pickSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36038_(I)V",
       "load": "Lnet/minecraft/world/entity/player/Inventory;m_36035_(Lnet/minecraft/nbt/ListTag;)V",
       "setChanged": "Lnet/minecraft/world/entity/player/Inventory;m_6596_()V",
       "setItem": "Lnet/minecraft/world/entity/player/Inventory;m_6836_(ILnet/minecraft/world/item/ItemStack;)V"
@@ -264,9 +264,6 @@
       "com/yyz/yyzsbackpack/mixin/minecraft/container/shulker/ShulkerBoxMenuMixin": {
         "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V": "Lnet/minecraft/world/inventory/ShulkerBoxMenu;<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;)V"
       },
-      "com/yyz/yyzsbackpack/mixin/minecraft/key/GameOptionsMixin": {
-        "load()V": "Lnet/minecraft/client/Options;m_92140_()V"
-      },
       "com/yyz/yyzsbackpack/mixin/minecraft/container/inventory/InventoryMenuMixin": {
         "Lnet/minecraft/world/inventory/InventoryMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z": "Lnet/minecraft/world/inventory/InventoryMenu;m_38903_(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
         "quickMoveStack": "Lnet/minecraft/world/inventory/InventoryMenu;m_7648_(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;"
@@ -323,10 +320,13 @@
         "isEmpty": "Lnet/minecraft/world/entity/player/Inventory;m_7983_()Z",
         "getFreeSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36062_()I",
         "getItem": "Lnet/minecraft/world/entity/player/Inventory;m_8020_(I)Lnet/minecraft/world/item/ItemStack;",
+        "findSlotMatchingUnusedItem": "Lnet/minecraft/world/entity/player/Inventory;m_36043_(Lnet/minecraft/world/item/ItemStack;)I",
         "findSlotMatchingItem": "Lnet/minecraft/world/entity/player/Inventory;m_36030_(Lnet/minecraft/world/item/ItemStack;)I",
         "add(ILnet/minecraft/world/item/ItemStack;)Z": "Lnet/minecraft/world/entity/player/Inventory;m_36040_(ILnet/minecraft/world/item/ItemStack;)Z",
         "removeItem(II)Lnet/minecraft/world/item/ItemStack;": "Lnet/minecraft/world/entity/player/Inventory;m_7407_(II)Lnet/minecraft/world/item/ItemStack;",
         "getSlotWithRemainingSpace": "Lnet/minecraft/world/entity/player/Inventory;m_36050_(Lnet/minecraft/world/item/ItemStack;)I",
+        "setPickedItem": "Lnet/minecraft/world/entity/player/Inventory;m_36012_(Lnet/minecraft/world/item/ItemStack;)V",
+        "pickSlot": "Lnet/minecraft/world/entity/player/Inventory;m_36038_(I)V",
         "load": "Lnet/minecraft/world/entity/player/Inventory;m_36035_(Lnet/minecraft/nbt/ListTag;)V",
         "setChanged": "Lnet/minecraft/world/entity/player/Inventory;m_6596_()V",
         "setItem": "Lnet/minecraft/world/entity/player/Inventory;m_6836_(ILnet/minecraft/world/item/ItemStack;)V"

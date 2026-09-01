@@ -332,8 +332,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
     }
 
-    @Inject(method = "findSlotMatchingItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "findSlotMatchingItem", at = @At("RETURN"), cancellable = true)
     private void onFindSlotMatchingItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
         for (int i = 0; i < extraItems.size(); i++) {
             if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
                     && ItemStack.isSameItemSameTags(stack, extraItems.get(i))) {
@@ -341,5 +345,66 @@ public abstract class InventoryMixin implements IExtendedInventory {
                 return;
             }
         }
+    }
+
+    @Inject(method = "findSlotMatchingUnusedItem", at = @At("RETURN"), cancellable = true)
+    private void onFindSlotMatchingUnusedItem(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() != -1) {
+            return;
+        }
+
+        for (int i = 0; i < extraItems.size(); i++) {
+            if (extraSlotEnabled[i] && !extraItems.get(i).isEmpty()
+                    && ItemStack.isSameItemSameTags(stack, extraItems.get(i))
+                    && !extraItems.get(i).isDamaged()
+                    && !extraItems.get(i).isEnchanted()
+                    && !extraItems.get(i).hasCustomHoverName()) {
+                cir.setReturnValue(getContainerSize() + i);
+                return;
+            }
+        }
+    }
+
+    @Inject(method = "pickSlot", at = @At("HEAD"), cancellable = true)
+    private void onPickSlot(int i, CallbackInfo ci) {
+        Inventory inv = (Inventory)(Object)this;
+
+        int selected = inv.getSuitableHotbarSlot();
+        inv.selected = selected;
+
+        ItemStack selectedStack = inv.getItem(selected);
+        ItemStack targetStack = inv.getItem(i);
+
+        inv.setItem(selected, targetStack);
+        inv.setItem(i, selectedStack);
+
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
+    }
+
+    @Inject(method = "setPickedItem", at = @At("HEAD"), cancellable = true)
+    private void onSetPickedItem(ItemStack arg, CallbackInfo ci) {
+        Inventory inv = (Inventory)(Object)this;
+
+        int i = inv.findSlotMatchingItem(arg);
+        if (Inventory.isHotbarSlot(i)) {
+            inv.selected = i;
+        } else if (i == -1) {
+            inv.selected = inv.getSuitableHotbarSlot();
+            if (!inv.getItem(inv.selected).isEmpty()) {
+                int j = inv.getFreeSlot();
+                if (j != -1) {
+                    inv.setItem(j, inv.getItem(inv.selected));
+                }
+            }
+            inv.setItem(inv.selected, arg);
+        } else {
+            inv.pickSlot(i);
+        }
+
+        inv.setChanged();
+        yyzsbackpack$syncToBackpack();
+        ci.cancel();
     }
 }

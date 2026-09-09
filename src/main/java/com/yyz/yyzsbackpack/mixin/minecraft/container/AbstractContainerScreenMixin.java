@@ -18,6 +18,7 @@ import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
+import com.yyz.yyzsbackpack.network.packets.control.QuickMoveC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.control.SortRequestC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -60,17 +61,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Shadow
     @Nullable
     protected Slot hoveredSlot;
-    @Shadow
-    @Final
-    protected Set<Slot> quickCraftSlots;
-
-    @Shadow
-    private @MouseButtonInfo.MouseButton int quickCraftingButton;
-    @Shadow
-    protected boolean isQuickCrafting;
-
-    @Shadow
-    protected abstract void slotClicked(Slot slot, int slotId, int buttonNum, ContainerInput containerInput);
 
     @Shadow
     public abstract T getMenu();
@@ -79,8 +69,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Nullable
     protected abstract Slot getHoveredSlot(double x, double y);
 
-    @Shadow
-    private int quickCraftingType;
     @Unique
     private static boolean backpackVisible = true; // 默认可见
 
@@ -168,37 +156,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
     private void onMouseScrolled(double x, double y, double scrollX, double scrollY, CallbackInfoReturnable<Boolean> cir) {
 
-        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-
-        for (var child : screen.children()) {
-            if (child instanceof BackpackSortButton btn) {
-                if (btn.isMouseOver(x, y)) {
-                    BackpackSortButton.cycleAlgorithm();
-                    cir.setReturnValue(true);
-                    return;
-                }
-            }
-        }
-
-        int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, x, y);
-        if (segmentIndex >= 0) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getSegmentScrollOffset(segmentIndex);
-            int newOffset = oldOffset - delta;
-            yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
-            cir.setReturnValue(true);
-        }
-
-        boolean mouseOverTab = screen.children().stream()
-                .filter(w -> w instanceof BackpackTabWidget)
-                .anyMatch(w -> w.isMouseOver(x, y));
-        if (mouseOverTab) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getTabScrollOffset();
-            int newOffset = oldOffset - delta; // 负方向为左滚，正方向为右滚
-            yyzsbackpack$setTabScrollOffset(newOffset);
-            // 重建标签
-            BackpackScreenHelper.addBackpackTabs(screen);
+        if (BackpackScreenHelper.handleMouseScrolled((AbstractContainerScreen<?>) (Object) this, x, y, scrollX, scrollY)) {
             cir.setReturnValue(true);
         }
     }
@@ -308,6 +266,21 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             }
             cir.setReturnValue(true);
             return;
+        }
+    }
+
+    @Inject(
+            method = "mouseClicked",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
+        if (event.button() == 0 && event.hasAltDown()) {
+            Slot slot = this.getHoveredSlot(event.x(), event.y());
+            if (slot != null && !slot.getItem().isEmpty()) {
+                ClientPlayNetworking.send(new QuickMoveC2SPacket(slot.index));
+                cir.setReturnValue(true);
+            }
         }
     }
 }

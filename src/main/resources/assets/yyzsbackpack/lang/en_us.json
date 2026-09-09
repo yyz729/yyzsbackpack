@@ -27,6 +27,24 @@
   "yyzsbackpack.button.movebc.line1": "§5Click§r: Move matching items from backpack to container",
   "yyzsbackpack.button.movebc.line2": "§5Shift+Click§r: Move all items from backpack to container",
 
+  "yyzsbackpack.button.moveib.line3": "§5Alt+Click§r: Fill matching items from inventory to backpack",
+  "yyzsbackpack.button.moveib.line4": "§5Ctrl+Click§r: Move a stack of matching items from inventory to backpack",
+
+  "yyzsbackpack.button.movebi.line3": "§5Alt+Click§r: Fill matching items from backpack to inventory",
+  "yyzsbackpack.button.movebi.line4": "§5Ctrl+Click§r: Move a stack of matching items from backpack to inventory",
+
+  "yyzsbackpack.button.moveci.line3": "§5Alt+Click§r: Fill matching items from container to inventory",
+  "yyzsbackpack.button.moveci.line4": "§5Ctrl+Click§r: Move a stack of matching items from container to inventory",
+
+  "yyzsbackpack.button.moveic.line3": "§5Alt+Click§r: Fill matching items from inventory to container",
+  "yyzsbackpack.button.moveic.line4": "§5Ctrl+Click§r: Move a stack of matching items from inventory to container",
+
+  "yyzsbackpack.button.movecb.line3": "§5Alt+Click§r: Fill matching items from container to backpack",
+  "yyzsbackpack.button.movecb.line4": "§5Ctrl+Click§r: Move a stack of matching items from container to backpack",
+
+  "yyzsbackpack.button.movebc.line3": "§5Alt+Click§r: Fill matching items from backpack to container",
+  "yyzsbackpack.button.movebc.line4": "§5Ctrl+Click§r: Move a stack of matching items from backpack to container",
+
   "yyzsbackpack.button.sort.tooltip.line1": "§6Current sorting order§r: %s",
   "yyzsbackpack.button.sort.tooltip.line2": "§5Scroll§r: Switch sorting order",
   "yyzsbackpack.button.sort.tooltip.line3": "§5Click§r: Sort all",

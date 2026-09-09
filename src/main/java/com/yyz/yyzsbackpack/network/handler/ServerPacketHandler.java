@@ -58,7 +58,7 @@ public class ServerPacketHandler {
         ServerPlayNetworking.registerGlobalReceiver(MoveIToBackpackC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveIToBackpack(packet.all(), player);
+                BackpackMenuHelper.moveIToBackpack(packet.mode(), player);
             });
         });
 
@@ -66,35 +66,35 @@ public class ServerPacketHandler {
         ServerPlayNetworking.registerGlobalReceiver(MoveBToInventoryC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveBToInventory(packet.all(), player);
+                BackpackMenuHelper.moveBToInventory(packet.mode(), player);
             });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(MoveCToInventoryC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveCToInventory(packet.all(), player);
+                BackpackMenuHelper.moveCToInventory(packet.mode(), player);
             });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(MoveIToContainerC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveIToContainer(packet.all(), player);
+                BackpackMenuHelper.moveIToContainer(packet.mode(), player);
             });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(MoveCToBackpackC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveCToBackpack(packet.all(), player);
+                BackpackMenuHelper.moveCToBackpack(packet.mode(), player);
             });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(MoveBToContainerC2SPacket.ID, (packet, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                BackpackMenuHelper.moveBToContainer(packet.all(), player);
+                BackpackMenuHelper.moveBToContainer(packet.mode(), player);
             });
         });
 
@@ -135,6 +135,13 @@ public class ServerPacketHandler {
                 for (int[] range : ranges) {
                     BackpackMenuHelper.sortSlots(menu, range[0], range[1], comparator);
                 }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(QuickMoveC2SPacket.ID, (packet, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                BackpackMenuHelper.quickMoveSlot(player, packet.slotIndex());
             });
         });
     }

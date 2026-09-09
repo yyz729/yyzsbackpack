@@ -2,32 +2,84 @@ package com.yyz.yyzsbackpack.api.helper;
 
 import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackMenu;
+import com.yyz.yyzsbackpack.api.IVirtualContainer;
+import com.yyz.yyzsbackpack.api.enums.MoveMode;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
 import com.yyz.yyzsbackpack.mixin.minecraft.accessor.MenuAccessor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public final class BackpackMenuHelper {
     private BackpackMenuHelper() {}
 
+    // 全局生效的容器类
+    private static final Set<Class<?>> GLOBAL_EXTERNAL_CONTAINER_CLASSES = new HashSet<>();
+
+    // 特定菜单中生效的容器类
+    private static final Map<Class<? extends AbstractContainerMenu>, Set<Class<?>>> MENU_SPECIFIC_CONTAINERS = new HashMap<>();
+
+    private static final List<IVirtualContainer> VIRTUAL_HANDLERS = new ArrayList<>();
+
+    static {
+        GLOBAL_EXTERNAL_CONTAINER_CLASSES.add(BaseContainerBlockEntity.class);
+        GLOBAL_EXTERNAL_CONTAINER_CLASSES.add(CompoundContainer.class);
+    }
+
     /**
-     * 判断一个槽位是否属于外部容器（非玩家背包）。
-     * 所有容器识别逻辑集中在此，便于统一修改。
+     * 注册一个全局外部容器类，所有菜单中都识别为外部容器。
      */
-    private static boolean isExternalContainer(Slot slot) {
-        return slot.container instanceof Container && !(slot.container instanceof Inventory);
+    public static void registerExternalContainer(Class<?> containerClass) {
+        if (containerClass != null) {
+            GLOBAL_EXTERNAL_CONTAINER_CLASSES.add(containerClass);
+        }
+    }
+
+    /**
+     * 注册一个仅在指定菜单类中生效的外部容器类。
+     */
+    public static void registerExternalContainer(Class<?> containerClass, Class<? extends AbstractContainerMenu> menuClass) {
+        if (containerClass == null || menuClass == null) return;
+        MENU_SPECIFIC_CONTAINERS
+                .computeIfAbsent(menuClass, k -> new HashSet<>())
+                .add(containerClass);
+    }
+
+    /**
+     * 注册虚拟容器处理器（用于终端类、网络存储等没有真实 Slot 的界面）
+     */
+    public static void registerVirtualContainerHandler(IVirtualContainer handler) {
+        if (handler != null) {
+            VIRTUAL_HANDLERS.add(handler);
+        }
+    }
+
+    private static boolean isExternalContainer(Slot slot, AbstractContainerMenu menu) {
+        for (Class<?> clazz : GLOBAL_EXTERNAL_CONTAINER_CLASSES) {
+            if (clazz.isAssignableFrom(slot.container.getClass())) {
+                return true;
+            }
+        }
+
+        Set<Class<?>> menuSpecific = MENU_SPECIFIC_CONTAINERS.get(menu.getClass());
+        if (menuSpecific != null) {
+            for (Class<?> clazz : menuSpecific) {
+                if (clazz.isAssignableFrom(slot.container.getClass())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void addBackpackSlotsIfPresent(AbstractContainerMenu menu, Inventory playerInv) {
@@ -48,9 +100,9 @@ public final class BackpackMenuHelper {
 
     /**
      * 将物品栏物品移至背包（moveB）
-     * @param all true = 全部移动；false = 只移动与背包内已有物品同类型的
+     * @param mode true = 全部移动；false = 只移动与背包内已有物品同类型的
      */
-    public static void moveIToBackpack(boolean all, Player player) {
+    public static void moveIToBackpack(MoveMode mode, Player player) {
         AbstractContainerMenu menu = player.containerMenu;
         int start = getBackpackSlotStart(menu);
         if (start < 0) return;
@@ -58,32 +110,35 @@ public final class BackpackMenuHelper {
         if (size <= 0) return;
         int end = Math.min(start + size, menu.slots.size());
 
-        // 获取主物品栏范围（9~35）
         int[] invMain = findInventoryMainRange(menu, player);
         if (invMain == null) return;
         int invStart = invMain[0], invEnd = invMain[1];
 
-        if (all) {
-            moveAll(menu, invStart, invEnd, start, end);
-        } else {
-            // 收集背包类型（不变）
-            List<ItemStack> backpackTypes = new ArrayList<>();
+        List<ItemStack> matchTypes = null;
+        if (mode == MoveMode.MATCHING || mode == MoveMode.FILL_MATCHING || mode == MoveMode.ONE_EACH) {
+            matchTypes = new ArrayList<>();
             for (int i = start; i < end; i++) {
                 Slot slot = menu.slots.get(i);
                 if (!(slot instanceof BackpackSlot)) continue;
                 ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) backpackTypes.add(stack.copy());
+                if (!stack.isEmpty()) matchTypes.add(stack.copy());
             }
-            if (backpackTypes.isEmpty()) return;
-            moveMatching(menu, invStart, invEnd, start, end, backpackTypes);
+            if (matchTypes.isEmpty()) return;
+        }
+
+        switch (mode) {
+            case ALL -> moveAll(menu, invStart, invEnd, start, end);
+            case MATCHING -> moveMatching(menu, invStart, invEnd, start, end, matchTypes);
+            case FILL_MATCHING -> fillMatching(menu, invStart, invEnd, start, end, matchTypes);
+            case ONE_EACH -> moveOneEach(menu, invStart, invEnd, start, end, matchTypes);
         }
     }
 
     /**
      * 将背包物品移至物品栏（moveI）
-     * @param all true = 全部移动；false = 只移动与物品栏内已有物品同类型的
+     * @param mode true = 全部移动；false = 只移动与物品栏内已有物品同类型的
      */
-    public static void moveBToInventory(boolean all, Player player) {
+    public static void moveBToInventory(MoveMode mode, Player player) {
         AbstractContainerMenu menu = player.containerMenu;
         int start = getBackpackSlotStart(menu);
         if (start < 0) return;
@@ -91,58 +146,27 @@ public final class BackpackMenuHelper {
         if (size <= 0) return;
         int end = Math.min(start + size, menu.slots.size());
 
-        // 目标：主物品栏
         int[] invMain = findInventoryMainRange(menu, player);
         if (invMain == null) return;
         int targetStart = invMain[0], targetEnd = invMain[1];
 
-        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
-
-        if (all) {
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = start; i < end; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot instanceof BackpackSlot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, targetStart, targetEnd, false)) {
-                        moved = true;
-                        if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                        else slot.set(stack);
-                    }
-                }
-            } while (moved);
-        } else {
-            // 同类：收集主物品栏已有物品类型
-            List<ItemStack> inventoryTypes = new ArrayList<>();
+        List<ItemStack> matchTypes = null;
+        if (mode == MoveMode.MATCHING || mode == MoveMode.FILL_MATCHING || mode == MoveMode.ONE_EACH) {
+            matchTypes = new ArrayList<>();
             for (int i = targetStart; i < targetEnd; i++) {
                 Slot slot = menu.slots.get(i);
                 if (slot.container != player.getInventory()) continue;
                 ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) inventoryTypes.add(stack.copy());
+                if (!stack.isEmpty()) matchTypes.add(stack.copy());
             }
-            if (inventoryTypes.isEmpty()) return;
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = start; i < end; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot instanceof BackpackSlot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    boolean matches = inventoryTypes.stream()
-                            .anyMatch(type -> ItemStack.isSameItemSameComponents(stack, type));
-                    if (matches) {
-                        if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, targetStart, targetEnd, false)) {
-                            moved = true;
-                            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                            else slot.set(stack);
-                        }
-                    }
-                }
-            } while (moved);
+            if (matchTypes.isEmpty()) return;
+        }
+
+        switch (mode) {
+            case ALL -> moveAll(menu, start, end, targetStart, targetEnd);
+            case MATCHING -> moveMatching(menu, start, end, targetStart, targetEnd, matchTypes);
+            case FILL_MATCHING -> fillMatching(menu, start, end, targetStart, targetEnd, matchTypes);
+            case ONE_EACH -> moveOneEach(menu, start, end, targetStart, targetEnd, matchTypes);
         }
     }
 
@@ -203,145 +227,226 @@ public final class BackpackMenuHelper {
         } while (moved);
     }
 
+    private static void fillMatching(AbstractContainerMenu menu,
+                                     int sourceStart, int sourceEnd,
+                                     int targetStart, int targetEnd,
+                                     List<ItemStack> matchTypes) {
+        for (int i = sourceStart; i < sourceEnd; i++) {
+            Slot sourceSlot = menu.slots.get(i);
+            ItemStack sourceStack = sourceSlot.getItem();
+            if (sourceStack.isEmpty()) continue;
+
+            boolean typeMatches = matchTypes == null ||
+                    matchTypes.stream().anyMatch(type -> ItemStack.isSameItemSameComponents(sourceStack, type));
+            if (!typeMatches) continue;
+
+            ItemStack remaining = sourceStack.copy();
+            for (int j = targetStart; j < targetEnd; j++) {
+                Slot targetSlot = menu.slots.get(j);
+                ItemStack targetStack = targetSlot.getItem();
+                if (targetStack.isEmpty() || !ItemStack.isSameItemSameComponents(remaining, targetStack)) continue;
+
+                int maxStack = Math.min(targetSlot.getMaxStackSize(targetStack), remaining.getMaxStackSize());
+                int canAdd = maxStack - targetStack.getCount();
+                if (canAdd <= 0) continue;
+
+                int toMove = Math.min(canAdd, remaining.getCount());
+                if (toMove > 0) {
+                    targetStack.grow(toMove);
+                    remaining.shrink(toMove);
+                    targetSlot.setChanged();
+                    if (remaining.isEmpty()) break;
+                }
+            }
+
+            if (remaining.getCount() != sourceStack.getCount()) {
+                if (remaining.isEmpty()) {
+                    sourceSlot.set(ItemStack.EMPTY);
+                } else {
+                    sourceSlot.set(remaining);
+                }
+                sourceSlot.setChanged();
+            }
+        }
+    }
+
+    private static void moveOneEach(AbstractContainerMenu menu,
+                                    int sourceStart, int sourceEnd,
+                                    int targetStart, int targetEnd,
+                                    List<ItemStack> matchTypes) {
+        if (!(menu instanceof IBackpackMenu backpackMenu)) return;
+
+        // 去重：每种物品类型只处理一次
+        List<ItemStack> uniqueTypes = new ArrayList<>();
+        for (ItemStack type : matchTypes) {
+            boolean exists = uniqueTypes.stream()
+                    .anyMatch(unique -> ItemStack.isSameItemSameComponents(unique, type));
+            if (!exists) {
+                uniqueTypes.add(type.copy());
+            }
+        }
+
+        for (ItemStack type : uniqueTypes) {
+            int remainingToMove = type.getMaxStackSize(); // 一组大小
+            if (remainingToMove <= 0) continue;
+
+            for (int i = sourceStart; i < sourceEnd && remainingToMove > 0; i++) {
+                Slot sourceSlot = menu.slots.get(i);
+                ItemStack sourceStack = sourceSlot.getItem();
+                if (sourceStack.isEmpty() || !ItemStack.isSameItemSameComponents(sourceStack, type)) continue;
+
+                int countToTake = Math.min(sourceStack.getCount(), remainingToMove);
+                ItemStack toMove = sourceStack.copy();
+                toMove.setCount(countToTake);
+
+                backpackMenu.yyzsbackpack$moveItemStackTo(toMove, targetStart, targetEnd, false);
+
+                int actuallyMoved = countToTake - toMove.getCount();
+                if (actuallyMoved > 0) {
+                    sourceStack.shrink(actuallyMoved);
+                    if (sourceStack.isEmpty()) {
+                        sourceSlot.set(ItemStack.EMPTY);
+                    } else {
+                        sourceSlot.set(sourceStack);
+                    }
+                    sourceSlot.setChanged();
+                    remainingToMove -= actuallyMoved;
+                } else {
+                    // 目标区域无法容纳，提前结束该类型的移动
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * 将外部容器中的物品移至玩家主物品栏（9~35）
-     * @param all true=全部移动，false=只移动与主物品栏内已有物品同类型的
+     * @param mode true=全部移动，false=只移动与主物品栏内已有物品同类型的
      */
-    public static void moveCToInventory(boolean all, ServerPlayer player) {
-        Backpack.LOGGER.info("Moving c to Inventory");
+    public static void moveCToInventory(MoveMode mode, ServerPlayer player) {
+        Backpack.LOGGER.info("Moving C to Inventory");
         AbstractContainerMenu menu = player.containerMenu;
-        int[] containerRange = findContainerRange(menu,player);
+        int[] containerRange = findContainerRange(menu, player);
         if (containerRange == null) return;
-        int containerStart = containerRange[0], containerEnd = containerRange[1];
 
-        // 只使用主物品栏（9~35）作为目标
         int[] invMainRange = findInventoryMainRange(menu, player);
         if (invMainRange == null) return;
-        int invStart = invMainRange[0], invEnd = invMainRange[1];
+        int invStart = invMainRange[0];
+        int invEnd = invMainRange[1];
 
-        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
+        if (containerRange[0] == -2) {
+            IVirtualContainer handler = findVirtualHandler(menu);
+            if (handler == null) return;
 
-        if (all) {
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = containerStart; i < containerEnd; i++) {
+            List<ItemStack> matchTypes = null;
+            if (mode != MoveMode.ALL) {
+                matchTypes = new ArrayList<>();
+                for (int i = invStart; i < invEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!isExternalContainer(slot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, invStart, invEnd, false)) {
-                        moved = true;
-                        if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                        else slot.set(stack);
+                    if (slot.container instanceof Inventory) {
+                        ItemStack stack = slot.getItem();
+                        if (!stack.isEmpty()) matchTypes.add(stack.copy());
                     }
                 }
+                if (matchTypes.isEmpty()) return;
+            }
+
+            boolean all = (mode == MoveMode.ALL);
+            boolean moved;
+            do {
+                moved = handler.transfer(menu, player, 0, 0, invStart, invEnd, false, all, matchTypes);
             } while (moved);
-        } else {
-            List<ItemStack> inventoryTypes = new ArrayList<>();
-            for (int i = invStart; i < invEnd; i++) {
+            return;
+        }
+
+        int containerStart = containerRange[0];
+        int containerEnd = containerRange[1];
+
+        List<ItemStack> inventoryTypes = null;
+        if (mode != MoveMode.ALL) {
+            inventoryTypes = new ArrayList<>();
+            for (int i = invStart; i < invEnd; ++i) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot.container instanceof Inventory)) continue;
-                ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) inventoryTypes.add(stack.copy());
+                if (slot.container instanceof Inventory) {
+                    ItemStack stack = slot.getItem();
+                    if (!stack.isEmpty()) inventoryTypes.add(stack.copy());
+                }
             }
             if (inventoryTypes.isEmpty()) return;
+        }
 
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = containerStart; i < containerEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!isExternalContainer(slot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    boolean matches = inventoryTypes.stream()
-                            .anyMatch(type -> ItemStack.isSameItemSameComponents(stack, type));
-                    if (matches) {
-                        if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, invStart, invEnd, false)) {
-                            moved = true;
-                            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                            else slot.set(stack);
-                        }
-                    }
-                }
-            } while (moved);
+        switch (mode) {
+            case ALL -> moveAll(menu, containerStart, containerEnd, invStart, invEnd);
+            case MATCHING -> moveMatching(menu, containerStart, containerEnd, invStart, invEnd, inventoryTypes);
+            case FILL_MATCHING -> fillMatching(menu, containerStart, containerEnd, invStart, invEnd, inventoryTypes);
+            case ONE_EACH -> moveOneEach(menu, containerStart, containerEnd, invStart, invEnd, inventoryTypes);
         }
     }
 
     /**
      * 将玩家主物品栏（9~35）中的物品移至外部容器
      */
-    public static void moveIToContainer(boolean all, ServerPlayer player) {
+    public static void moveIToContainer(MoveMode mode, ServerPlayer player) {
         Backpack.LOGGER.info("Moving I to Container");
         AbstractContainerMenu menu = player.containerMenu;
         int[] invMainRange = findInventoryMainRange(menu, player);
         if (invMainRange == null) return;
-        int invStart = invMainRange[0], invEnd = invMainRange[1];
+        int invStart = invMainRange[0];
+        int invEnd = invMainRange[1];
 
         int[] containerRange = findContainerRange(menu, player);
         if (containerRange == null) return;
-        int containerStart = containerRange[0], containerEnd = containerRange[1];
 
-        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
+        if (containerRange[0] == -2) {
+            IVirtualContainer handler = findVirtualHandler(menu);
+            if (handler == null) return;
 
-        if (all) {
+            List<ItemStack> matchTypes = null;
+            if (mode != MoveMode.ALL) {
+                matchTypes = handler.getStoredItemTypes(menu);
+                if (matchTypes.isEmpty()) return;
+            }
+
+            boolean all = (mode == MoveMode.ALL);
             boolean moved;
             do {
-                moved = false;
-                for (int i = invStart; i < invEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof Inventory)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, containerStart, containerEnd, false)) {
-                        moved = true;
-                        if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                        else slot.set(stack);
-                    }
-                }
+                moved = handler.transfer(menu, player, invStart, invEnd, 0, 0, true, all, matchTypes);
             } while (moved);
-        } else {
-            List<ItemStack> containerTypes = new ArrayList<>();
-            for (int i = containerStart; i < containerEnd; i++) {
+            return;
+        }
+
+        int containerStart = containerRange[0];
+        int containerEnd = containerRange[1];
+
+        List<ItemStack> containerTypes = null;
+        if (mode != MoveMode.ALL) {
+            containerTypes = new ArrayList<>();
+            for (int i = containerStart; i < containerEnd; ++i) {
                 Slot slot = menu.slots.get(i);
-                if (!isExternalContainer(slot)) continue;
-                ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) containerTypes.add(stack.copy());
+                if (isExternalContainer(slot, menu)) {
+                    ItemStack stack = slot.getItem();
+                    if (!stack.isEmpty()) containerTypes.add(stack.copy());
+                }
             }
             if (containerTypes.isEmpty()) return;
+        }
 
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = invStart; i < invEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot.container instanceof Inventory)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    boolean matches = containerTypes.stream()
-                            .anyMatch(type -> ItemStack.isSameItemSameComponents(stack, type));
-                    if (matches) {
-                        if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, containerStart, containerEnd, false)) {
-                            moved = true;
-                            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                            else slot.set(stack);
-                        }
-                    }
-                }
-            } while (moved);
+        switch (mode) {
+            case ALL -> moveAll(menu, invStart, invEnd, containerStart, containerEnd);
+            case MATCHING -> moveMatching(menu, invStart, invEnd, containerStart, containerEnd, containerTypes);
+            case FILL_MATCHING -> fillMatching(menu, invStart, invEnd, containerStart, containerEnd, containerTypes);
+            case ONE_EACH -> moveOneEach(menu, invStart, invEnd, containerStart, containerEnd, containerTypes);
         }
     }
 
     /**
      * 将外部容器中的物品移至背包
      */
-    public static void moveCToBackpack(boolean all, ServerPlayer player) {
+    public static void moveCToBackpack(MoveMode mode, ServerPlayer player) {
         Backpack.LOGGER.info("Moving C to Backpack");
         AbstractContainerMenu menu = player.containerMenu;
         int[] containerRange = findContainerRange(menu, player);
         if (containerRange == null) return;
-        int containerStart = containerRange[0], containerEnd = containerRange[1];
 
         int backpackStart = getBackpackSlotStart(menu);
         if (backpackStart < 0) return;
@@ -349,60 +454,59 @@ public final class BackpackMenuHelper {
         if (size <= 0) return;
         int backpackEnd = Math.min(backpackStart + size, menu.slots.size());
 
-        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
+        if (containerRange[0] == -2) {
+            IVirtualContainer handler = findVirtualHandler(menu);
+            if (handler == null) return;
 
-        if (all) {
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = containerStart; i < containerEnd; i++) {
+            List<ItemStack> matchTypes = null;
+            if (mode != MoveMode.ALL) {
+                matchTypes = new ArrayList<>();
+                for (int i = backpackStart; i < backpackEnd; i++) {
                     Slot slot = menu.slots.get(i);
-                    if (!isExternalContainer(slot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
-                        moved = true;
-                        if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                        else slot.set(stack);
+                    if (slot instanceof BackpackSlot) {
+                        ItemStack stack = slot.getItem();
+                        if (!stack.isEmpty()) matchTypes.add(stack.copy());
                     }
                 }
+                if (matchTypes.isEmpty()) return;
+            }
+
+            boolean all = (mode == MoveMode.ALL);
+            boolean moved;
+            do {
+                moved = handler.transfer(menu, player, 0, 0, backpackStart, backpackEnd, false, all, matchTypes);
             } while (moved);
-        } else {
-            List<ItemStack> backpackTypes = new ArrayList<>();
-            for (int i = backpackStart; i < backpackEnd; i++) {
+            return;
+        }
+
+        int containerStart = containerRange[0];
+        int containerEnd = containerRange[1];
+
+        List<ItemStack> backpackTypes = null;
+        if (mode != MoveMode.ALL) {
+            backpackTypes = new ArrayList<>();
+            for (int i = backpackStart; i < backpackEnd; ++i) {
                 Slot slot = menu.slots.get(i);
-                if (!(slot instanceof BackpackSlot)) continue;
-                ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) backpackTypes.add(stack.copy());
+                if (slot instanceof BackpackSlot) {
+                    ItemStack stack = slot.getItem();
+                    if (!stack.isEmpty()) backpackTypes.add(stack.copy());
+                }
             }
             if (backpackTypes.isEmpty()) return;
+        }
 
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = containerStart; i < containerEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!isExternalContainer(slot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    boolean matches = backpackTypes.stream()
-                            .anyMatch(type -> ItemStack.isSameItemSameComponents(stack, type));
-                    if (matches) {
-                        if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
-                            moved = true;
-                            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                            else slot.set(stack);
-                        }
-                    }
-                }
-            } while (moved);
+        switch (mode) {
+            case ALL -> moveAll(menu, containerStart, containerEnd, backpackStart, backpackEnd);
+            case MATCHING -> moveMatching(menu, containerStart, containerEnd, backpackStart, backpackEnd, backpackTypes);
+            case FILL_MATCHING -> fillMatching(menu, containerStart, containerEnd, backpackStart, backpackEnd, backpackTypes);
+            case ONE_EACH -> moveOneEach(menu, containerStart, containerEnd, backpackStart, backpackEnd, backpackTypes);
         }
     }
 
     /**
      * 将背包中的物品移至外部容器
      */
-    public static void moveBToContainer(boolean all, ServerPlayer player) {
+    public static void moveBToContainer(MoveMode mode, ServerPlayer player) {
         Backpack.LOGGER.info("Moving B to Container");
         AbstractContainerMenu menu = player.containerMenu;
         int backpackStart = getBackpackSlotStart(menu);
@@ -413,71 +517,91 @@ public final class BackpackMenuHelper {
 
         int[] containerRange = findContainerRange(menu, player);
         if (containerRange == null) return;
-        int containerStart = containerRange[0], containerEnd = containerRange[1];
 
-        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
+        if (containerRange[0] == -2) {
+            IVirtualContainer handler = findVirtualHandler(menu);
+            if (handler == null) return;
 
-        if (all) {
+            List<ItemStack> matchTypes = null;
+            if (mode != MoveMode.ALL) {
+                matchTypes = handler.getStoredItemTypes(menu);
+                if (matchTypes.isEmpty()) return;
+            }
+
+            boolean all = (mode == MoveMode.ALL);
             boolean moved;
             do {
-                moved = false;
-                for (int i = backpackStart; i < backpackEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot instanceof BackpackSlot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, containerStart, containerEnd, false)) {
-                        moved = true;
-                        if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                        else slot.set(stack);
-                    }
-                }
+                moved = handler.transfer(menu, player, backpackStart, backpackEnd, 0, 0, true, all, matchTypes);
             } while (moved);
-        } else {
-            List<ItemStack> containerTypes = new ArrayList<>();
-            for (int i = containerStart; i < containerEnd; i++) {
+            return;
+        }
+
+        int containerStart = containerRange[0];
+        int containerEnd = containerRange[1];
+
+        List<ItemStack> containerTypes = null;
+        if (mode != MoveMode.ALL) {
+            containerTypes = new ArrayList<>();
+            for (int i = containerStart; i < containerEnd; ++i) {
                 Slot slot = menu.slots.get(i);
-                if (!isExternalContainer(slot)) continue;
-                ItemStack stack = slot.getItem();
-                if (!stack.isEmpty()) containerTypes.add(stack.copy());
+                if (isExternalContainer(slot, menu)) {
+                    ItemStack stack = slot.getItem();
+                    if (!stack.isEmpty()) containerTypes.add(stack.copy());
+                }
             }
             if (containerTypes.isEmpty()) return;
+        }
 
-            boolean moved;
-            do {
-                moved = false;
-                for (int i = backpackStart; i < backpackEnd; i++) {
-                    Slot slot = menu.slots.get(i);
-                    if (!(slot instanceof BackpackSlot)) continue;
-                    ItemStack stack = slot.getItem();
-                    if (stack.isEmpty()) continue;
-                    boolean matches = containerTypes.stream()
-                            .anyMatch(type -> ItemStack.isSameItemSameComponents(stack, type));
-                    if (matches) {
-                        if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, containerStart, containerEnd, false)) {
-                            moved = true;
-                            if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
-                            else slot.set(stack);
-                        }
-                    }
-                }
-            } while (moved);
+        switch (mode) {
+            case ALL -> moveAll(menu, backpackStart, backpackEnd, containerStart, containerEnd);
+            case MATCHING -> moveMatching(menu, backpackStart, backpackEnd, containerStart, containerEnd, containerTypes);
+            case FILL_MATCHING -> fillMatching(menu, backpackStart, backpackEnd, containerStart, containerEnd, containerTypes);
+            case ONE_EACH -> moveOneEach(menu, backpackStart, backpackEnd, containerStart, containerEnd, containerTypes);
         }
     }
 
     /**
-     * 查找菜单中所有属于外部容器（非玩家背包）的槽位范围（连续）
+     * 查找是否有匹配的虚拟处理器
      */
-    public static int[] findContainerRange(AbstractContainerMenu menu, ServerPlayer player) {
-        int start = -1, end = -1;
-        for (int i = 0; i < menu.slots.size(); i++) {
-            Slot slot = menu.slots.get(i);
-            if (isExternalContainer(slot)) {
-                if (start == -1) start = i;
-                end = i;
+    private static IVirtualContainer findVirtualHandler(AbstractContainerMenu menu) {
+        for (IVirtualContainer h : VIRTUAL_HANDLERS) {
+            if (h.matches(menu)) {
+                return h;
             }
         }
-        return (start == -1) ? null : new int[]{start, end + 1};
+        return null;
+    }
+
+    public static int[] findContainerRange(AbstractContainerMenu menu, ServerPlayer player) {
+        // 先尝试真实外部容器槽位
+        int start = -1;
+        int end = -1;
+        boolean found = false;
+
+        for (int i = 0; i < menu.slots.size(); ++i) {
+            Slot slot = menu.slots.get(i);
+            if (isExternalContainer(slot, menu)) {
+                if (!found) {
+                    start = i;
+                    found = true;
+                }
+                end = i;
+            } else if (found) {
+                break;
+            }
+        }
+
+        if (start != -1) {
+            return new int[]{start, end + 1};
+        }
+
+        // 没有真实槽位时，检查虚拟处理器
+        if (findVirtualHandler(menu) != null) {
+            // 特殊标记：-2 表示虚拟容器
+            return new int[]{-2, -2};
+        }
+
+        return null;
     }
 
     /**
@@ -492,6 +616,49 @@ public final class BackpackMenuHelper {
                 int idx = slot.getContainerSlot();
                 if (idx >= 9 && idx < 36) {   // 只主物品栏
                     if (start == -1) start = i;
+                    end = i;
+                }
+            }
+        }
+        return (start == -1) ? null : new int[]{start, end + 1};
+    }
+
+    /**
+     * 查找玩家快捷栏（索引 0~8）对应的菜单槽位范围
+     */
+    public static int[] findHotbarRange(AbstractContainerMenu menu, Player player) {
+        Inventory inv = player.getInventory();
+        int start = -1, end = -1;
+        for (int i = 0; i < menu.slots.size(); i++) {
+            Slot slot = menu.slots.get(i);
+            if (slot.container == inv) {
+                int idx = slot.getContainerSlot();
+                if (idx >= 0 && idx < 9) {
+                    if (start == -1) start = i;
+                    end = i;
+                }
+            }
+        }
+        return (start == -1) ? null : new int[]{start, end + 1};
+    }
+
+    /**
+     * 查找玩家完整背包（快捷栏 0-8 + 主物品栏 9-35）对应的菜单槽位范围。
+     * 假设这些槽位在菜单中连续排列。
+     */
+    public static int[] findPlayerInventoryRange(AbstractContainerMenu menu, Player player) {
+        Inventory inv = player.getInventory();
+        int start = -1, end = -1;
+        boolean found = false;
+        for (int i = 0; i < menu.slots.size(); i++) {
+            Slot slot = menu.slots.get(i);
+            if (slot.container == inv) {
+                int idx = slot.getContainerSlot();
+                if (idx >= 0 && idx < 36) {
+                    if (!found) {
+                        start = i;
+                        found = true;
+                    }
                     end = i;
                 }
             }
@@ -661,5 +828,53 @@ public final class BackpackMenuHelper {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Ctrl+点击槽位：非背包槽位移至背包，背包槽位移至快捷栏。
+     * 使用原版 Shift+点击逻辑（先合并后放入空槽）。
+     *
+     * @param player    服务器玩家
+     * @param slotIndex 菜单全局槽位索引
+     */
+    public static void quickMoveSlot(ServerPlayer player, int slotIndex) {
+        AbstractContainerMenu menu = player.containerMenu;
+        if (slotIndex < 0 || slotIndex >= menu.slots.size()) return;
+
+        Slot sourceSlot = menu.slots.get(slotIndex);
+        ItemStack stack = sourceSlot.getItem();
+        if (stack.isEmpty()) return;
+
+        IBackpackMenu backpackMenu = (IBackpackMenu) menu;
+
+        if (sourceSlot instanceof BackpackSlot) {
+            // 背包槽 → 快捷栏（物品栏 0-8）
+            int[] hotbarRange = findPlayerInventoryRange(menu, player);
+            if (hotbarRange == null) return;
+
+            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, hotbarRange[0], hotbarRange[1], true)) {
+                // 移动成功，更新源槽位
+                if (stack.isEmpty()) {
+                    sourceSlot.set(ItemStack.EMPTY);
+                } else {
+                    sourceSlot.set(stack);
+                }
+            }
+        } else {
+            // 非背包槽 → 背包
+            int backpackStart = getBackpackSlotStart(menu);
+            if (backpackStart < 0) return;
+            int size = BackpackSlotHelper.getBackpackSize(player);
+            if (size <= 0) return;
+            int backpackEnd = Math.min(backpackStart + size, menu.slots.size());
+
+            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
+                if (stack.isEmpty()) {
+                    sourceSlot.set(ItemStack.EMPTY);
+                } else {
+                    sourceSlot.set(stack);
+                }
+            }
+        }
     }
 }

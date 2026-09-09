@@ -3,6 +3,7 @@ package com.yyz.yyzsbackpack;
 import com.yyz.yyzsbackpack.component.ModComponents;
 import com.yyz.yyzsbackpack.config.BackpackControlConfig;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
 import com.yyz.yyzsbackpack.effect.ModEffects;
@@ -26,7 +27,7 @@ public class Backpack implements ModInitializer {
 	private static BackpackMainConfig mainConfig;
 	private static BackpackControlConfig controlConfig;
 	private static BackpackUiConfig uiConfig;
-
+	private static BackpackOffsetConfig offsetConfig;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -47,6 +48,21 @@ public class Backpack implements ModInitializer {
 		controlConfig = BackpackControlConfig.loadConfig(controlDir);
 		File uiDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/ui").toFile();
 		uiConfig = BackpackUiConfig.loadConfig(uiDir);
+		File offsetDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/offset").toFile();
+		offsetConfig = BackpackOffsetConfig.loadConfig(offsetDir);
+	}
+
+	public static void reloadConfigs() {
+		// 重新加载 control 配置
+		File controlDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control").toFile();
+		controlConfig = BackpackControlConfig.loadConfig(controlDir);
+
+		// 重新加载 ui 配置
+		File uiDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/ui").toFile();
+		uiConfig = BackpackUiConfig.loadConfig(uiDir);
+
+		File offsetDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/offset").toFile();
+		offsetConfig = BackpackOffsetConfig.loadConfig(offsetDir);
 	}
 
 	public static BackpackMainConfig getMainConfig() {
@@ -56,8 +72,13 @@ public class Backpack implements ModInitializer {
 	public static BackpackControlConfig getControlConfig() {
 		return controlConfig;
 	}
+
 	public static BackpackUiConfig getUiConfig() {
 		return uiConfig;
+	}
+
+	public static BackpackOffsetConfig getOffsetConfig() {
+		return offsetConfig;
 	}
 
 }

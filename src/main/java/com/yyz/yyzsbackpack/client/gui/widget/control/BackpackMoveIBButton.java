@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.enums.MoveMode;
 import com.yyz.yyzsbackpack.network.packets.control.MoveIToBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -36,7 +37,9 @@ public class BackpackMoveIBButton extends Button {
         if (this.isHovered()) {
             List<FormattedCharSequence> tooltipLines = List.of(
                     Component.translatable("yyzsbackpack.button.moveib.line1").getVisualOrderText(),
-                    Component.translatable("yyzsbackpack.button.moveib.line2").getVisualOrderText()
+                    Component.translatable("yyzsbackpack.button.moveib.line2").getVisualOrderText(),
+                    Component.translatable("yyzsbackpack.button.moveib.line3").getVisualOrderText(),
+                    Component.translatable("yyzsbackpack.button.moveib.line4").getVisualOrderText()
             );
             graphics.setTooltipForNextFrame(tooltipLines, mouseX, mouseY);
         }
@@ -45,6 +48,20 @@ public class BackpackMoveIBButton extends Button {
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
         boolean shift = event.hasShiftDown();
-        ClientPlayNetworking.send(new MoveIToBackpackC2SPacket(shift));
+        boolean ctrl  = event.hasControlDown();
+        boolean alt   = event.hasAltDown();
+
+        MoveMode mode;
+        if (shift) {
+            mode = MoveMode.ALL;
+        } else if (ctrl) {
+            mode = MoveMode.ONE_EACH;
+        } else if (alt) {
+            mode = MoveMode.FILL_MATCHING;
+        } else {
+            mode = MoveMode.MATCHING;
+        }
+
+        ClientPlayNetworking.send(new MoveIToBackpackC2SPacket(mode));
     }
 }

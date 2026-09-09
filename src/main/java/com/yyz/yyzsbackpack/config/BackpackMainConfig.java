@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.yyz.yyzsbackpack.api.enums.ButtonMode;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,7 @@ public class BackpackMainConfig {
 
     public boolean model = true;
     public int heavy = 2;
+    public ButtonMode button = ButtonMode.SHOW;
 
     public static BackpackMainConfig loadConfig(File file) {
         BackpackMainConfig config;

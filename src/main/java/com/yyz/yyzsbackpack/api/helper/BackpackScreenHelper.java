@@ -9,6 +9,7 @@ import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
+import com.yyz.yyzsbackpack.config.BackpackConfigs;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
 import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
@@ -809,7 +810,9 @@ public final class BackpackScreenHelper {
         }
 
         String screenType = getScreenType(screen);
-        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(screenType);
+        Map<String, List<int[]>> controlMap = BackpackConfigs.control();
+        if (controlMap == null) return;
+        List<int[]> offsets = controlMap.get(screenType);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).getLeftPos();
@@ -1015,11 +1018,11 @@ public final class BackpackScreenHelper {
      * @return 配置的 X 偏移或默认值
      */
     public static int getConfigOffsetX(AbstractContainerScreen<?> screen, int defaultX) {
-        BackpackOffsetConfig config = Backpack.getOffsetConfig();
-        if (config == null) return defaultX;
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultX;
 
         String screenType = getScreenType(screen);
-        List<int[]> offsets = config.getOffsetValues().get(screenType);
+        List<int[]> offsets = offsetMap.get(screenType);
         if (offsets == null || offsets.isEmpty()) return defaultX;
 
         int[] offset = offsets.getFirst();
@@ -1034,11 +1037,11 @@ public final class BackpackScreenHelper {
      * @return 配置的 Y 偏移或默认值
      */
     public static int getConfigOffsetY(AbstractContainerScreen<?> screen, int defaultY) {
-        BackpackOffsetConfig config = Backpack.getOffsetConfig();
-        if (config == null) return defaultY;
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultY;
 
         String screenType = getScreenType(screen);
-        List<int[]> offsets = config.getOffsetValues().get(screenType);
+        List<int[]> offsets = offsetMap.get(screenType);
         if (offsets == null || offsets.isEmpty()) return defaultY;
 
         int[] offset = offsets.getFirst();
@@ -1067,10 +1070,10 @@ public final class BackpackScreenHelper {
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        BackpackUiConfig config = Backpack.getUiConfig();
-        if (config == null) return new int[]{0, 0};
+        Map<String, List<int[]>> uiMap = BackpackConfigs.ui();
+        if (uiMap == null) return new int[]{0, 0};
         String screenType = getScreenType(screen);
-        List<int[]> offsets = config.getUiOffsets().get(screenType);
+        List<int[]> offsets = uiMap.get(screenType);
         if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
         return offsets.getFirst();
     }
@@ -1084,7 +1087,7 @@ public final class BackpackScreenHelper {
     }
 
     private static String getScreenType(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IScreenType provider) {
+        if (screen instanceof IBackpackScreen provider) {
             return provider.yyzsbackpack$getScreenType();
         }
         return screen.getClass().getSimpleName();

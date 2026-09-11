@@ -11,4 +11,6 @@ public interface IExtendedInventory {
     void yyzsbackpack$syncToBackpack();
 
     void yyzsbackpack$switchToBackpack(int newIndex);
+
+    int yyzsbackpack$getTotalSize();
 }

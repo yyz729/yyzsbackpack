@@ -132,6 +132,10 @@ public abstract class InventoryMixin implements IExtendedInventory {
         inv.setChanged();
     }
 
+    @Override
+    public int yyzsbackpack$getTotalSize() {
+        return getContainerSize() + EXTRA_SLOT_COUNT;
+    }
 
     @Unique
     private int getExtraIndex(int slot) {

@@ -1,6 +1,5 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.combiner;
 
-import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;

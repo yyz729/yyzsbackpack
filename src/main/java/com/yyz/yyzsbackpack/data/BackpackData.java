@@ -14,9 +14,6 @@
     public record BackpackData(
         String type,
         int size,
-//        Identifier guiTexture,
-//        int backgroundX,
-//        int backgroundY,
         boolean forceServer,
         int maxVisibleTabs,
         List<LayoutSegment> segments
@@ -25,9 +22,6 @@
                 instance.group(
                         Codec.STRING.fieldOf("type").forGetter(BackpackData::type),
                         Codec.INT.optionalFieldOf("size", 0).forGetter(BackpackData::size),
-//                        Identifier.CODEC.fieldOf("guiTexture").forGetter(BackpackData::guiTexture),
-//                        Codec.INT.fieldOf("backgroundX").forGetter(BackpackData::backgroundX),
-//                        Codec.INT.fieldOf("backgroundY").forGetter(BackpackData::backgroundY),
                         Codec.BOOL.optionalFieldOf("force_server", false).forGetter(BackpackData::forceServer),
                         Codec.INT.optionalFieldOf("maxVisibleTabs", -1).forGetter(BackpackData::maxVisibleTabs),
                         Codec.list(LayoutSegment.CODEC).fieldOf("segments").forGetter(BackpackData::segments)

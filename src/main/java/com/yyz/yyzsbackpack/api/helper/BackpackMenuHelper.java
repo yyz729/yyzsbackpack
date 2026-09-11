@@ -321,7 +321,6 @@ public final class BackpackMenuHelper {
 
     /**
      * 将外部容器中的物品移至玩家主物品栏（9~35）
-     * @param mode true=全部移动，false=只移动与主物品栏内已有物品同类型的
      */
     public static void moveCToInventory(MoveMode mode, ServerPlayer player) {
         Backpack.LOGGER.info("Moving C to Inventory");
@@ -831,50 +830,70 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * Ctrl+点击槽位：非背包槽位移至背包，背包槽位移至快捷栏。
-     * 使用原版 Shift+点击逻辑（先合并后放入空槽）。
+     * Alt+点击槽位：非背包槽位移至背包，背包槽位移至快捷栏。
+     * 使用原版 Shift+点击逻辑。
      *
      * @param player    服务器玩家
      * @param slotIndex 菜单全局槽位索引
      */
     public static void quickMoveSlot(ServerPlayer player, int slotIndex) {
         AbstractContainerMenu menu = player.containerMenu;
-        if (slotIndex < 0 || slotIndex >= menu.slots.size()) return;
+
+        if (slotIndex < 0 || slotIndex >= menu.slots.size()) {
+            return;
+        }
 
         Slot sourceSlot = menu.slots.get(slotIndex);
-        ItemStack stack = sourceSlot.getItem();
-        if (stack.isEmpty()) return;
+
+        if (!sourceSlot.hasItem()) {
+            return;
+        }
 
         IBackpackMenu backpackMenu = (IBackpackMenu) menu;
 
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack originalStack = sourceStack.copy();
+
+        int start;
+        int end;
+        boolean reverse;
+
         if (sourceSlot instanceof BackpackSlot) {
-            // 背包槽 → 快捷栏（物品栏 0-8）
-            int[] hotbarRange = findPlayerInventoryRange(menu, player);
-            if (hotbarRange == null) return;
-
-            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, hotbarRange[0], hotbarRange[1], true)) {
-                // 移动成功，更新源槽位
-                if (stack.isEmpty()) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.set(stack);
-                }
+            int[] playerRange = findPlayerInventoryRange(menu, player);
+            if (playerRange == null) {
+                return;
             }
+
+            start = playerRange[0];
+            end = playerRange[1];
+            reverse = true;
         } else {
-            // 非背包槽 → 背包
             int backpackStart = getBackpackSlotStart(menu);
-            if (backpackStart < 0) return;
-            int size = BackpackSlotHelper.getBackpackSize(player);
-            if (size <= 0) return;
-            int backpackEnd = Math.min(backpackStart + size, menu.slots.size());
-
-            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
-                if (stack.isEmpty()) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.set(stack);
-                }
+            if (backpackStart < 0) {
+                return;
             }
+
+            int size = BackpackSlotHelper.getBackpackSize(player);
+            if (size <= 0) {
+                return;
+            }
+
+            start = backpackStart;
+            end = Math.min(backpackStart + size, menu.slots.size());
+            reverse = false;
         }
+
+        if (!backpackMenu.yyzsbackpack$moveItemStackTo(
+                sourceStack,
+                start,
+                end,
+                reverse
+        )) {
+            return;
+        }
+
+        sourceSlot.setByPlayer(sourceStack);
+        sourceSlot.setChanged();
+        sourceSlot.onTake(player, originalStack);
     }
 }

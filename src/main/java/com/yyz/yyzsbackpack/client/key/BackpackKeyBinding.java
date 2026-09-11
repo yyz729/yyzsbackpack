@@ -2,6 +2,8 @@ package com.yyz.yyzsbackpack.client.key;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.client.gui.screen.BackpackConfigScreen;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
@@ -17,6 +19,7 @@ public class BackpackKeyBinding {
 
     public static final KeyMapping KEY_SORT;
     public static final KeyMapping KEY_OPEN;
+    public static final KeyMapping KEY_CONFIG;
 
     static {
         KEY_SORT = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -32,9 +35,22 @@ public class BackpackKeyBinding {
                 GLFW.GLFW_KEY_B,
                 CATEGORY
         ));
+
+        KEY_CONFIG = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.yyzsbackpack.config",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_BRACKET, // 默认 ]
+                CATEGORY
+        ));
     }
 
     public static void register() {
-
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (KEY_CONFIG.consumeClick()) {
+                if (client.gui.screen() == null) {
+                    BackpackConfigScreen.open(null);
+                }
+            }
+        });
     }
 }

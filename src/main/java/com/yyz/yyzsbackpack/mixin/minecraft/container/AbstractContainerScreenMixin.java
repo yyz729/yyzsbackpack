@@ -2,10 +2,7 @@ package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.yyz.yyzsbackpack.Backpack;
-import com.yyz.yyzsbackpack.api.IBackpackScroll;
-import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
-import com.yyz.yyzsbackpack.api.IBackpackVisible;
-import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
@@ -24,6 +21,7 @@ import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -275,6 +273,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             cancellable = true
     )
     private void onMouseClicked(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof IBackpackScreen qm) || !qm.yyzsbackpack$allowQuickMove()) {
+            return;
+        }
+
         if (event.button() == 0 && event.hasAltDown()) {
             Slot slot = this.getHoveredSlot(event.x(), event.y());
             if (slot != null && !slot.getItem().isEmpty()) {

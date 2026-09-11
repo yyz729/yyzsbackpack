@@ -14,6 +14,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -24,10 +25,6 @@ import java.io.File;
 
 public class Backpack implements ModInitializer {
 	public static final String MOD_ID = "yyzsbackpack";
-	private static BackpackMainConfig mainConfig;
-	private static BackpackControlConfig controlConfig;
-	private static BackpackUiConfig uiConfig;
-	private static BackpackOffsetConfig offsetConfig;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -42,43 +39,18 @@ public class Backpack implements ModInitializer {
 		ServerPacketHandler.register();
 		ModComponents.register();
 
-		File mainfile = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/yyzsbackpack.json").toFile();
-		mainConfig = BackpackMainConfig.loadConfig(mainfile);
-		File controlDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control").toFile();
-		controlConfig = BackpackControlConfig.loadConfig(controlDir);
-		File uiDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/ui").toFile();
-		uiConfig = BackpackUiConfig.loadConfig(uiDir);
-		File offsetDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/offset").toFile();
-		offsetConfig = BackpackOffsetConfig.loadConfig(offsetDir);
-	}
+		File dir = FabricLoader.getInstance().getConfigDir()
+				.resolve("yyzsbackpack").toFile();
 
-	public static void reloadConfigs() {
-		// 重新加载 control 配置
-		File controlDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control").toFile();
-		controlConfig = BackpackControlConfig.loadConfig(controlDir);
+		BackpackMainConfig.loadConfig(new File(dir, "yyzsbackpack.json"));
+		BackpackControlConfig.loadConfig(new File(dir, "control"));
+		BackpackOffsetConfig.loadConfig(new File(dir, "offset"));
+		BackpackUiConfig.loadConfig(new File(dir, "ui"));
 
-		// 重新加载 ui 配置
-		File uiDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/ui").toFile();
-		uiConfig = BackpackUiConfig.loadConfig(uiDir);
-
-		File offsetDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/offset").toFile();
-		offsetConfig = BackpackOffsetConfig.loadConfig(offsetDir);
 	}
 
 	public static BackpackMainConfig getMainConfig() {
-		return mainConfig;
-	}
-
-	public static BackpackControlConfig getControlConfig() {
-		return controlConfig;
-	}
-
-	public static BackpackUiConfig getUiConfig() {
-		return uiConfig;
-	}
-
-	public static BackpackOffsetConfig getOffsetConfig() {
-		return offsetConfig;
+		return BackpackMainConfig.getInstance();
 	}
 
 }

@@ -1,9 +1,6 @@
 {
   "type": "diamond",
   "size": 54,
-  "guiTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
-  "backgroundX": -122,
-  "backgroundY": 0,
   "force_server": false,
   "maxVisibleTabs": 2,
   "segments": [
@@ -14,7 +11,10 @@
       "startX": -114,
       "startY": 17,
       "columns": 6,
-      "rows": 8
+      "rows": 8,
+      "backgroundTexture": "yyzsbackpack:textures/gui/6x9backpack.png",
+      "backgroundX": -8,
+      "backgroundY": -17
     }
   ]
 }

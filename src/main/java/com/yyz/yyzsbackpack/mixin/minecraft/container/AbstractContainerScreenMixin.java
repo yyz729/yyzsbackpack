@@ -1,9 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
-import com.yyz.yyzsbackpack.api.IBackpackScroll;
-import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
-import com.yyz.yyzsbackpack.api.IBackpackVisible;
-import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
@@ -11,6 +8,7 @@ import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.network.packets.control.QuickMoveC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.control.SortRequestC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -133,42 +131,12 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-
-        // 排序按钮
-        for (var child : screen.children()) {
-            if (child instanceof BackpackSortButton btn) {
-                if (btn.isMouseOver(mouseX, mouseY)) {
-                    BackpackSortButton.cycleAlgorithm();
-                    return true;
-                }
-            }
-        }
-
-        // 段内滚动
-        int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, mouseX, mouseY);
-        if (segmentIndex >= 0) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getSegmentScrollOffset(segmentIndex);
-            int newOffset = oldOffset - delta;
-            yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
+        // 先尝试处理背包逻辑
+        if (BackpackScreenHelper.handleMouseScrolled(
+                (AbstractContainerScreen<?>) (Object) this, mouseX, mouseY, scrollX, scrollY)) {
             return true;
         }
-
-        // 标签页滚动
-        boolean mouseOverTab = screen.children().stream()
-                .filter(w -> w instanceof BackpackTabWidget)
-                .anyMatch(w -> w.isMouseOver(mouseX, mouseY));
-        if (mouseOverTab) {
-            int delta = (int)Math.signum(scrollY);
-            int oldOffset = yyzsbackpack$getTabScrollOffset();
-            int newOffset = oldOffset - delta;
-            yyzsbackpack$setTabScrollOffset(newOffset);
-            BackpackScreenHelper.addBackpackTabs(screen);
-            return true;
-        }
-
-        // 未处理，交给父类
+        // 未处理则交给父类
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
@@ -273,6 +241,26 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
             }
             cir.setReturnValue(true);
             return;
+        }
+    }
+
+    @Inject(
+            method = "mouseClicked",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof IBackpackScreen qm) || !qm.yyzsbackpack$allowQuickMove()) {
+            return;
+        }
+
+        if (button == 0 && hasAltDown() && hoveredSlot != null && !hoveredSlot.getItem().isEmpty()) {
+            // 获取全局槽位索引
+            int slotIndex = ((AbstractContainerScreen<?>) (Object) this).getMenu().slots.indexOf(hoveredSlot);
+            if (slotIndex != -1) {
+                ClientPlayNetworking.send(new QuickMoveC2SPacket(slotIndex));
+                cir.setReturnValue(true);
+            }
         }
     }
 }

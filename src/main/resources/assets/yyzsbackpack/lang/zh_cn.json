@@ -6,24 +6,42 @@
 
   "effect.yyzsbackpack.heavy": "负重",
 
-  "key.yyzsbackpack.sort": "排序",
-  "key.yyzsbackpack.open": "打开",
-  "key.category.yyzsbackpack.category": "yyz的背包",
+  "key.yyzsbackpack.sort": "整理背包",
+  "key.yyzsbackpack.open": "打开背包",
+  "key.yyzsbackpack.config": "打开背包配置",
+  "key.categories.yyzsbackpack.category": "yyz的背包",
 
   "itemGroup.yyzsbackpack.title": "yyz的背包",
 
   "yyzsbackpack.button.moveib.line1": "§5点击§r：将物品栏中相符物品移动到背包",
   "yyzsbackpack.button.moveib.line2": "§5Shift+点击§r：将物品栏中所有物品移动到背包",
+  "yyzsbackpack.button.moveib.line3": "§5Alt+点击§r：将物品栏中相符物品填充到背包",
+  "yyzsbackpack.button.moveib.line4": "§5Ctrl+点击§r：将物品栏中一组相符物品移动到背包",
+
   "yyzsbackpack.button.movebi.line1": "§5点击§r：将背包中相符物品移动到物品栏",
   "yyzsbackpack.button.movebi.line2": "§5Shift+点击§r：将背包中所有物品移动到物品栏",
+  "yyzsbackpack.button.movebi.line3": "§5Alt+点击§r：将背包中相符物品填充到物品栏",
+  "yyzsbackpack.button.movebi.line4": "§5Ctrl+点击§r：将背包中一组相符物品移动到物品栏",
+
   "yyzsbackpack.button.moveci.line1": "§5点击§r：将容器中相符物品移动到物品栏",
   "yyzsbackpack.button.moveci.line2": "§5Shift+点击§r：将容器中所有物品移动到物品栏",
+  "yyzsbackpack.button.moveci.line3": "§5Alt+点击§r：将容器中相符物品填充到物品栏",
+  "yyzsbackpack.button.moveci.line4": "§5Ctrl+点击§r：将容器中一组相符物品移动到物品栏",
+
   "yyzsbackpack.button.moveic.line1": "§5点击§r：将物品栏中相符物品移动到容器",
   "yyzsbackpack.button.moveic.line2": "§5Shift+点击§r：将物品栏中所有物品移动到容器",
+  "yyzsbackpack.button.moveic.line3": "§5Alt+点击§r：将物品栏中相符物品填充到容器",
+  "yyzsbackpack.button.moveic.line4": "§5Ctrl+点击§r：将物品栏中一组相符物品移动到容器",
+
   "yyzsbackpack.button.movecb.line1": "§5点击§r：将容器中相符物品移动到背包",
   "yyzsbackpack.button.movecb.line2": "§5Shift+点击§r：将容器中所有物品移动到背包",
+  "yyzsbackpack.button.movecb.line3": "§5Alt+点击§r：将容器中相符物品填充到背包",
+  "yyzsbackpack.button.movecb.line4": "§5Ctrl+点击§r：将容器中一组相符物品移动到背包",
+
   "yyzsbackpack.button.movebc.line1": "§5点击§r：将背包中相符物品移动到容器",
   "yyzsbackpack.button.movebc.line2": "§5Shift+点击§r：将背包中所有物品移动到容器",
+  "yyzsbackpack.button.movebc.line3": "§5Alt+点击§r：将背包中相符物品填充到容器",
+  "yyzsbackpack.button.movebc.line4": "§5Ctrl+点击§r：将背包中一组相符物品移动到容器",
 
   "yyzsbackpack.button.sort.tooltip.line1": "§6当前排序顺序§r：%s",
   "yyzsbackpack.button.sort.tooltip.line2": "§5滚轮§r：切换排序顺序",
@@ -39,5 +57,35 @@
   "sort.algorithm.mod": "按模组",
 
   "yyzsbackpack.button.hide": "隐藏背包界面",
-  "yyzsbackpack.button.show": "显示背包界面"
+  "yyzsbackpack.button.show": "显示背包界面",
+
+  "yyzsbackpack.config.title": "背包配置",
+
+  "yyzsbackpack.config.tab.main": "主设置",
+  "yyzsbackpack.config.tab.control": "按钮布局",
+  "yyzsbackpack.config.tab.offset": "配方书偏移",
+  "yyzsbackpack.config.tab.ui": "背包界面位置",
+
+  "yyzsbackpack.config.done": "完成",
+  "yyzsbackpack.config.back": "< 返回",
+  "yyzsbackpack.config.refresh": "重载",
+  "yyzsbackpack.config.edit": "编辑: %s",
+  "yyzsbackpack.config.add_pos": "+ 添加位置",
+
+  "yyzsbackpack.config.model": "显示背包模型: %s",
+  "yyzsbackpack.config.heavy": "沉重阈值: %s",
+  "yyzsbackpack.config.button_mode": "按钮模式: %s",
+  "yyzsbackpack.config.button_mode.show": "显示",
+  "yyzsbackpack.config.button_mode.hide": "隐藏",
+  "yyzsbackpack.config.button_mode.auto": "自动",
+  "yyzsbackpack.config.on": "开",
+  "yyzsbackpack.config.off": "关",
+
+  "yyzsbackpack.config.group.base": "基础按钮",
+  "yyzsbackpack.config.group.extra": "额外按钮",
+  "yyzsbackpack.config.group.offset": "配方书自动偏移",
+  "yyzsbackpack.config.group.ui": "背包界面位置",
+
+  "yyzsbackpack.config.x": "X",
+  "yyzsbackpack.config.y": "Y"
 }

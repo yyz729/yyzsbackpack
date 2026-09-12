@@ -1,6 +1,4 @@
 {
-  "item.yyzsbackpack.woolen_backpack": "Wooden Backpack",
-  "item.yyzsbackpack.stone_backpack": "Stone Backpack",
   "item.yyzsbackpack.iron_backpack": "Iron Backpack",
   "item.yyzsbackpack.gold_backpack": "Gold Backpack",
   "item.yyzsbackpack.diamond_backpack": "Diamond Backpack",
@@ -8,24 +6,42 @@
 
   "effect.yyzsbackpack.heavy": "Heavy",
 
-  "key.yyzsbackpack.sort": "Sort",
-  "key.yyzsbackpack.open": "Open",
-  "key.category.yyzsbackpack.category": "yyz's backpack",
+  "key.yyzsbackpack.open": "Open Backpack",
+  "key.yyzsbackpack.sort": "Sort Backpack",
+  "key.yyzsbackpack.config": "Open Backpack Config",
+  "key.categories.yyzsbackpack.category": "yyz's Backpack",
 
-  "itemGroup.yyzsbackpack.title": "yyz's backpack",
+  "itemGroup.yyzsbackpack.title": "yyz's Backpack",
 
   "yyzsbackpack.button.moveib.line1": "§5Click§r: Move matching items from inventory to backpack",
   "yyzsbackpack.button.moveib.line2": "§5Shift+Click§r: Move all items from inventory to backpack",
+  "yyzsbackpack.button.moveib.line3": "§5Alt+Click§r: Fill matching items from inventory to backpack",
+  "yyzsbackpack.button.moveib.line4": "§5Ctrl+Click§r: Move a stack of matching items from inventory to backpack",
+
   "yyzsbackpack.button.movebi.line1": "§5Click§r: Move matching items from backpack to inventory",
   "yyzsbackpack.button.movebi.line2": "§5Shift+Click§r: Move all items from backpack to inventory",
+  "yyzsbackpack.button.movebi.line3": "§5Alt+Click§r: Fill matching items from backpack to inventory",
+  "yyzsbackpack.button.movebi.line4": "§5Ctrl+Click§r: Move a stack of matching items from backpack to inventory",
+
   "yyzsbackpack.button.moveci.line1": "§5Click§r: Move matching items from container to inventory",
   "yyzsbackpack.button.moveci.line2": "§5Shift+Click§r: Move all items from container to inventory",
+  "yyzsbackpack.button.moveci.line3": "§5Alt+Click§r: Fill matching items from container to inventory",
+  "yyzsbackpack.button.moveci.line4": "§5Ctrl+Click§r: Move a stack of matching items from container to inventory",
+
   "yyzsbackpack.button.moveic.line1": "§5Click§r: Move matching items from inventory to container",
   "yyzsbackpack.button.moveic.line2": "§5Shift+Click§r: Move all items from inventory to container",
+  "yyzsbackpack.button.moveic.line3": "§5Alt+Click§r: Fill matching items from inventory to container",
+  "yyzsbackpack.button.moveic.line4": "§5Ctrl+Click§r: Move a stack of matching items from inventory to container",
+
   "yyzsbackpack.button.movecb.line1": "§5Click§r: Move matching items from container to backpack",
   "yyzsbackpack.button.movecb.line2": "§5Shift+Click§r: Move all items from container to backpack",
+  "yyzsbackpack.button.movecb.line3": "§5Alt+Click§r: Fill matching items from container to backpack",
+  "yyzsbackpack.button.movecb.line4": "§5Ctrl+Click§r: Move a stack of matching items from container to backpack",
+
   "yyzsbackpack.button.movebc.line1": "§5Click§r: Move matching items from backpack to container",
   "yyzsbackpack.button.movebc.line2": "§5Shift+Click§r: Move all items from backpack to container",
+  "yyzsbackpack.button.movebc.line3": "§5Alt+Click§r: Fill matching items from backpack to container",
+  "yyzsbackpack.button.movebc.line4": "§5Ctrl+Click§r: Move a stack of matching items from backpack to container",
 
   "yyzsbackpack.button.sort.tooltip.line1": "§6Current sorting order§r: %s",
   "yyzsbackpack.button.sort.tooltip.line2": "§5Scroll§r: Switch sorting order",
@@ -41,5 +57,35 @@
   "sort.algorithm.mod": "By Mod",
 
   "yyzsbackpack.button.hide": "Hide Backpack GUI",
-  "yyzsbackpack.button.show": "Show Backpack Gui"
+  "yyzsbackpack.button.show": "Show Backpack GUI",
+
+  "yyzsbackpack.config.title": "Backpack Config",
+
+  "yyzsbackpack.config.tab.main": "Main",
+  "yyzsbackpack.config.tab.control": "Button Layout",
+  "yyzsbackpack.config.tab.offset": "Recipe Book Offset",
+  "yyzsbackpack.config.tab.ui": "Backpack UI Position",
+
+  "yyzsbackpack.config.done": "Done",
+  "yyzsbackpack.config.back": "< Back",
+  "yyzsbackpack.config.refresh": "Reload",
+  "yyzsbackpack.config.edit": "Edit: %s",
+  "yyzsbackpack.config.add_pos": "+ Add Position",
+
+  "yyzsbackpack.config.model": "Show Backpack Model: %s",
+  "yyzsbackpack.config.heavy": "Heavy Threshold: %s",
+  "yyzsbackpack.config.button_mode": "Button Mode: %s",
+  "yyzsbackpack.config.button_mode.show": "Show",
+  "yyzsbackpack.config.button_mode.hide": "Hide",
+  "yyzsbackpack.config.button_mode.auto": "Auto",
+  "yyzsbackpack.config.on": "ON",
+  "yyzsbackpack.config.off": "OFF",
+
+  "yyzsbackpack.config.group.base": "Base Buttons",
+  "yyzsbackpack.config.group.extra": "Extra Buttons",
+  "yyzsbackpack.config.group.offset": "Recipe Book Auto Offset",
+  "yyzsbackpack.config.group.ui": "Backpack UI Position",
+
+  "yyzsbackpack.config.x": "X",
+  "yyzsbackpack.config.y": "Y"
 }

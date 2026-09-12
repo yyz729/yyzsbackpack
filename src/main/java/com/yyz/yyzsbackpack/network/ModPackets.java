@@ -21,6 +21,7 @@ public class ModPackets {
         PayloadTypeRegistry.playC2S().register(MoveCToBackpackC2SPacket.ID, MoveCToBackpackC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(MoveBToContainerC2SPacket.ID, MoveBToContainerC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(SortRequestC2SPacket.ID, SortRequestC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickMoveC2SPacket.ID, QuickMoveC2SPacket.CODEC);
     }
 
     public static void registerS2CPacket() {

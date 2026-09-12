@@ -3,8 +3,10 @@ package com.yyz.yyzsbackpack;
 import com.yyz.yyzsbackpack.component.ModComponents;
 import com.yyz.yyzsbackpack.config.BackpackControlConfig;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
+import com.yyz.yyzsbackpack.data.ColorDataLoaderClient;
 import com.yyz.yyzsbackpack.effect.ModEffects;
 import com.yyz.yyzsbackpack.item.ModItems;
 import com.yyz.yyzsbackpack.network.*;
@@ -27,6 +29,7 @@ public class Backpack implements ModInitializer {
     private static BackpackMainConfig mainConfig;
     private static BackpackControlConfig controlConfig;
     private static BackpackUiConfig uiConfig;
+    private static BackpackOffsetConfig offsetConfig;
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -42,30 +45,23 @@ public class Backpack implements ModInitializer {
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
                     if (tintIndex == 0) {
-                        return DyedItemColor.getOrDefault(stack, -6265536);
+                        return DyedItemColor.getOrDefault(stack, ColorDataLoaderClient.getDefaultColor(stack.getItem()));
                     }
                     return -1;
                 }, ModItems.IRON_BACKPACK, ModItems.GOLD_BACKPACK,
                 ModItems.DIAMOND_BACKPACK, ModItems.NETHERITE_BACKPACK);
 
-        File mainfile = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/yyzsbackpack.json").toFile();
-        mainConfig = BackpackMainConfig.loadConfig(mainfile);
-        File controlDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control").toFile();
-        controlConfig = BackpackControlConfig.loadConfig(controlDir);
-        File uiDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/ui").toFile();
-        uiConfig = BackpackUiConfig.loadConfig(uiDir);
-    }
+        File dir = FabricLoader.getInstance().getConfigDir()
+                .resolve("yyzsbackpack").toFile();
 
+        BackpackMainConfig.loadConfig(new File(dir, "yyzsbackpack.json"));
+        BackpackControlConfig.loadConfig(new File(dir, "control"));
+        BackpackOffsetConfig.loadConfig(new File(dir, "offset"));
+        BackpackUiConfig.loadConfig(new File(dir, "ui"));
+    }
 
     public static BackpackMainConfig getMainConfig() {
-        return mainConfig;
-    }
-
-    public static BackpackControlConfig getControlConfig() {
-        return controlConfig;
-    }
-    public static BackpackUiConfig getUiConfig() {
-        return uiConfig;
+        return BackpackMainConfig.getInstance();
     }
 
 }

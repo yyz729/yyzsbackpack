@@ -38,6 +38,8 @@
     "container.combiner.ItemCombinerScreenMixin",
     "container.combiner.SmithingScreenMixin",
     "container.crafting.CraftingScreenMixin",
+    "container.creative.CreativeModeInventoryScreenMixin",
+    "container.creative.ItemPickerMenuMixin",
     "container.dispenser.DispenserScreenMixin",
     "container.enchantment.EnchantmentScreenMixin",
     "container.furnace.AbstractFurnaceScreenMixin",

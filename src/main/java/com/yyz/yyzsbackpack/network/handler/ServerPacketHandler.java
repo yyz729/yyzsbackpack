@@ -50,7 +50,7 @@ public class ServerPacketHandler {
                 MoveIToBackpackC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveIToBackpackC2SPacket packet = MoveIToBackpackC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveIToBackpack(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveIToBackpack(packet.mode(), player));
                 }
         );
 
@@ -59,7 +59,7 @@ public class ServerPacketHandler {
                 MoveBToInventoryC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveBToInventoryC2SPacket packet = MoveBToInventoryC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveBToInventory(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveBToInventory(packet.mode(), player));
                 }
         );
 
@@ -68,7 +68,7 @@ public class ServerPacketHandler {
                 MoveCToInventoryC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveCToInventoryC2SPacket packet = MoveCToInventoryC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveCToInventory(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveCToInventory(packet.mode(), player));
                 }
         );
 
@@ -77,7 +77,7 @@ public class ServerPacketHandler {
                 MoveIToContainerC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveIToContainerC2SPacket packet = MoveIToContainerC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveIToContainer(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveIToContainer(packet.mode(), player));
                 }
         );
 
@@ -86,7 +86,7 @@ public class ServerPacketHandler {
                 MoveCToBackpackC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveCToBackpackC2SPacket packet = MoveCToBackpackC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveCToBackpack(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveCToBackpack(packet.mode(), player));
                 }
         );
 
@@ -95,7 +95,7 @@ public class ServerPacketHandler {
                 MoveBToContainerC2SPacket.ID,
                 (server, player, handler, buf, responseSender) -> {
                     MoveBToContainerC2SPacket packet = MoveBToContainerC2SPacket.read(buf);
-                    server.execute(() -> BackpackMenuHelper.moveBToContainer(packet.all(), player));
+                    server.execute(() -> BackpackMenuHelper.moveBToContainer(packet.mode(), player));
                 }
         );
 
@@ -154,5 +154,14 @@ public class ServerPacketHandler {
                 data.yyzsbackpack$setSyncedBackpack(selected);
             }
         });
+
+        ServerPlayNetworking.registerGlobalReceiver(
+                QuickMoveC2SPacket.ID,
+                (server, player, handler, buf, responseSender) -> {
+                    QuickMoveC2SPacket packet = QuickMoveC2SPacket.read(buf);
+                    server.execute(() -> BackpackMenuHelper.quickMoveSlot(player,packet.slotIndex()));
+                }
+        );
+
     }
 }

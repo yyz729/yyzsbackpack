@@ -1,7 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.furnace;
 
 import com.yyz.yyzsbackpack.api.IBackpackOffset;
-import com.yyz.yyzsbackpack.api.IScreenType;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
@@ -21,12 +20,17 @@ public abstract class AbstractFurnaceScreenMixin implements IBackpackOffset{
     @Override
     public int yyzsbackpack$getBackpackOffsetX() {
         if (getRecipeBookComponent().isVisible()) {
-            return -180;
+            AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
+            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
         }
         return 0;
     }
     @Override
     public int yyzsbackpack$getBackpackOffsetY() {
+        if (getRecipeBookComponent().isVisible()) {
+            AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
+            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+        }
         return 0;
     }
 

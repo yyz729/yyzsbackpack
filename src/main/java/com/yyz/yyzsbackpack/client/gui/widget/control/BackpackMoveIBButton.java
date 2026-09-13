@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.enums.MoveMode;
 import com.yyz.yyzsbackpack.network.packets.control.MoveIToBackpackC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -35,7 +36,9 @@ public class BackpackMoveIBButton extends Button {
         if (this.isHovered()) {
             List<Component> tooltip = List.of(
                     Component.translatable("yyzsbackpack.button.moveib.line1"),
-                    Component.translatable("yyzsbackpack.button.moveib.line2")
+                    Component.translatable("yyzsbackpack.button.moveib.line2"),
+                    Component.translatable("yyzsbackpack.button.moveib.line3"),
+                    Component.translatable("yyzsbackpack.button.moveib.line4")
             );
             graphics.renderComponentTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
@@ -44,8 +47,21 @@ public class BackpackMoveIBButton extends Button {
     @Override
     public void onPress() {
         boolean shift = Screen.hasShiftDown();
+        boolean ctrl  = Screen.hasControlDown();
+        boolean alt   = Screen.hasAltDown();
+
+        MoveMode mode;
+        if (shift) {
+            mode = MoveMode.ALL;
+        } else if (ctrl) {
+            mode = MoveMode.ONE_EACH;
+        } else if (alt) {
+            mode = MoveMode.FILL_MATCHING;
+        } else {
+            mode = MoveMode.MATCHING;
+        }
         FriendlyByteBuf buf = PacketByteBufs.create();
-        MoveIToBackpackC2SPacket.write(buf, new MoveIToBackpackC2SPacket(shift));
+        MoveIToBackpackC2SPacket.write(buf, new MoveIToBackpackC2SPacket(mode));
         ClientPlayNetworking.send(MoveIToBackpackC2SPacket.ID, buf);
     }
 }

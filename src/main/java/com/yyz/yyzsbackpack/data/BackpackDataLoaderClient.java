@@ -46,9 +46,6 @@ public class BackpackDataLoaderClient {
                     BackpackData combined = new BackpackData(
                             clientEntry.type(),
                             serverEntry.size(),
-//                            clientEntry.guiTexture(),
-//                            clientEntry.backgroundX(),
-//                            clientEntry.backgroundY(),
                             false,
                             clientEntry.maxVisibleTabs(),
                             clientEntry.segments()
@@ -84,12 +81,14 @@ public class BackpackDataLoaderClient {
         protected void apply(Map<ResourceLocation, JsonElement> prepared,
                              ResourceManager manager,
                              ProfilerFiller profiler) {
-            CLIENT_DATA.clear();
+            Map<ResourceLocation, BackpackData> parsed = new HashMap<>();
             for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
                 BackpackData.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
                         .resultOrPartial(error -> Backpack.LOGGER.error("Failed to parse client backpack data {}: {}", entry.getKey(), error))
-                        .ifPresent(data -> CLIENT_DATA.put(data.type(), data));
+                        .ifPresent(data -> parsed.put(entry.getKey(), data));
             }
+
+            BackpackDataLoaderClient.apply(parsed, manager, profiler);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.yyz.yyzsbackpack;
 
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
+import com.yyz.yyzsbackpack.data.ColorDataLoaderClient;
 import com.yyz.yyzsbackpack.network.handler.ClientPacketHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -14,6 +15,7 @@ public class BackpackClient implements ClientModInitializer {
         ClientPacketHandler.register();
         BackpackKeyBinding.register();
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BackpackDataLoaderClient.ReloadListener(new ResourceLocation(Backpack.MOD_ID, "client_backpack_data")));
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new ColorDataLoaderClient.ReloadListener(new ResourceLocation(Backpack.MOD_ID, "client_color_data")));
 
     }
 }

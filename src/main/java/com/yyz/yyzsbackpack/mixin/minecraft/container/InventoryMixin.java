@@ -91,6 +91,17 @@ public abstract class InventoryMixin implements IExtendedInventory {
         ItemStack equippedBackpack = BackpackSlotHelper.getSelectedBackpack(player);
         if (!(equippedBackpack.getItem() instanceof BackpackItem)) return;
 
+        boolean anyEnabled = false;
+        for (boolean enabled : extraSlotEnabled) {
+            if (enabled) {
+                anyEnabled = true;
+                break;
+            }
+        }
+        if (!anyEnabled) {
+            return;
+        }
+
         // 写入物品 NBT
         CompoundTag tag = equippedBackpack.getOrCreateTag();
         NonNullList<ItemStack> contentsList = NonNullList.withSize(EXTRA_SLOT_COUNT, ItemStack.EMPTY);

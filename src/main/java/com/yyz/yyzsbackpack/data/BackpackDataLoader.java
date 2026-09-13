@@ -56,19 +56,13 @@ public class BackpackDataLoader {
         protected void apply(Map<ResourceLocation, JsonElement> prepared,
                              ResourceManager manager,
                              ProfilerFiller profiler) {
-            Map<String, BackpackData> newData = new HashMap<>();
-
+            Map<ResourceLocation, BackpackData> parsed = new HashMap<>();
             for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
-                ResourceLocation id = entry.getKey();
-                JsonElement json = entry.getValue();
-
-                BackpackData.CODEC.parse(JsonOps.INSTANCE, json)
-                        .resultOrPartial(error -> Backpack.LOGGER.error("Failed to parse backpack data {}: {}", id, error))
-                        .ifPresent(data -> newData.put(data.type(), data));
+                BackpackData.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
+                        .resultOrPartial(error -> Backpack.LOGGER.error("Failed to parse backpack data {}: {}", entry.getKey(), error))
+                        .ifPresent(data -> parsed.put(entry.getKey(), data));
             }
-
-            // 替换全局数据
-            setData(newData);
+            BackpackDataLoader.apply(parsed, manager, profiler);
         }
     }
 }

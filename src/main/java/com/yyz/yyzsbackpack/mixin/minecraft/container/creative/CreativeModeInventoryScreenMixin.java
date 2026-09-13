@@ -22,6 +22,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,6 +31,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CreativeModeInventoryScreen.class)
 public abstract class CreativeModeInventoryScreenMixin extends AbstractContainerScreen<ItemPickerMenu> implements IBackpackScreen {
+
+    @Shadow
+    private @Nullable Slot destroyItemSlot;
 
     public CreativeModeInventoryScreenMixin(ItemPickerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -86,10 +90,18 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
                     menu.slots.remove(i);
                 }
             }
+            if (this.destroyItemSlot != null) {
+                menu.slots.remove(this.destroyItemSlot);
+            }
         }
 
         if (BackpackMenuHelper.getBackpackSlotStart(menu) < 0) {
             BackpackMenuHelper.addBackpackSlotsIfPresent(menu, player.getInventory());
+        }
+
+        if (tab.getType() == CreativeModeTab.Type.INVENTORY && this.destroyItemSlot != null) {
+            this.destroyItemSlot.index = menu.slots.size();
+            menu.slots.add(this.destroyItemSlot);
         }
     }
 

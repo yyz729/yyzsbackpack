@@ -39,6 +39,7 @@ public class BackpackUiConfig {
         put("StonecutterScreen",        Collections.singletonList(new int[]{0, 0}));
         put("NautilusInventoryScreen",  Collections.singletonList(new int[]{0, 0}));
         put("HorseInventoryScreen",     Collections.singletonList(new int[]{0, 0}));
+        put("CreativeModeInventoryScreen",     Collections.singletonList(new int[]{0, 0}));
     }};
 
     private transient Map<String, File> sourceFiles = new HashMap<>();

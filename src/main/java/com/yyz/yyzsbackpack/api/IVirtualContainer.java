@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.api;
 
+import com.yyz.yyzsbackpack.api.enums.MoveMode;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,7 @@ public interface IVirtualContainer {
                      int sourceStart, int sourceEnd,
                      int targetStart, int targetEnd,
                      boolean toContainer,
-                     boolean all,
+                     MoveMode mode,
                      List<ItemStack> matchTypes);
 
     default List<ItemStack> getStoredItemTypes(AbstractContainerMenu menu) {

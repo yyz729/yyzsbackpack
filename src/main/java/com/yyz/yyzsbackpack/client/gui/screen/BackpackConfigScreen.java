@@ -109,9 +109,9 @@ public class BackpackConfigScreen extends Screen {
         for (int i = 0; i < tabs.length; i++) {
             final Tab tab = tabs[i];
             String label = Component.translatable(tab.key).getString();
-            while (label.length() > 3 && this.font.width(label) > tabWidth - 6) {
-                label = label.substring(0, label.length() - 1);
-            }
+//            while (label.length() > 3 && this.font.width(label) > tabWidth - 6) {
+//                label = label.substring(0, label.length() - 1);
+//            }
             Button btn = Button.builder(Component.literal(label), b -> {
                 if (currentTab != tab) {
                     currentTab = tab;
@@ -240,6 +240,7 @@ public class BackpackConfigScreen extends Screen {
         this.lastMaxScroll = maxScroll;
         if (this.scrollY < -maxScroll) this.scrollY = -maxScroll;
         if (this.scrollY > 0) this.scrollY = 0;
+        this.scrollY = Math.floorDiv(this.scrollY, ROW_HEIGHT) * ROW_HEIGHT;
 
         int startY = baseY + this.scrollY;
 
@@ -250,7 +251,7 @@ public class BackpackConfigScreen extends Screen {
             int x = startX + col * (colWidth + gap);
             int y = startY + row * ROW_HEIGHT;
 
-            if (y + 20 < baseY || y > this.height - BOTTOM_RESERVED) continue;
+            if (y < baseY || y + 20 > this.height - BOTTOM_RESERVED) continue;
 
             final File file = f;
             this.addRenderableWidget(Button.builder(Component.literal(f.getName()), b -> {
@@ -285,6 +286,7 @@ public class BackpackConfigScreen extends Screen {
         this.lastMaxScroll = maxScroll;
         if (this.scrollY < -maxScroll) this.scrollY = -maxScroll;
         if (this.scrollY > 0) this.scrollY = 0;
+        this.scrollY = Math.floorDiv(this.scrollY, ROW_HEIGHT) * ROW_HEIGHT;
 
         int startY = baseY + this.scrollY;
 
@@ -295,7 +297,7 @@ public class BackpackConfigScreen extends Screen {
             int x = startX + col * (colWidth + gap);
             int y = startY + row * ROW_HEIGHT;
 
-            if (y + 20 < baseY || y > this.height - BOTTOM_RESERVED) continue;
+            if (y < baseY || y + 20 > this.height - BOTTOM_RESERVED) continue;
 
             List<int[]> valueList = currentValue(key);
             String label = key;
@@ -399,7 +401,7 @@ public class BackpackConfigScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY,
                                  double scrollX, double scrollY) {
         if (currentTab != Tab.MAIN) {
-            this.scrollY += (int) (scrollY * 14);
+            this.scrollY += (int) Math.signum(scrollY) * ROW_HEIGHT;
             rebuild();
             return true;
         }
@@ -429,15 +431,41 @@ public class BackpackConfigScreen extends Screen {
     }
 
     private void drawScrollbar(GuiGraphicsExtractor graphics) {
+        int viewTop = CONTENT_TOP;
+        int viewBottom = this.height - BOTTOM_RESERVED;
+        int visibleH = viewBottom - viewTop;
+        if (visibleH <= 0) return;
+
+        int visibleRows = (visibleH - 20) / ROW_HEIGHT + 1;
+
+        int trackH = (visibleRows - 1) * ROW_HEIGHT + 20;
+        int totalRows = this.lastContentHeight / ROW_HEIGHT;
+        if (totalRows <= visibleRows) return;
+
+        // [16, trackH]
+        int thumbH = trackH * visibleRows / totalRows;
+        if (thumbH < 16) thumbH = 16;
+        if (thumbH > trackH) thumbH = trackH;
+
+        // 可滑动的像素范围
+        int range = trackH - thumbH;
+        int scrollablePx = (totalRows - visibleRows) * ROW_HEIGHT;
+
+        // 当前滚动量,[0, scrollablePx]
+        int scrolled = -this.scrollY;
+        if (scrolled < 0) scrolled = 0;
+        if (scrolled > scrollablePx) scrolled = scrollablePx;
+
+        int thumbOffset = (int) ((long) scrolled * range / scrollablePx);
+
         int trackX = this.width - 6;
-        int trackY = CONTENT_TOP;
-        int trackH = this.lastVisibleHeight;
-        if (trackH <= 0) return;
+        int barW = 3;
 
-        graphics.fill(trackX, trackY, trackX + 3, trackY + trackH, 0x30FFFFFF);
+        // 轨道
+        graphics.fill(trackX, viewTop, trackX + barW, viewTop + trackH, 0x30FFFFFF);
 
-        int thumbH = Math.max(20, (int) ((long) trackH * trackH / this.lastContentHeight));
-        int thumbY = trackY + (int) ((long) (-this.scrollY) * (trackH - thumbH) / this.lastMaxScroll);
-        graphics.fill(trackX, thumbY, trackX + 3, thumbY + thumbH, 0xFFFFFFFF);
+        // 偏移量一定在 0..range 内，绝不超过轨道
+        int thumbY = viewTop + thumbOffset;
+        graphics.fill(trackX, thumbY, trackX + barW, thumbY + thumbH, 0xFFFFFFFF);
     }
 }

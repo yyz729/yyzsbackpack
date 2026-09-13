@@ -44,42 +44,42 @@ public class ServerPacketHandler {
     public static void handleMoveIToBackpack(MoveIToBackpackC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveIToBackpack(packet.all(), player);
+            BackpackMenuHelper.moveIToBackpack(packet.mode(), player);
         });
     }
 
     public static void handleMoveBToInventory(MoveBToInventoryC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveBToInventory(packet.all(), player);
+            BackpackMenuHelper.moveBToInventory(packet.mode(), player);
         });
     }
 
     public static void handleMoveCToInventory(MoveCToInventoryC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveCToInventory(packet.all(), player);
+            BackpackMenuHelper.moveCToInventory(packet.mode(), player);
         });
     }
 
     public static void handleMoveIToContainer(MoveIToContainerC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveIToContainer(packet.all(), player);
+            BackpackMenuHelper.moveIToContainer(packet.mode(), player);
         });
     }
 
     public static void handleMoveCToBackpack(MoveCToBackpackC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveCToBackpack(packet.all(), player);
+            BackpackMenuHelper.moveCToBackpack(packet.mode(), player);
         });
     }
 
     public static void handleMoveBToContainer(MoveBToContainerC2SPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            BackpackMenuHelper.moveBToContainer(packet.all(), player);
+            BackpackMenuHelper.moveBToContainer(packet.mode(), player);
         });
     }
 
@@ -120,6 +120,13 @@ public class ServerPacketHandler {
             for (int[] range : ranges) {
                 BackpackMenuHelper.sortSlots(menu, range[0], range[1], comparator);
             }
+        });
+    }
+
+    public static void handleQuickMove(QuickMoveC2SPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ServerPlayer player = (ServerPlayer) context.player();
+            BackpackMenuHelper.quickMoveSlot(player, packet.slotIndex());
         });
     }
 }

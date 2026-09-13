@@ -71,5 +71,12 @@ public class ModServerPackets {
                 SortRequestC2SPacket.CODEC,
                 ServerPacketHandler::handleSortRequest
         );
+
+        registrar.playToServer(
+                QuickMoveC2SPacket.ID,
+                QuickMoveC2SPacket.CODEC,
+                ServerPacketHandler::handleQuickMove
+        );
+
     }
 }

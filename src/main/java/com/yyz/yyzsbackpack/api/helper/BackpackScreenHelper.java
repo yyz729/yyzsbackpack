@@ -6,9 +6,13 @@ import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
+import com.yyz.yyzsbackpack.api.enums.ButtonMode;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
+import com.yyz.yyzsbackpack.config.BackpackConfigs;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
@@ -683,6 +687,10 @@ public final class BackpackScreenHelper {
         addBackpackControls(screen, 0);
     }
 
+    public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset) {
+        addBackpackControls(screen, extraYOffset, true, false);
+    }
+
     /**
      * 添加背包控制按钮，支持额外的Y轴偏移（用于多行容器屏幕）。
      * 如果按钮已存在则更新位置，否则创建新按钮。
@@ -690,9 +698,36 @@ public final class BackpackScreenHelper {
      * @param screen        目标容器屏幕
      * @param extraYOffset  额外的Y轴偏移量
      */
-    public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset) {
+    public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset, boolean applyToGroup1, boolean applyToGroup2) {
+        // 获取配置
+        BackpackMainConfig config = Backpack.getMainConfig();
+        ButtonMode mode = config.button;
+
+        // 获取玩家
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            // 没有玩家时移除按钮并返回
+            removeAllBackpackControlButtons(screen);
+            return;
+        }
+
+        // 判断是否应该显示按钮
+        boolean showButtons = switch (mode) {
+            case HIDE -> false;
+            case SHOW -> true;
+            case AUTO -> !BackpackSlotHelper.getAllBackpackStacks(player).isEmpty();
+        };
+
+        if (!showButtons) {
+            // 隐藏按钮：移除所有按钮后返回
+            removeAllBackpackControlButtons(screen);
+            return;
+        }
+
         String screenType = getScreenType(screen);
-        List<int[]> offsets = Backpack.getControlConfig().getControlPoss().get(screenType);
+        Map<String, List<int[]>> controlMap = BackpackConfigs.control();
+        if (controlMap == null) return;
+        List<int[]> offsets = controlMap.get(screenType);
         if (offsets == null) return;
 
         int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
@@ -700,14 +735,18 @@ public final class BackpackScreenHelper {
         int size = 6;
         int gap = 2;
 
-        // 遍历每个组
         for (int groupIdx = 0; groupIdx < offsets.size(); groupIdx++) {
             int[] offset = offsets.get(groupIdx);
             int offsetX = offset[0];
             int offsetY = offset[1];
 
-            // 只有第一组应用额外偏移
-            int finalExtraOffset = (groupIdx == 0) ? extraYOffset : 0;
+            int finalExtraOffset = 0;
+            if (groupIdx == 0 && applyToGroup1) {
+                finalExtraOffset = extraYOffset;
+            } else if (groupIdx == 1 && applyToGroup2) {
+                finalExtraOffset = extraYOffset;
+            }
+
             int toggleX = leftPos + offsetX;
             int toggleY = topPos - size + offsetY + finalExtraOffset;
 
@@ -723,6 +762,68 @@ public final class BackpackScreenHelper {
                 addBackpackMoveCToIButton(screen, toggleX + 3 * (size + gap), toggleY);
             }
         }
+    }
+
+    private static void removeAllBackpackControlButtons(AbstractContainerScreen<?> screen) {
+        List<Class<?>> buttonClasses = List.of(
+                BackpackVisibleButton.class,
+                BackpackSortButton.class,
+                BackpackMoveBIButton.class,
+                BackpackMoveIBButton.class,
+                BackpackMoveBCButton.class,
+                BackpackMoveCBButton.class,
+                BackpackMoveICButton.class,
+                BackpackMoveCIButton.class
+        );
+        for (var child : screen.children().stream().filter(w -> buttonClasses.stream().anyMatch(c -> c.isInstance(w))).toList()) {
+            ((ScreenInvoker) screen).invokeRemoveWidget(child);
+        }
+    }
+
+    /**
+     * 处理背包滚动逻辑。
+     * @return true 表示已处理，外部应直接返回；false 表示未处理，继续执行原逻辑。
+     */
+    public static boolean handleMouseScrolled(AbstractContainerScreen<?> screen,
+                                              double mouseX, double mouseY,
+                                              double scrollX, double scrollY) {
+        // 排序按钮
+        for (var child : screen.children()) {
+            if (child instanceof BackpackSortButton btn) {
+                if (btn.isMouseOver(mouseX, mouseY)) {
+                    BackpackSortButton.cycleAlgorithm();
+                    return true;
+                }
+            }
+        }
+
+        // 段内滚动
+        int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, mouseX, mouseY);
+        if (segmentIndex >= 0) {
+            // 获取实现了 IBackpackScroll 的接口（screen 本身已实现，因为 AbstractContainerScreenMixin 实现了它）
+            IBackpackScroll scrollable = (IBackpackScroll) screen;
+            int delta = (int) Math.signum(scrollY);
+            int oldOffset = scrollable.yyzsbackpack$getSegmentScrollOffset(segmentIndex);
+            int newOffset = oldOffset - delta;
+            scrollable.yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
+            return true;
+        }
+
+        // 标签页滚动
+        boolean mouseOverTab = screen.children().stream()
+                .filter(w -> w instanceof BackpackTabWidget)
+                .anyMatch(w -> w.isMouseOver(mouseX, mouseY));
+        if (mouseOverTab) {
+            IBackpackTabScroll tabScroll = (IBackpackTabScroll) screen;
+            int delta = (int) Math.signum(scrollY);
+            int oldOffset = tabScroll.yyzsbackpack$getTabScrollOffset();
+            int newOffset = oldOffset - delta;
+            tabScroll.yyzsbackpack$setTabScrollOffset(newOffset);
+            BackpackScreenHelper.addBackpackTabs(screen);
+            return true;
+        }
+
+        return false; // 未处理，让原逻辑继续
     }
 
     private static void addBackpackMoveBToCButton(AbstractContainerScreen<?> screen, int x, int y) {
@@ -820,6 +921,44 @@ public final class BackpackScreenHelper {
         return -1;
     }
 
+    /**
+     * 从 BackpackOffsetConfig 中读取当前屏幕类型的 X 偏移值。
+     *
+     * @param screen    当前容器屏幕
+     * @param defaultX  当配置缺失或无效时返回的默认 X 偏移
+     * @return 配置的 X 偏移或默认值
+     */
+    public static int getConfigOffsetX(AbstractContainerScreen<?> screen, int defaultX) {
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultX;
+
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = offsetMap.get(screenType);
+        if (offsets == null || offsets.isEmpty()) return defaultX;
+
+        int[] offset = offsets.getFirst();
+        return offset.length > 0 ? offset[0] : defaultX;
+    }
+
+    /**
+     * 从 BackpackOffsetConfig 中读取当前屏幕类型的 Y 偏移值。
+     *
+     * @param screen    当前容器屏幕
+     * @param defaultY  当配置缺失或无效时返回的默认 Y 偏移
+     * @return 配置的 Y 偏移或默认值
+     */
+    public static int getConfigOffsetY(AbstractContainerScreen<?> screen, int defaultY) {
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultY;
+
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = offsetMap.get(screenType);
+        if (offsets == null || offsets.isEmpty()) return defaultY;
+
+        int[] offset = offsets.getFirst();
+        return offset.length > 1 ? offset[1] : defaultY;
+    }
+
     public static BackpackData getBackpackData(ItemStack stack) {
         if (stack.getItem() instanceof BackpackItem backpackItem) {
             return backpackItem.getData();
@@ -842,10 +981,10 @@ public final class BackpackScreenHelper {
     }
 
     private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        BackpackUiConfig config = Backpack.getUiConfig();
-        if (config == null) return new int[]{0, 0};
+        Map<String, List<int[]>> uiMap = BackpackConfigs.ui();
+        if (uiMap == null) return new int[]{0, 0};
         String screenType = getScreenType(screen);
-        List<int[]> offsets = config.getUiOffsets().get(screenType);
+        List<int[]> offsets = uiMap.get(screenType);
         if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
         return offsets.getFirst();
     }
@@ -859,7 +998,7 @@ public final class BackpackScreenHelper {
     }
 
     private static String getScreenType(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IScreenType provider) {
+        if (screen instanceof IBackpackScreen provider) {
             return provider.yyzsbackpack$getScreenType();
         }
         return screen.getClass().getSimpleName();

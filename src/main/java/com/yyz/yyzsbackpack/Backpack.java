@@ -5,6 +5,7 @@ import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.component.ModComponents;
 import com.yyz.yyzsbackpack.config.BackpackControlConfig;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
+import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.data.BackpackDataLoader;
@@ -38,7 +39,7 @@ public class Backpack {
     private static BackpackMainConfig mainConfig;
     private static BackpackControlConfig controlConfig;
     private static BackpackUiConfig uiConfig;
-
+    private static BackpackOffsetConfig offsetConfig;
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -50,12 +51,13 @@ public class Backpack {
         ModComponents.DATA_COMPONENTS.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
 
-        File mainfile = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/yyzsbackpack.json").toFile();
-        mainConfig = BackpackMainConfig.loadConfig(mainfile);
-        File controlDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/control").toFile();
-        controlConfig = BackpackControlConfig.loadConfig(controlDir);
-        File uiDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/ui").toFile();
-        uiConfig = BackpackUiConfig.loadConfig(uiDir);
+        File dir = FMLPaths.CONFIGDIR.get()
+                .resolve("yyzsbackpack").toFile();
+
+        BackpackMainConfig.loadConfig(new File(dir, "yyzsbackpack.json"));
+        BackpackControlConfig.loadConfig(new File(dir, "control"));
+        BackpackOffsetConfig.loadConfig(new File(dir, "offset"));
+        BackpackUiConfig.loadConfig(new File(dir, "ui"));
     }
 
     @SubscribeEvent
@@ -73,19 +75,13 @@ public class Backpack {
         }
     }
 
+
     @SubscribeEvent
     private void addReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(Identifier.fromNamespaceAndPath(MOD_ID, "backpack_data"),new BackpackDataLoader.ReloadListener());
     }
 
     public static BackpackMainConfig getMainConfig() {
-        return mainConfig;
-    }
-
-    public static BackpackControlConfig getControlConfig() {
-        return controlConfig;
-    }
-    public static BackpackUiConfig getUiConfig() {
-        return uiConfig;
+        return BackpackMainConfig.getInstance();
     }
 }

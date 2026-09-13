@@ -48,6 +48,8 @@
     "minecraft.container.combiner.SmithingScreenMixin",
     "minecraft.container.crafter.CrafterScreenMixin",
     "minecraft.container.crafting.CraftingScreenMixin",
+    "minecraft.container.creative.CreativeModeInventoryScreenMixin",
+    "minecraft.container.creative.ItemPickerMenuMixin",
     "minecraft.container.dispenser.DispenserScreenMixin",
     "minecraft.container.enchantment.EnchantmentScreenMixin",
     "minecraft.container.furnace.AbstractFurnaceScreenMixin",

@@ -1,6 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.enchantment;
 
-import com.yyz.yyzsbackpack.api.IScreenType;
+import com.yyz.yyzsbackpack.api.IBackpackScreen;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EnchantmentScreen.class)
-public class EnchantmentScreenMixin implements IScreenType {
+public class EnchantmentScreenMixin implements IBackpackScreen {
 
     @Override
     public String yyzsbackpack$getScreenType() {

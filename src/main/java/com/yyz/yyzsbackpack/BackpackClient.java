@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack;
 
+import com.yyz.yyzsbackpack.client.gui.screen.BackpackConfigScreen;
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -32,5 +34,16 @@ public class BackpackClient {
         event.registerCategory(BackpackKeyBinding.CATEGORY);
         event.register(BackpackKeyBinding.KEY_SORT);
         event.register(BackpackKeyBinding.KEY_OPEN);
+        event.register(BackpackKeyBinding.KEY_CONFIG);
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Minecraft client = Minecraft.getInstance();
+        while (BackpackKeyBinding.KEY_CONFIG.consumeClick()) {
+            if (client.gui.screen() == null) {
+                BackpackConfigScreen.open(null);
+            }
+        }
     }
 }

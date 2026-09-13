@@ -17,6 +17,7 @@ public class BackpackKeyBinding {
 
     public static final KeyMapping KEY_SORT;
     public static final KeyMapping KEY_OPEN;
+    public static final KeyMapping KEY_CONFIG;
 
     static {
         KEY_SORT = new KeyMapping(
@@ -30,6 +31,12 @@ public class BackpackKeyBinding {
                 "key.yyzsbackpack.open",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
+                CATEGORY
+        );
+        KEY_CONFIG = new KeyMapping(
+                "key.yyzsbackpack.config",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_BRACKET, // 默认 ]
                 CATEGORY
         );
     }

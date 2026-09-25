@@ -1,7 +1,7 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container.crafting;
 
 import com.yyz.yyzsbackpack.api.IBackpackOffset;
-import com.yyz.yyzsbackpack.api.IScreenType;
+import com.yyz.yyzsbackpack.api.IBackpackScreen;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingScreen.class)
-public abstract class CraftingScreenMixin implements IBackpackOffset, IScreenType {
+public abstract class CraftingScreenMixin implements IBackpackOffset, IBackpackScreen {
 
     @Override
     public String yyzsbackpack$getScreenType() {
@@ -26,12 +26,17 @@ public abstract class CraftingScreenMixin implements IBackpackOffset, IScreenTyp
     @Override
     public int yyzsbackpack$getBackpackOffsetX() {
         if (getRecipeBookComponent().isVisible()) {
-            return -180;
+            CraftingScreen screen = (CraftingScreen) (Object) this;
+            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
         }
         return 0;
     }
     @Override
     public int yyzsbackpack$getBackpackOffsetY() {
+        if (getRecipeBookComponent().isVisible()) {
+            CraftingScreen screen = (CraftingScreen) (Object) this;
+            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+        }
         return 0;
     }
 

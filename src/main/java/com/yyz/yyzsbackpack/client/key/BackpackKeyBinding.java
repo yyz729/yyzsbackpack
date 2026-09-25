@@ -12,6 +12,7 @@ public class BackpackKeyBinding {
 
     public static final KeyMapping KEY_SORT;
     public static final KeyMapping KEY_OPEN;
+    public static final KeyMapping KEY_CONFIG;
 
     static {
         KEY_SORT = new KeyMapping(
@@ -25,6 +26,13 @@ public class BackpackKeyBinding {
                 "key.yyzsbackpack.open",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
+                "key.category."+Backpack.MOD_ID + ".category"
+        );
+
+        KEY_CONFIG = new KeyMapping(
+                "key.yyzsbackpack.config",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_BRACKET, // 默认 ]
                 "key.category."+Backpack.MOD_ID + ".category"
         );
     }

@@ -1,6 +1,7 @@
 package com.yyz.yyzsbackpack.client.gui.widget.control;
 
 import com.yyz.yyzsbackpack.Backpack;
+import com.yyz.yyzsbackpack.api.enums.MoveMode;
 import com.yyz.yyzsbackpack.network.packets.control.MoveBToContainerC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,7 +35,9 @@ public class BackpackMoveBCButton extends Button {
         if (this.isHovered()) {
             List<Component> tooltip = List.of(
                     Component.translatable("yyzsbackpack.button.movebc.line1"),
-                    Component.translatable("yyzsbackpack.button.movebc.line2")
+                    Component.translatable("yyzsbackpack.button.movebc.line2"),
+                    Component.translatable("yyzsbackpack.button.movebc.line3"),
+                    Component.translatable("yyzsbackpack.button.movebc.line4")
             );
             graphics.renderComponentTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
         }
@@ -43,6 +46,20 @@ public class BackpackMoveBCButton extends Button {
     @Override
     public void onPress() {
         boolean shift = Screen.hasShiftDown();
-        PacketDistributor.sendToServer(new MoveBToContainerC2SPacket(shift));
+        boolean ctrl  = Screen.hasControlDown();
+        boolean alt   = Screen.hasAltDown();
+
+        MoveMode mode;
+        if (shift) {
+            mode = MoveMode.ALL;
+        } else if (ctrl) {
+            mode = MoveMode.ONE_EACH;
+        } else if (alt) {
+            mode = MoveMode.FILL_MATCHING;
+        } else {
+            mode = MoveMode.MATCHING;
+        }
+
+        PacketDistributor.sendToServer(new MoveBToContainerC2SPacket(mode));
     }
 }

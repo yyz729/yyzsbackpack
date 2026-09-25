@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +45,9 @@ public class BackpackDataLoaderClient {
                     BackpackData combined = new BackpackData(
                             clientEntry.type(),
                             serverEntry.size(),
-                            clientEntry.guiTexture(),
-                            clientEntry.backgroundX(),
-                            clientEntry.backgroundY(),
+//                            clientEntry.guiTexture(),
+//                            clientEntry.backgroundX(),
+//                            clientEntry.backgroundY(),
                             false,
                             clientEntry.maxVisibleTabs(),
                             clientEntry.segments()
@@ -75,14 +76,16 @@ public class BackpackDataLoaderClient {
 
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> prepared,
-                             ResourceManager manager,
-                             ProfilerFiller profiler) {
-            CLIENT_DATA.clear();
+                             @NotNull ResourceManager manager,
+                             @NotNull ProfilerFiller profiler) {
+            Map<ResourceLocation, BackpackData> parsed = new HashMap<>();
             for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
                 BackpackData.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
                         .resultOrPartial(error -> Backpack.LOGGER.error("Failed to parse client backpack data {}: {}", entry.getKey(), error))
-                        .ifPresent(data -> CLIENT_DATA.put(data.type(), data));
+                        .ifPresent(data -> parsed.put(entry.getKey(), data));
             }
+
+            BackpackDataLoaderClient.apply(parsed, manager, profiler);
         }
     }
 }

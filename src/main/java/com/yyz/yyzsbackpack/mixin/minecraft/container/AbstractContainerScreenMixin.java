@@ -1,9 +1,6 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
-import com.yyz.yyzsbackpack.api.IBackpackScroll;
-import com.yyz.yyzsbackpack.api.IBackpackTabScroll;
-import com.yyz.yyzsbackpack.api.IBackpackVisible;
-import com.yyz.yyzsbackpack.api.IExtendedInventory;
+import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
@@ -11,6 +8,7 @@ import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
+import com.yyz.yyzsbackpack.network.packets.control.QuickMoveC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.control.SortRequestC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.minecraft.client.Minecraft;
@@ -243,6 +241,26 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
             }
             cir.setReturnValue(true);
             return;
+        }
+    }
+
+    @Inject(
+            method = "mouseClicked",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof IBackpackScreen qm) || !qm.yyzsbackpack$allowQuickMove()) {
+            return;
+        }
+
+        if (button == 0 && hasAltDown() && hoveredSlot != null && !hoveredSlot.getItem().isEmpty()) {
+            // 获取全局槽位索引
+            int slotIndex = ((AbstractContainerScreen<?>) (Object) this).getMenu().slots.indexOf(hoveredSlot);
+            if (slotIndex != -1) {
+                PacketDistributor.sendToServer(new QuickMoveC2SPacket(slotIndex));
+                cir.setReturnValue(true);
+            }
         }
     }
 }

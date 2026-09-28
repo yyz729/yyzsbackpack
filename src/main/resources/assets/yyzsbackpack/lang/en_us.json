@@ -85,7 +85,12 @@
   "yyzsbackpack.config.group.extra": "Extra Buttons",
   "yyzsbackpack.config.group.offset": "Recipe Book Auto Offset",
   "yyzsbackpack.config.group.ui": "Backpack UI Position",
+  "yyzsbackpack.config.add_anchor": "Add anchor",
 
   "yyzsbackpack.config.x": "X",
-  "yyzsbackpack.config.y": "Y"
+  "yyzsbackpack.config.y": "Y",
+
+  "yyzsbackpack.config.group.offset_seg":       "Offset (seg %s)",
+  "yyzsbackpack.config.group.ui_target_seg":    "Target (seg %s)",
+  "yyzsbackpack.config.group.ui_anchor_seg":    "Anchor (seg %s)"
 }

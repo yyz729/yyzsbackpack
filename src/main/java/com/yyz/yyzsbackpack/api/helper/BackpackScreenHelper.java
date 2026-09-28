@@ -6,7 +6,6 @@ import com.yyz.yyzsbackpack.api.*;
 import com.yyz.yyzsbackpack.api.data.BackpackSlotPos;
 import com.yyz.yyzsbackpack.api.data.LayoutOrder;
 import com.yyz.yyzsbackpack.api.data.LayoutSegment;
-import com.yyz.yyzsbackpack.api.enums.ButtonMode;
 import com.yyz.yyzsbackpack.client.gui.widget.control.*;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
@@ -14,6 +13,7 @@ import com.yyz.yyzsbackpack.config.BackpackConfigs;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
 import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
+import com.yyz.yyzsbackpack.api.enums.ButtonMode;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
 import com.yyz.yyzsbackpack.item.BackpackItem;
@@ -47,9 +47,107 @@ public final class BackpackScreenHelper {
     private static final float STOP_DURATION = 0.8f;
     private static final int   RIGHT_PADDING = 2;
 
-    /**
-     * 根据背包数据重新计算所有背包槽位的实际显示位置，并设置到对应的 Slot 中。
-     */
+    // ============================================================
+    // 分段偏移辅助
+    // ============================================================
+
+    /** 屏幕自身提供的全局偏移（IBackpackOffset）。 */
+    public static int getOffsetX(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IBackpackOffset provider) return provider.yyzsbackpack$getBackpackOffsetX();
+        return 0;
+    }
+
+    public static int getOffsetY(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IBackpackOffset provider) return provider.yyzsbackpack$getBackpackOffsetY();
+        return 0;
+    }
+
+    /** 屏幕自身提供的指定分段偏移（IBackpackOffset），默认回退到全局偏移。 */
+    public static int getOffsetX(AbstractContainerScreen<?> screen, int segmentIndex) {
+        if (screen instanceof IBackpackOffset provider) return provider.yyzsbackpack$getBackpackOffsetX(segmentIndex);
+        return 0;
+    }
+
+    public static int getOffsetY(AbstractContainerScreen<?> screen, int segmentIndex) {
+        if (screen instanceof IBackpackOffset provider) return provider.yyzsbackpack$getBackpackOffsetY(segmentIndex);
+        return 0;
+    }
+
+    /** 计算指定分段的 UI 偏移 {x, y}。
+     *  <p>语义：分段最终位置 = 分段自身 startX/startY（槽位网格基准） + backgroundX/backgroundY（背景微调）
+     *  + 本方法返回的偏移。UI 配置里每段占 2 个条目：[目标位置 off, 锚点百分比 anchor]（越界回退段 0）。
+     *  <p>锚点以默认值 (100, 0) 为基准做<b>相对</b>调整，保证旧配置（startX + backgroundX + 纹理宽 = 0
+     *  这类“右边缘对齐容器左缘”的写法）行为完全不变，同时 startX/backgroundX 直接生效：
+     *  <ul>
+     *    <li>anchorX 从 100 调小 → 分段相对右移 (100 - anchorX)% × 纹理宽；</li>
+     *    <li>anchorY 从 0 调大 → 分段相对上移 anchorY% × 纹理高。</li>
+     *  </ul>
+     *  <p>注意：不能把锚点算在“含 startX/backgroundX 的绝对边界”上再减掉，否则 startX 会被抵消、
+     *  backgroundX 反向作用到槽位、多段布局所有段被钉到同一位置。 */
+    private static int[] getUiOffsetForSegment(AbstractContainerScreen<?> screen, int segmentIndex) {
+        List<int[]> list = getUiOffsetList(screen);
+        if (list.isEmpty()) return new int[]{0, 0};
+
+        int[] off    = BackpackUiConfig.offsetOf(list, segmentIndex);
+        int[] anchor = BackpackUiConfig.anchorOf(list, segmentIndex);
+
+        int[] extent = getSegmentExtent(screen, segmentIndex);
+        if (extent == null) return new int[]{off[0], off[1]};
+
+        int adjX = (int) Math.round((100 - anchor[0]) / 100.0 * extent[0]);
+        int adjY = (int) Math.round((0    - anchor[1]) / 100.0 * extent[1]);
+        return new int[]{off[0] + adjX, off[1] + adjY};
+    }
+
+    /** 分段“尺寸”{宽, 高}：优先背景纹理尺寸，其次自定义坐标范围，最后槽位网格。锚点调整量按此计算。 */
+    @Nullable
+    private static int[] getSegmentExtent(AbstractContainerScreen<?> screen, int segmentIndex) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return null;
+
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null || segmentIndex < 0 || segmentIndex >= data.segments().size()) return null;
+
+        LayoutSegment seg = data.segments().get(segmentIndex);
+        Minecraft mc = Minecraft.getInstance();
+
+        if (seg.backgroundTexture().isPresent()) {
+            Dimension texSize = getTextureSize(mc, seg.backgroundTexture().get());
+            if (texSize != null && texSize.width > 0 && texSize.height > 0) {
+                return new int[]{texSize.width, texSize.height};
+            }
+        }
+
+        if (seg.order() == LayoutOrder.CUSTOM) {
+            List<BackpackSlotPos> positions = seg.customPositions().orElse(null);
+            if (positions == null || positions.isEmpty()) return null;
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+            int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+            for (BackpackSlotPos p : positions) {
+                minX = Math.min(minX, p.x()); maxX = Math.max(maxX, p.x());
+                minY = Math.min(minY, p.y()); maxY = Math.max(maxY, p.y());
+            }
+            return new int[]{maxX - minX + 18, maxY - minY + 18};
+        }
+
+        int columns = seg.columns().orElse(1);
+        int rows = seg.rows().orElse(9);
+        return new int[]{columns * 18, rows * 18};
+    }
+
+    /** 向后兼容：段 0 的 UI 偏移 X / Y。 */
+    public static int getUiOffsetX(AbstractContainerScreen<?> screen) {
+        return getUiOffsetForSegment(screen, 0)[0];
+    }
+    public static int getUiOffsetY(AbstractContainerScreen<?> screen) {
+        return getUiOffsetForSegment(screen, 0)[1];
+    }
+
+    // ============================================================
+    // 槽位布局
+    // ============================================================
+
     public static void setupBackpackSlots(AbstractContainerScreen<?> screen) {
         AbstractContainerMenu menu = screen.getMenu();
         int start = BackpackMenuHelper.getBackpackSlotStart(menu);
@@ -77,8 +175,6 @@ public final class BackpackScreenHelper {
 
         if (!(screen instanceof IBackpackScroll scrollable)) return;
 
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int slotCount = menu.slots.size();
 
         List<LayoutSegment> segments = data.segments();
@@ -86,6 +182,10 @@ public final class BackpackScreenHelper {
 
         for (int segIdx = 0; segIdx < segmentCount; segIdx++) {
             LayoutSegment seg = segments.get(segIdx);
+            int[] uiOff = getUiOffsetForSegment(screen, segIdx);
+            int offsetX = getOffsetX(screen, segIdx) + uiOff[0];
+            int offsetY = getOffsetY(screen, segIdx) + uiOff[1];
+
             int segStart = seg.startSlot();
             int count = seg.getSlotCount();
             int baseX = seg.getEffectiveStartX() + offsetX;
@@ -167,15 +267,14 @@ public final class BackpackScreenHelper {
         }
     }
 
-    /**
-     * 在屏幕背景之上绘制自定义背包 GUI 纹理（每个段独立绘制）。
-     */
+    // ============================================================
+    // 背景绘制
+    // ============================================================
+
     public static void addBackpackBackground(AbstractContainerScreen<?> screen,
                                              GuiGraphicsExtractor graphics,
                                              int mouseX, int mouseY, float partialTick) {
-        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) {
-            return;
-        }
+        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) return;
 
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
@@ -185,17 +284,22 @@ public final class BackpackScreenHelper {
         BackpackData data = getBackpackData(backpackStack);
         if (data == null) return;
 
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
 
-        for (LayoutSegment seg : data.segments()) {
+        List<LayoutSegment> segments = data.segments();
+        for (int segIdx = 0; segIdx < segments.size(); segIdx++) {
+            LayoutSegment seg = segments.get(segIdx);
             if (seg.backgroundTexture().isEmpty()) continue;
+
+            int[] uiOff = getUiOffsetForSegment(screen, segIdx);
+            int offsetX = getOffsetX(screen, segIdx) + uiOff[0];
+            int offsetY = getOffsetY(screen, segIdx) + uiOff[1];
 
             Identifier tex = seg.backgroundTexture().get();
             int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
             int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+
             int bgOffX = seg.backgroundX().orElse(0);
             int bgOffY = seg.backgroundY().orElse(0);
 
@@ -216,14 +320,9 @@ public final class BackpackScreenHelper {
         }
     }
 
-    /**
-     * 计算所有段背景纹理在屏幕上的合并矩形区域。
-     */
     @Nullable
     public static Rectangle getBackpackBackgroundBounds(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) {
-            return null;
-        }
+        if (screen instanceof IBackpackVisible handler && !handler.yyzsbackpack$isBackpackVisible()) return null;
 
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
@@ -233,19 +332,21 @@ public final class BackpackScreenHelper {
         BackpackData data = getBackpackData(backpackStack);
         if (data == null) return null;
 
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
 
-        int minX = Integer.MAX_VALUE;
-        int minY = Integer.MAX_VALUE;
-        int maxX = Integer.MIN_VALUE;
-        int maxY = Integer.MIN_VALUE;
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
         boolean hasAny = false;
 
-        for (LayoutSegment seg : data.segments()) {
+        List<LayoutSegment> segments = data.segments();
+        for (int segIdx = 0; segIdx < segments.size(); segIdx++) {
+            LayoutSegment seg = segments.get(segIdx);
             if (seg.backgroundTexture().isEmpty()) continue;
+
+            int[] uiOff = getUiOffsetForSegment(screen, segIdx);
+            int offsetX = getOffsetX(screen, segIdx) + uiOff[0];
+            int offsetY = getOffsetY(screen, segIdx) + uiOff[1];
 
             Identifier tex = seg.backgroundTexture().get();
             Dimension texSize = getTextureSize(minecraft, tex);
@@ -272,9 +373,10 @@ public final class BackpackScreenHelper {
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 
-    /**
-     * 重建背包标签页控件。
-     */
+    // ============================================================
+    // 页签 / 滚动条 / 标题
+    // ============================================================
+
     public static void addBackpackTabs(AbstractContainerScreen<?> screen) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
@@ -315,8 +417,10 @@ public final class BackpackScreenHelper {
 
         int left = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
         int top = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
+        // 页签不分段，统一使用段 0 的 UI 偏移，保持原行为
+        int[] seg0Ui = getUiOffsetForSegment(screen, 0);
+        int offsetX = getOffsetX(screen) + seg0Ui[0];
+        int offsetY = getOffsetY(screen) + seg0Ui[1];
 
         int tabHeight = 18;
         int baseY = top - tabHeight - 2 + offsetY;
@@ -330,20 +434,11 @@ public final class BackpackScreenHelper {
             for (int j = 0; j < oldTabs.size(); j++) {
                 int actualIndex = start + j;
                 BackpackTabWidget oldTab = oldTabs.get(j);
-                if (!ItemStack.matches(oldTab.getIcon(), stacks.get(actualIndex))) {
-                    needRebuild = true;
-                    break;
-                }
-                if (oldTab.isSelected() != (actualIndex == selected)) {
-                    needRebuild = true;
-                    break;
-                }
+                if (!ItemStack.matches(oldTab.getIcon(), stacks.get(actualIndex))) { needRebuild = true; break; }
+                if (oldTab.isSelected() != (actualIndex == selected)) { needRebuild = true; break; }
                 int expectedX = left - (j + 1) * 9 + offsetX - 7;
                 int expectedY = baseY + 25;
-                if (oldTab.getX() != expectedX || oldTab.getY() != expectedY) {
-                    needRebuild = true;
-                    break;
-                }
+                if (oldTab.getX() != expectedX || oldTab.getY() != expectedY) { needRebuild = true; break; }
             }
         }
 
@@ -404,21 +499,22 @@ public final class BackpackScreenHelper {
         }
 
         List<LayoutSegment> segments = data.segments();
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
         int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
 
         List<BackpackScrollWidget> existingBars = screen.children().stream()
                 .filter(w -> w instanceof BackpackScrollWidget)
-                .map(w -> (BackpackScrollWidget) w)
-                .toList();
+                .map(w -> (BackpackScrollWidget) w).toList();
 
         List<ScrollbarInfo> expectedInfos = new ArrayList<>();
         for (int i = 0; i < segments.size(); i++) {
             LayoutSegment seg = segments.get(i);
             if (seg.order() == LayoutOrder.CUSTOM) continue;
             if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
+
+            int[] uiOff = getUiOffsetForSegment(screen, i);
+            int offsetX = getOffsetX(screen, i) + uiOff[0];
+            int offsetY = getOffsetY(screen, i) + uiOff[1];
 
             int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
             int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
@@ -464,6 +560,10 @@ public final class BackpackScreenHelper {
             if (seg.order() == LayoutOrder.CUSTOM) continue;
             if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
 
+            int[] uiOff = getUiOffsetForSegment(screen, i);
+            int offsetX = getOffsetX(screen, i) + uiOff[0];
+            int offsetY = getOffsetY(screen, i) + uiOff[1];
+
             int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
             int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
             int columns = seg.columns().get();
@@ -486,12 +586,8 @@ public final class BackpackScreenHelper {
         }
     }
 
-    private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {
-    }
+    private record ScrollbarInfo(int x, int y, int width, int height, int segmentIndex) {}
 
-    /**
-     * 绘制背包标题，锚点位于第一个段的背景区域（若有），否则使用段网格区域。
-     */
     public static void addBackpackTitle(AbstractContainerScreen<?> screen,
                                         GuiGraphicsExtractor graphics,
                                         float partialTick) {
@@ -509,8 +605,10 @@ public final class BackpackScreenHelper {
         Font font = mc.font;
         String title = backpackStack.getHoverName().getString();
 
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
+        // 标题使用段 0 的偏移
+        int[] seg0Ui = getUiOffsetForSegment(screen, 0);
+        int offsetX = getOffsetX(screen) + seg0Ui[0];
+        int offsetY = getOffsetY(screen) + seg0Ui[1];
         int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
         int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
 
@@ -526,23 +624,18 @@ public final class BackpackScreenHelper {
             if (texSize == null || texSize.width == 0 || texSize.height == 0) {
                 int cols = firstSeg.columns().orElse(1);
                 int rows = firstSeg.rows().orElse(9);
-                areaWidth = cols * 18;
-                areaHeight = rows * 18;
-                baseX = segStartX;
-                baseY = segStartY;
+                areaWidth = cols * 18; areaHeight = rows * 18;
+                baseX = segStartX; baseY = segStartY;
             } else {
                 baseX = segStartX + bgOffX;
                 baseY = segStartY + bgOffY;
-                areaWidth = texSize.width;
-                areaHeight = texSize.height;
+                areaWidth = texSize.width; areaHeight = texSize.height;
             }
         } else {
             int cols = firstSeg.columns().orElse(1);
             int rows = firstSeg.rows().orElse(9);
-            areaWidth = cols * 18;
-            areaHeight = rows * 18;
-            baseX = segStartX;
-            baseY = segStartY;
+            areaWidth = cols * 18; areaHeight = rows * 18;
+            baseX = segStartX; baseY = segStartY;
         }
 
         int textX = baseX + 7;
@@ -588,17 +681,10 @@ public final class BackpackScreenHelper {
         float t = elapsed % totalCycle;
         float offset;
 
-        if (t < STOP_DURATION) {
-            offset = 0;
-        } else if (t < halfCycle) {
-            float moveProgress = (t - STOP_DURATION) / moveTime;
-            offset = moveProgress * maxScroll;
-        } else if (t < halfCycle + STOP_DURATION) {
-            offset = maxScroll;
-        } else {
-            float moveProgress = (t - halfCycle - STOP_DURATION) / moveTime;
-            offset = maxScroll * (1.0f - moveProgress);
-        }
+        if (t < STOP_DURATION) offset = 0;
+        else if (t < halfCycle) offset = ((t - STOP_DURATION) / moveTime) * maxScroll;
+        else if (t < halfCycle + STOP_DURATION) offset = maxScroll;
+        else offset = maxScroll * (1.0f - (t - halfCycle - STOP_DURATION) / moveTime);
 
         int drawX = textX + availableWidth - titleWidth + (int) offset;
 
@@ -606,6 +692,10 @@ public final class BackpackScreenHelper {
         graphics.text(font, title, drawX, textY, -12566464, false);
         graphics.disableScissor();
     }
+
+    // ============================================================
+    // 纹理尺寸 & 命中检测
+    // ============================================================
 
     private static final Map<Identifier, Dimension> TEXTURE_SIZE_CACHE = new HashMap<>();
     private static Dimension getTextureSize(Minecraft mc, Identifier texId) {
@@ -621,20 +711,184 @@ public final class BackpackScreenHelper {
         });
     }
 
+    public static int getSegmentAtPosition(AbstractContainerScreen<?> screen, double mouseX, double mouseY) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return -1;
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null) return -1;
+
+        int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
+        int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
+
+        List<LayoutSegment> segments = data.segments();
+        for (int i = 0; i < segments.size(); i++) {
+            LayoutSegment seg = segments.get(i);
+            if (seg.order() == LayoutOrder.CUSTOM) continue;
+            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
+
+            int[] uiOff = getUiOffsetForSegment(screen, i);
+            int offsetX = getOffsetX(screen, i) + uiOff[0];
+            int offsetY = getOffsetY(screen, i) + uiOff[1];
+
+            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
+            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
+            int width = seg.columns().get() * 18;
+            int height = seg.rows().get() * 18;
+
+            Rectangle rect = new Rectangle(segStartX, segStartY, width, height);
+            if (rect.contains(mouseX, mouseY)) return i;
+        }
+        return -1;
+    }
+
+    // ============================================================
+    // 配置偏移（供外部调用）
+    // ============================================================
+
+    public static int getConfigOffsetX(AbstractContainerScreen<?> screen, int defaultX) {
+        return getConfigOffsetX(screen, defaultX, 0);
+    }
+
+    public static int getConfigOffsetX(AbstractContainerScreen<?> screen, int defaultX, int segmentIndex) {
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultX;
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = offsetMap.get(screenType);
+        if (offsets == null || offsets.isEmpty()) return defaultX;
+        int[] v = BackpackOffsetConfig.offsetFor(offsetMap, screenType, segmentIndex);
+        return v.length > 0 ? v[0] : defaultX;
+    }
+
+    public static int getConfigOffsetY(AbstractContainerScreen<?> screen, int defaultY) {
+        return getConfigOffsetY(screen, defaultY, 0);
+    }
+
+    public static int getConfigOffsetY(AbstractContainerScreen<?> screen, int defaultY, int segmentIndex) {
+        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
+        if (offsetMap == null) return defaultY;
+        String screenType = getScreenType(screen);
+        List<int[]> offsets = offsetMap.get(screenType);
+        if (offsets == null || offsets.isEmpty()) return defaultY;
+        int[] v = BackpackOffsetConfig.offsetFor(offsetMap, screenType, segmentIndex);
+        return v.length > 1 ? v[1] : defaultY;
+    }
+
+    // ============================================================
+    // 单段 / 全背包边界
+    // ============================================================
+
+    /** 单段边界 {minX, minY, W, H}，以容器左上角为原点。 */
+    private static int[] computeSingleSegmentBounds(Minecraft mc, LayoutSegment seg) {
+        int segStartX = seg.getEffectiveStartX();
+        int segStartY = seg.getEffectiveStartY();
+        int count = seg.getSlotCount();
+        int columns = seg.columns().orElse(1);
+        LayoutOrder order = seg.order();
+
+        // 优先用背景纹理作为该段的边界
+        if (seg.backgroundTexture().isPresent()) {
+            Identifier tex = seg.backgroundTexture().get();
+            Dimension texSize = getTextureSize(mc, tex);
+            if (texSize != null && texSize.width > 0 && texSize.height > 0) {
+                int bgX = seg.backgroundX().orElse(0);
+                int bgY = seg.backgroundY().orElse(0);
+                return new int[]{
+                        segStartX + bgX,
+                        segStartY + bgY,
+                        texSize.width,
+                        texSize.height
+                };
+            }
+        }
+
+        // 回退：用格子范围
+        if (order == LayoutOrder.CUSTOM) {
+            List<BackpackSlotPos> positions = seg.customPositions().orElse(null);
+            if (positions == null) return new int[]{0, 0, 0, 0};
+            int limit = Math.min(count, positions.size());
+            if (limit <= 0) return new int[]{0, 0, 0, 0};
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+            int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+            for (int j = 0; j < limit; j++) {
+                BackpackSlotPos p = positions.get(j);
+                int x = segStartX + p.x();
+                int y = segStartY + p.y();
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x + 18);
+                maxY = Math.max(maxY, y + 18);
+            }
+            return new int[]{minX, minY, maxX - minX, maxY - minY};
+        }
+
+        int rows = (count + columns - 1) / columns;
+        return new int[]{segStartX, segStartY, columns * 18, rows * 18};
+    }
+
+    private static int[] computeSegmentBounds(Player player, int segmentIndex) {
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null) return new int[]{0, 0, 0, 0};
+
+        List<LayoutSegment> segments = data.segments();
+        if (segmentIndex < 0 || segmentIndex >= segments.size()) return new int[]{0, 0, 0, 0};
+
+        return computeSingleSegmentBounds(Minecraft.getInstance(), segments.get(segmentIndex));
+    }
+
+    /** 全背包合并边界（保留供扩展）。 */
+    private static int[] computeBackpackBounds(Player player) {
+        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
+        BackpackData data = getBackpackData(backpack);
+        if (data == null) return new int[]{0, 0, 0, 0};
+
+        Minecraft mc = Minecraft.getInstance();
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+        boolean hasAny = false;
+
+        for (LayoutSegment seg : data.segments()) {
+            int[] b = computeSingleSegmentBounds(mc, seg);
+            if (b[2] <= 0 || b[3] <= 0) continue;
+            minX = Math.min(minX, b[0]);
+            minY = Math.min(minY, b[1]);
+            maxX = Math.max(maxX, b[0] + b[2]);
+            maxY = Math.max(maxY, b[1] + b[3]);
+            hasAny = true;
+        }
+
+        if (!hasAny) return new int[]{0, 0, 0, 0};
+        return new int[]{minX, minY, maxX - minX, maxY - minY};
+    }
+
+    // ============================================================
+    // 屏幕类型 / UI 配置查询
+    // ============================================================
+
+    private static List<int[]> getUiOffsetList(AbstractContainerScreen<?> screen) {
+        Map<String, List<int[]>> uiMap = BackpackConfigs.ui();
+        if (uiMap == null) return List.of();
+        List<int[]> list = uiMap.get(getScreenType(screen));
+        return list != null ? list : List.of();
+    }
+
+    private static String getScreenType(AbstractContainerScreen<?> screen) {
+        if (screen instanceof IBackpackScreen provider) return provider.yyzsbackpack$getScreenType();
+        return screen.getClass().getSimpleName();
+    }
+
+    // ============================================================
+    // 控制按钮（保持原样，不分段）
+    // ============================================================
+
     public static void addBackpackMoveIToBButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackMoveIBButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackMoveIBButton)
                 .map(w -> (BackpackMoveIBButton) w)
                 .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveIBButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveIBButton btn = new BackpackMoveIBButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveIBButton(x, y)); }
     }
 
     public static void addBackpackMoveBToIButton(AbstractContainerScreen<?> screen, int x, int y) {
@@ -642,15 +896,8 @@ public final class BackpackScreenHelper {
                 .filter(w -> w instanceof BackpackMoveBIButton)
                 .map(w -> (BackpackMoveBIButton) w)
                 .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveBIButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveBIButton btn = new BackpackMoveBIButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveBIButton(x, y)); }
     }
 
     public static void addBackpackSortButton(AbstractContainerScreen<?> screen, int x, int y) {
@@ -658,15 +905,8 @@ public final class BackpackScreenHelper {
                 .filter(w -> w instanceof BackpackSortButton)
                 .map(w -> (BackpackSortButton) w)
                 .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackSortButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackSortButton btn = new BackpackSortButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackSortButton(x, y)); }
     }
 
     public static void addBackpackVisibleButton(AbstractContainerScreen<?> screen, int x, int y) {
@@ -674,55 +914,29 @@ public final class BackpackScreenHelper {
                 .filter(w -> w instanceof BackpackVisibleButton)
                 .map(w -> (BackpackVisibleButton) w)
                 .findFirst();
-
-        if (existing.isPresent()) {
-            existing.get().setPosition(x, y);
-        } else {
-            BackpackVisibleButton btn = new BackpackVisibleButton(x, y, (IBackpackVisible) screen);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+        if (existing.isPresent()) { existing.get().setPosition(x, y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackVisibleButton(x, y, (IBackpackVisible) screen)); }
     }
 
-    public static void addBackpackControls(AbstractContainerScreen<?> screen) {
-        addBackpackControls(screen, 0);
-    }
-
+    public static void addBackpackControls(AbstractContainerScreen<?> screen) { addBackpackControls(screen, 0); }
     public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset) {
         addBackpackControls(screen, extraYOffset, true, false);
     }
 
-    /**
-     * 添加背包控制按钮，支持额外的Y轴偏移（用于多行容器屏幕）。
-     * 如果按钮已存在则更新位置，否则创建新按钮。
-     *
-     * @param screen        目标容器屏幕
-     * @param extraYOffset  额外的Y轴偏移量
-     */
     public static void addBackpackControls(AbstractContainerScreen<?> screen, int extraYOffset, boolean applyToGroup1, boolean applyToGroup2) {
-        // 获取配置
         BackpackMainConfig config = Backpack.getMainConfig();
         ButtonMode mode = config.button;
 
-        // 获取玩家
         Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            // 没有玩家时移除按钮并返回
-            removeAllBackpackControlButtons(screen);
-            return;
-        }
+        if (player == null) { removeAllBackpackControlButtons(screen); return; }
 
-        // 判断是否应该显示按钮
         boolean showButtons = switch (mode) {
             case HIDE -> false;
             case SHOW -> true;
             case AUTO -> !BackpackSlotHelper.getAllBackpackStacks(player).isEmpty();
         };
 
-        if (!showButtons) {
-            // 隐藏按钮：移除所有按钮后返回
-            removeAllBackpackControlButtons(screen);
-            return;
-        }
+        if (!showButtons) { removeAllBackpackControlButtons(screen); return; }
 
         String screenType = getScreenType(screen);
         Map<String, List<int[]>> controlMap = BackpackConfigs.control();
@@ -741,11 +955,8 @@ public final class BackpackScreenHelper {
             int offsetY = offset[1];
 
             int finalExtraOffset = 0;
-            if (groupIdx == 0 && applyToGroup1) {
-                finalExtraOffset = extraYOffset;
-            } else if (groupIdx == 1 && applyToGroup2) {
-                finalExtraOffset = extraYOffset;
-            }
+            if (groupIdx == 0 && applyToGroup1) finalExtraOffset = extraYOffset;
+            else if (groupIdx == 1 && applyToGroup2) finalExtraOffset = extraYOffset;
 
             int toggleX = leftPos + offsetX;
             int toggleY = topPos - size + offsetY + finalExtraOffset;
@@ -766,50 +977,33 @@ public final class BackpackScreenHelper {
 
     private static void removeAllBackpackControlButtons(AbstractContainerScreen<?> screen) {
         List<Class<?>> buttonClasses = List.of(
-                BackpackVisibleButton.class,
-                BackpackSortButton.class,
-                BackpackMoveBIButton.class,
-                BackpackMoveIBButton.class,
-                BackpackMoveBCButton.class,
-                BackpackMoveCBButton.class,
-                BackpackMoveICButton.class,
-                BackpackMoveCIButton.class
-        );
+                BackpackVisibleButton.class, BackpackSortButton.class,
+                BackpackMoveBIButton.class, BackpackMoveIBButton.class,
+                BackpackMoveBCButton.class, BackpackMoveCBButton.class,
+                BackpackMoveICButton.class, BackpackMoveCIButton.class);
         for (var child : screen.children().stream().filter(w -> buttonClasses.stream().anyMatch(c -> c.isInstance(w))).toList()) {
             ((ScreenInvoker) screen).invokeRemoveWidget(child);
         }
     }
 
-    /**
-     * 处理背包滚动逻辑。
-     * @return true 表示已处理，外部应直接返回；false 表示未处理，继续执行原逻辑。
-     */
     public static boolean handleMouseScrolled(AbstractContainerScreen<?> screen,
                                               double mouseX, double mouseY,
                                               double scrollX, double scrollY) {
-        // 排序按钮
         for (var child : screen.children()) {
             if (child instanceof BackpackSortButton btn) {
-                if (btn.isMouseOver(mouseX, mouseY)) {
-                    BackpackSortButton.cycleAlgorithm();
-                    return true;
-                }
+                if (btn.isMouseOver(mouseX, mouseY)) { BackpackSortButton.cycleAlgorithm(); return true; }
             }
         }
 
-        // 段内滚动
         int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, mouseX, mouseY);
         if (segmentIndex >= 0) {
-            // 获取实现了 IBackpackScroll 的接口（screen 本身已实现，因为 AbstractContainerScreenMixin 实现了它）
             IBackpackScroll scrollable = (IBackpackScroll) screen;
             int delta = (int) Math.signum(scrollY);
             int oldOffset = scrollable.yyzsbackpack$getSegmentScrollOffset(segmentIndex);
-            int newOffset = oldOffset - delta;
-            scrollable.yyzsbackpack$setSegmentScrollOffset(segmentIndex, newOffset);
+            scrollable.yyzsbackpack$setSegmentScrollOffset(segmentIndex, oldOffset - delta);
             return true;
         }
 
-        // 标签页滚动
         boolean mouseOverTab = screen.children().stream()
                 .filter(w -> w instanceof BackpackTabWidget)
                 .anyMatch(w -> w.isMouseOver(mouseX, mouseY));
@@ -817,190 +1011,48 @@ public final class BackpackScreenHelper {
             IBackpackTabScroll tabScroll = (IBackpackTabScroll) screen;
             int delta = (int) Math.signum(scrollY);
             int oldOffset = tabScroll.yyzsbackpack$getTabScrollOffset();
-            int newOffset = oldOffset - delta;
-            tabScroll.yyzsbackpack$setTabScrollOffset(newOffset);
+            tabScroll.yyzsbackpack$setTabScrollOffset(oldOffset - delta);
             BackpackScreenHelper.addBackpackTabs(screen);
             return true;
         }
 
-        return false; // 未处理，让原逻辑继续
+        return false;
     }
 
     private static void addBackpackMoveBToCButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackMoveBCButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackMoveBCButton)
-                .map(w -> (BackpackMoveBCButton) w)
-                .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveBCButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveBCButton btn = new BackpackMoveBCButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+                .map(w -> (BackpackMoveBCButton) w).findFirst();
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveBCButton(x, y)); }
     }
 
     private static void addBackpackMoveCToBButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackMoveCBButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackMoveCBButton)
-                .map(w -> (BackpackMoveCBButton) w)
-                .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveCBButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveCBButton btn = new BackpackMoveCBButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+                .map(w -> (BackpackMoveCBButton) w).findFirst();
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveCBButton(x, y)); }
     }
 
     private static void addBackpackMoveIToCButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackMoveICButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackMoveICButton)
-                .map(w -> (BackpackMoveICButton) w)
-                .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveICButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveICButton btn = new BackpackMoveICButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
+                .map(w -> (BackpackMoveICButton) w).findFirst();
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveICButton(x, y)); }
     }
 
     private static void addBackpackMoveCToIButton(AbstractContainerScreen<?> screen, int x, int y) {
         Optional<BackpackMoveCIButton> existing = screen.children().stream()
                 .filter(w -> w instanceof BackpackMoveCIButton)
-                .map(w -> (BackpackMoveCIButton) w)
-                .findFirst();
-
-        if (existing.isPresent()) {
-            BackpackMoveCIButton btn = existing.get();
-            btn.setX(x);
-            btn.setY(y);
-        } else {
-            BackpackMoveCIButton btn = new BackpackMoveCIButton(x, y);
-            ((ScreenInvoker) screen).invokeAddRenderableWidget(btn);
-        }
-    }
-
-    public static int getSegmentAtPosition(AbstractContainerScreen<?> screen, double mouseX, double mouseY) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return -1;
-        ItemStack backpack = BackpackSlotHelper.getSelectedBackpack(player);
-        BackpackData data = getBackpackData(backpack);
-        if (data == null) return -1;
-
-        int offsetX = getOffsetX(screen) + getUiOffsetX(screen);
-        int offsetY = getOffsetY(screen) + getUiOffsetY(screen);
-        int leftPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getLeftPos();
-        int topPos = ((ScreenAccessor<?>) screen).yyzsbackpack_getTopPos();
-
-        List<LayoutSegment> segments = data.segments();
-        for (int i = 0; i < segments.size(); i++) {
-            LayoutSegment seg = segments.get(i);
-            if (seg.order() == LayoutOrder.CUSTOM) continue;
-            if (seg.columns().isEmpty() || seg.rows().isEmpty()) continue;
-
-            int segStartX = leftPos + seg.getEffectiveStartX() + offsetX;
-            int segStartY = topPos + seg.getEffectiveStartY() + offsetY;
-            int width = seg.columns().get() * 18;
-            int height = seg.rows().get() * 18;
-
-            Rectangle rect = new Rectangle(segStartX, segStartY, width, height);
-            if (rect.contains(mouseX, mouseY)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * 从 BackpackOffsetConfig 中读取当前屏幕类型的 X 偏移值。
-     *
-     * @param screen    当前容器屏幕
-     * @param defaultX  当配置缺失或无效时返回的默认 X 偏移
-     * @return 配置的 X 偏移或默认值
-     */
-    public static int getConfigOffsetX(AbstractContainerScreen<?> screen, int defaultX) {
-        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
-        if (offsetMap == null) return defaultX;
-
-        String screenType = getScreenType(screen);
-        List<int[]> offsets = offsetMap.get(screenType);
-        if (offsets == null || offsets.isEmpty()) return defaultX;
-
-        int[] offset = offsets.getFirst();
-        return offset.length > 0 ? offset[0] : defaultX;
-    }
-
-    /**
-     * 从 BackpackOffsetConfig 中读取当前屏幕类型的 Y 偏移值。
-     *
-     * @param screen    当前容器屏幕
-     * @param defaultY  当配置缺失或无效时返回的默认 Y 偏移
-     * @return 配置的 Y 偏移或默认值
-     */
-    public static int getConfigOffsetY(AbstractContainerScreen<?> screen, int defaultY) {
-        Map<String, List<int[]>> offsetMap = BackpackConfigs.offset();
-        if (offsetMap == null) return defaultY;
-
-        String screenType = getScreenType(screen);
-        List<int[]> offsets = offsetMap.get(screenType);
-        if (offsets == null || offsets.isEmpty()) return defaultY;
-
-        int[] offset = offsets.getFirst();
-        return offset.length > 1 ? offset[1] : defaultY;
+                .map(w -> (BackpackMoveCIButton) w).findFirst();
+        if (existing.isPresent()) { existing.get().setX(x); existing.get().setY(y); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackMoveCIButton(x, y)); }
     }
 
     public static BackpackData getBackpackData(ItemStack stack) {
-        if (stack.getItem() instanceof BackpackItem backpackItem) {
-            return backpackItem.getData();
-        }
+        if (stack.getItem() instanceof BackpackItem backpackItem) return backpackItem.getData();
         return null;
-    }
-
-    public static int getOffsetX(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffset provider) {
-            return provider.yyzsbackpack$getBackpackOffsetX();
-        }
-        return 0;
-    }
-
-    public static int getOffsetY(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackOffset provider) {
-            return provider.yyzsbackpack$getBackpackOffsetY();
-        }
-        return 0;
-    }
-
-    private static int[] getUiOffset(AbstractContainerScreen<?> screen) {
-        Map<String, List<int[]>> uiMap = BackpackConfigs.ui();
-        if (uiMap == null) return new int[]{0, 0};
-        String screenType = getScreenType(screen);
-        List<int[]> offsets = uiMap.get(screenType);
-        if (offsets == null || offsets.isEmpty()) return new int[]{0, 0};
-        return offsets.getFirst();
-    }
-
-    private static int getUiOffsetX(AbstractContainerScreen<?> screen) {
-        return getUiOffset(screen)[0];
-    }
-
-    private static int getUiOffsetY(AbstractContainerScreen<?> screen) {
-        return getUiOffset(screen)[1];
-    }
-
-    private static String getScreenType(AbstractContainerScreen<?> screen) {
-        if (screen instanceof IBackpackScreen provider) {
-            return provider.yyzsbackpack$getScreenType();
-        }
-        return screen.getClass().getSimpleName();
     }
 }

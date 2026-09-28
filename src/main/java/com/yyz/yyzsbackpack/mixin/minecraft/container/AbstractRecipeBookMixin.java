@@ -17,17 +17,28 @@ public abstract class AbstractRecipeBookMixin implements IBackpackOffset {
 
     @Override
     public int yyzsbackpack$getBackpackOffsetX() {
+        return yyzsbackpack$getBackpackOffsetX(0);
+    }
+
+    @Override
+    public int yyzsbackpack$getBackpackOffsetX(int segmentIndex) {
         if (recipeBookComponent.isVisible()) {
             AbstractRecipeBookScreen<?> screen = (AbstractRecipeBookScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetX(screen, 0, segmentIndex);
         }
         return 0;
     }
+
     @Override
     public int yyzsbackpack$getBackpackOffsetY() {
+        return yyzsbackpack$getBackpackOffsetY(0);
+    }
+
+    @Override
+    public int yyzsbackpack$getBackpackOffsetY(int segmentIndex) {
         if (recipeBookComponent.isVisible()) {
             AbstractRecipeBookScreen<?> screen = (AbstractRecipeBookScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetY(screen, 0, segmentIndex);
         }
         return 0;
     }

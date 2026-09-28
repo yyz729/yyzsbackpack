@@ -16,30 +16,43 @@ public class BackpackUiConfig {
 
     private static volatile BackpackUiConfig INSTANCE;
 
+    /**
+     * 每个界面条目：List<int[]>，按分段顺序交替存放 [目标位置, 锚点百分比]：
+     *   index 2i     -> 第 i 段锚点的目标位置（像素）[x, y]
+     *   index 2i + 1 -> 第 i 段锚点在背包上的位置（%）[x%, y%]（0~100）
+     *
+     * 语义：把第 i 段上 (x%, y%) 那个点放到 (off[0], off[1]) 位置。
+     *   [100, 0] （默认） = 该段右边缘对齐到 off 位置
+     *   [0,   0]          = 该段左边缘对齐到 off 位置
+     *   [100, 100]        = 该段右下角对齐到 off 位置
+     *   [50,  50]         = 该段中心对齐到 off 位置
+     *
+     * 单段时等价于旧格式：{ [x, y], [anchorX, anchorY] }。
+     */
     public Map<String, List<int[]>> uiOffsets = new HashMap<>() {{
-        put("InventoryScreen",          Collections.singletonList(new int[]{0, 0}));
-        put("CraftingScreen",           Collections.singletonList(new int[]{0, 0}));
-        put("ContainerScreen",          Collections.singletonList(new int[]{0, 0}));
-        put("BlastFurnaceScreen",       Collections.singletonList(new int[]{0, 0}));
-        put("FurnaceScreen",            Collections.singletonList(new int[]{0, 0}));
-        put("SmokerScreen",             Collections.singletonList(new int[]{0, 0}));
-        put("BeaconScreen",             Collections.singletonList(new int[]{0, 0}));
-        put("BrewingStandScreen",       Collections.singletonList(new int[]{0, 0}));
-        put("CartographyTableScreen",   Collections.singletonList(new int[]{0, 0}));
-        put("CrafterScreen",            Collections.singletonList(new int[]{0, 0}));
-        put("DispenserScreen",          Collections.singletonList(new int[]{0, 0}));
-        put("EnchantmentScreen",        Collections.singletonList(new int[]{0, 0}));
-        put("GrindstoneScreen",         Collections.singletonList(new int[]{0, 0}));
-        put("HopperScreen",             Collections.singletonList(new int[]{0, 0}));
-        put("LoomScreen",               Collections.singletonList(new int[]{0, 0}));
-        put("MerchantScreen",           Collections.singletonList(new int[]{0, 0}));
-        put("ShulkerBoxScreen",         Collections.singletonList(new int[]{0, 0}));
-        put("SmithingScreen",           Collections.singletonList(new int[]{0, 0}));
-        put("AnvilScreen",              Collections.singletonList(new int[]{0, 0}));
-        put("StonecutterScreen",        Collections.singletonList(new int[]{0, 0}));
-        put("NautilusInventoryScreen",  Collections.singletonList(new int[]{0, 0}));
-        put("HorseInventoryScreen",     Collections.singletonList(new int[]{0, 0}));
-        put("CreativeModeInventoryScreen",     Collections.singletonList(new int[]{0, 0}));
+        put("InventoryScreen",             Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("CraftingScreen",              Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("ContainerScreen",             Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("BlastFurnaceScreen",          Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("FurnaceScreen",               Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("SmokerScreen",                Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("BeaconScreen",                Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("BrewingStandScreen",          Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("CartographyTableScreen",      Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("CrafterScreen",               Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("DispenserScreen",             Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("EnchantmentScreen",           Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("GrindstoneScreen",            Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("HopperScreen",                Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("LoomScreen",                  Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("MerchantScreen",              Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("ShulkerBoxScreen",            Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("SmithingScreen",              Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("AnvilScreen",                 Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("StonecutterScreen",           Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("NautilusInventoryScreen",     Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("HorseInventoryScreen",        Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
+        put("CreativeModeInventoryScreen", Arrays.asList(new int[]{0, 0}, new int[]{100, 0}));
     }};
 
     private transient Map<String, File> sourceFiles = new HashMap<>();
@@ -49,6 +62,42 @@ public class BackpackUiConfig {
     public static BackpackUiConfig getInstance() {
         return INSTANCE;
     }
+
+    // ============================================================
+    // 分段访问：每段占 2 个条目（2i = 目标位置，2i + 1 = 锚点百分比）
+    // ============================================================
+
+    /** 指定分段的偏移（目标位置）。越界或缺失时回退到段 0。 */
+    public static int[] offsetOf(List<int[]> list, int segmentIndex) {
+        if (list == null || list.isEmpty()) return new int[]{0, 0};
+        int idx = segmentIndex * 2;
+        if (idx < 0 || idx >= list.size()) idx = 0;
+        int[] v = list.get(idx);
+        return (v != null && v.length >= 2) ? new int[]{v[0], v[1]} : new int[]{0, 0};
+    }
+
+    /** 指定分段的锚点百分比。越界或缺失时回退到段 0 的锚点。 */
+    public static int[] anchorOf(List<int[]> list, int segmentIndex) {
+        if (list == null || list.size() < 2) return new int[]{100, 0};
+        int idx = segmentIndex * 2 + 1;
+        if (idx < 0 || idx >= list.size()) idx = 1;
+        int[] v = list.get(idx);
+        if (v == null || v.length < 2) return new int[]{100, 0};
+        return new int[]{
+                Math.max(0, Math.min(100, v[0])),
+                Math.max(0, Math.min(100, v[1]))
+        };
+    }
+
+    /** 向后兼容：段 0 的偏移。 */
+    public static int[] offsetOf(List<int[]> list) { return offsetOf(list, 0); }
+
+    /** 向后兼容：段 0 的锚点。 */
+    public static int[] anchorOf(List<int[]> list) { return anchorOf(list, 0); }
+
+    // ============================================================
+    // 生成 / 加载 / 保存
+    // ============================================================
 
     public static void generateModDefaultConfig(String modId, Map<String, List<int[]>> defaultEntries) {
         Path uiDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/ui");

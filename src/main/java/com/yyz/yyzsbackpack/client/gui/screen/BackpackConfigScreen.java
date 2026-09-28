@@ -49,7 +49,6 @@ public class BackpackConfigScreen extends Screen {
     private File currentFile = null;
     private int scrollY = 0;
 
-    // 滚动条用
     private int lastContentHeight = 0;
     private int lastVisibleHeight = 0;
     private int lastMaxScroll = 0;
@@ -97,7 +96,6 @@ public class BackpackConfigScreen extends Screen {
     private void rebuild() {
         this.clearWidgets();
 
-        // ---- 顶部标签栏（动态宽度） ----
         Tab[] tabs = Tab.values();
         int gap = 4;
         int available = this.width - 20;
@@ -109,9 +107,6 @@ public class BackpackConfigScreen extends Screen {
         for (int i = 0; i < tabs.length; i++) {
             final Tab tab = tabs[i];
             String label = Component.translatable(tab.key).getString();
-//            while (label.length() > 3 && this.font.width(label) > tabWidth - 6) {
-//                label = label.substring(0, label.length() - 1);
-//            }
             Button btn = Button.builder(Component.literal(label), b -> {
                 if (currentTab != tab) {
                     currentTab = tab;
@@ -124,7 +119,6 @@ public class BackpackConfigScreen extends Screen {
             this.addRenderableWidget(btn);
         }
 
-        // ---- 内容区 ----
         if (currentTab == Tab.MAIN) {
             buildMainTab();
         } else if (currentFile == null) {
@@ -133,7 +127,6 @@ public class BackpackConfigScreen extends Screen {
             buildKeyListTab();
         }
 
-        // ---- 底部按钮（统一 Y 位置，不重叠） ----
         int bottomY = this.height - 28;
 
         if (currentTab != Tab.MAIN && currentFile != null) {
@@ -160,7 +153,6 @@ public class BackpackConfigScreen extends Screen {
                 }).bounds(this.width / 2 - 60, bottomY, 120, 20).build());
     }
 
-    // ==================== Main 页 ====================
     private void buildMainTab() {
         int centerX = this.width / 2;
         int w = 220;
@@ -173,7 +165,6 @@ public class BackpackConfigScreen extends Screen {
                 }).bounds(centerX - w / 2, y, w, 20).build());
         y += 28;
 
-        // 先夹取一次，防止配置文件里的值超出范围
         if (mainConfig.heavy < HEAVY_MIN) mainConfig.heavy = HEAVY_MIN;
         if (mainConfig.heavy > HEAVY_MAX) mainConfig.heavy = HEAVY_MAX;
 
@@ -216,7 +207,6 @@ public class BackpackConfigScreen extends Screen {
         return Component.translatable("yyzsbackpack.config.button_mode", mode);
     }
 
-    // ==================== 文件列表 ====================
     private void buildFileListTab() {
         List<File> files = currentFiles();
         int baseY = CONTENT_TOP;
@@ -262,7 +252,6 @@ public class BackpackConfigScreen extends Screen {
         }
     }
 
-    // ==================== 单个文件里的 key 列表 ====================
     private void buildKeyListTab() {
         List<String> keys = currentKeys();
         int baseY = CONTENT_TOP;
@@ -299,12 +288,24 @@ public class BackpackConfigScreen extends Screen {
 
             if (y < baseY || y + 20 > this.height - BOTTOM_RESERVED) continue;
 
+            String displayKey = key;
+            int colonIndex = key.indexOf(':');
+            if (colonIndex >= 0 && colonIndex + 1 < key.length()) {
+                displayKey = key.substring(colonIndex + 1);
+            }
+
             List<int[]> valueList = currentValue(key);
-            String label = key;
+            String label = displayKey;
             if (valueList != null && !valueList.isEmpty()) {
                 int[] p = valueList.get(0);
-                label = key + " (" + p[0] + "," + p[1] + ")"
-                        + (valueList.size() > 1 ? " +" + (valueList.size() - 1) : "");
+                label = displayKey + " (" + p[0] + "," + p[1] + ")";
+                if (valueList.size() >= 2) {
+                    int[] a = valueList.get(1);
+                    label += " A(" + a[0] + "%," + a[1] + "%)";
+                }
+                if (valueList.size() > 2) {
+                    label += " +" + (valueList.size() - 2);
+                }
             }
             while (label.length() > 3 && this.font.width(label) > colWidth - 10) {
                 label = label.substring(0, label.length() - 1);
@@ -317,7 +318,6 @@ public class BackpackConfigScreen extends Screen {
         }
     }
 
-    // ==================== 数据访问 ====================
     private List<File> currentFiles() {
         return switch (currentTab) {
             case CONTROL -> controlConfig != null ? controlConfig.getAllFiles() : List.of();
@@ -396,7 +396,6 @@ public class BackpackConfigScreen extends Screen {
         }
     }
 
-    // ==================== 滚动 ====================
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY,
                                  double scrollX, double scrollY) {
@@ -442,16 +441,13 @@ public class BackpackConfigScreen extends Screen {
         int totalRows = this.lastContentHeight / ROW_HEIGHT;
         if (totalRows <= visibleRows) return;
 
-        // [16, trackH]
         int thumbH = trackH * visibleRows / totalRows;
         if (thumbH < 16) thumbH = 16;
         if (thumbH > trackH) thumbH = trackH;
 
-        // 可滑动的像素范围
         int range = trackH - thumbH;
         int scrollablePx = (totalRows - visibleRows) * ROW_HEIGHT;
 
-        // 当前滚动量,[0, scrollablePx]
         int scrolled = -this.scrollY;
         if (scrolled < 0) scrolled = 0;
         if (scrolled > scrollablePx) scrolled = scrollablePx;
@@ -461,10 +457,8 @@ public class BackpackConfigScreen extends Screen {
         int trackX = this.width - 6;
         int barW = 3;
 
-        // 轨道
         graphics.fill(trackX, viewTop, trackX + barW, viewTop + trackH, 0x30FFFFFF);
 
-        // 偏移量一定在 0..range 内，绝不超过轨道
         int thumbY = viewTop + thumbOffset;
         graphics.fill(trackX, thumbY, trackX + barW, thumbY + thumbH, 0xFFFFFFFF);
     }

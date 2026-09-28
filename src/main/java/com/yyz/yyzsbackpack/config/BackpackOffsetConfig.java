@@ -16,6 +16,12 @@ public class BackpackOffsetConfig {
 
     private static volatile BackpackOffsetConfig INSTANCE;
 
+    /**
+     * 每个界面条目：List<int[]>，按分段顺序存放偏移：
+     *   list[i] = 第 i 段的偏移 [dx, dy]
+     *
+     * 若段数超过列表长度，多出来的段回退到列表最后一项（单段配置天然兼容）。
+     */
     public Map<String, List<int[]>> offsetValues = new HashMap<>() {{
         put("InventoryScreen",    Collections.singletonList(new int[]{-180, 0}));
         put("CraftingScreen",     Collections.singletonList(new int[]{-180, 0}));
@@ -31,6 +37,28 @@ public class BackpackOffsetConfig {
     public static BackpackOffsetConfig getInstance() {
         return INSTANCE;
     }
+
+    // ============================================================
+    // 分段访问
+    // ============================================================
+
+    /**
+     * 取指定分段的偏移。列表索引 = 分段索引；若分段索引越界，
+     * 回退到列表最后一个条目，保证单段配置仍对多段背包生效。
+     */
+    public static int[] offsetFor(Map<String, List<int[]>> map, String screenType, int segmentIndex) {
+        if (map == null) return new int[]{0, 0};
+        List<int[]> list = map.get(screenType);
+        if (list == null || list.isEmpty()) return new int[]{0, 0};
+        int idx = Math.max(0, Math.min(segmentIndex, list.size() - 1));
+        int[] v = list.get(idx);
+        if (v == null || v.length < 2) return new int[]{0, 0};
+        return new int[]{v[0], v[1]};
+    }
+
+    // ============================================================
+    // 生成 / 加载 / 保存
+    // ============================================================
 
     public static void generateModDefaultConfig(String modId, Map<String, List<int[]>> defaultEntries) {
         Path offsetDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/offset");

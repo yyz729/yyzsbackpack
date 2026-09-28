@@ -831,7 +831,7 @@ public final class BackpackMenuHelper {
     }
 
     /**
-     * Ctrl+点击槽位：非背包槽位移至背包，背包槽位移至快捷栏。
+     * ALt+点击槽位：非背包槽位移至背包，背包槽位移至快捷栏。
      * 使用原版 Shift+点击逻辑（先合并后放入空槽）。
      *
      * @param player    服务器玩家
@@ -847,37 +847,30 @@ public final class BackpackMenuHelper {
 
         IBackpackMenu backpackMenu = (IBackpackMenu) menu;
 
+        // 保存移动前的副本，用于 onTake（不能复用 stack，因为 moveItemStackTo 会改它的 count）
+        ItemStack originalStack = stack.copy();
+        boolean moved = false;
+
         if (sourceSlot instanceof BackpackSlot) {
             // 优先快捷栏 0~8
             int[] hotbarRange = findHotbarRange(menu, player);
             if (hotbarRange != null) {
-                backpackMenu.yyzsbackpack$moveItemStackTo(
-                        stack,
-                        hotbarRange[0],
-                        hotbarRange[1],
-                        true
-                );
+                if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                        stack, hotbarRange[0], hotbarRange[1], true)) {
+                    moved = true;
+                }
             }
 
             // 快捷栏没放完，再尝试主物品栏 9~35
             if (!stack.isEmpty()) {
                 int[] mainRange = findInventoryMainRange(menu, player);
                 if (mainRange != null) {
-                    backpackMenu.yyzsbackpack$moveItemStackTo(
-                            stack,
-                            mainRange[0],
-                            mainRange[1],
-                            true
-                    );
+                    if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                            stack, mainRange[0], mainRange[1], true)) {
+                        moved = true;
+                    }
                 }
             }
-
-            if (stack.isEmpty()) {
-                sourceSlot.set(ItemStack.EMPTY);
-            } else {
-                sourceSlot.set(stack);
-            }
-            sourceSlot.setChanged();
         } else {
             // 非背包槽 → 背包
             int backpackStart = getBackpackSlotStart(menu);
@@ -886,13 +879,17 @@ public final class BackpackMenuHelper {
             if (size <= 0) return;
             int backpackEnd = Math.min(backpackStart + size, menu.slots.size());
 
-            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
-                if (stack.isEmpty()) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.set(stack);
-                }
+            if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                    stack, backpackStart, backpackEnd, false)) {
+                moved = true;
             }
         }
+
+        // 没有移动则不写回、不触发 onTake（对应原版“没动就不消耗”的语义）
+        if (!moved) return;
+
+        sourceSlot.setByPlayer(stack);
+        sourceSlot.setChanged();
+        sourceSlot.onTake(player, originalStack);
     }
 }

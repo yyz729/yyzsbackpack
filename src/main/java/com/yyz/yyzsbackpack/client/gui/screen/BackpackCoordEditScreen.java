@@ -13,11 +13,10 @@ import java.util.function.Consumer;
 
 public class BackpackCoordEditScreen extends Screen {
 
-    /** 编辑模式，决定每行的描述文字。 */
     public enum EditMode {
-        CONTROL,  // 第 0 行 = 基础按钮，第 1 行 = 额外按钮，其余无描述
-        OFFSET,   // 第 0 行 = 配方书自动偏移，其余无描述
-        UI        // 第 0 行 = 背包初始位置，其余无描述
+        CONTROL,
+        OFFSET,
+        UI
     }
 
     private static final int ROW_HEIGHT = 26;
@@ -26,6 +25,9 @@ public class BackpackCoordEditScreen extends Screen {
     private static final int FIELD_WIDTH = 70;
     private static final int LABEL_WIDTH = 130;
     private static final int DEL_WIDTH = 24;
+
+    /** UI 模式最大分段数（每段 2 个条目：目标位置 + 锚点）。 */
+    private static final int MAX_UI_SEGMENTS = 10;
 
     private static final int COLOR_WHITE = 0xFFFFFFFF;
 
@@ -80,7 +82,6 @@ public class BackpackCoordEditScreen extends Screen {
             int[] pos = this.values.get(i);
             final int index = i;
 
-            // ==== 描述文字（可能为 null，null 则不画） ====
             final Component labelComp = labelFor(index);
             if (labelComp != null) {
                 final int labelX = startX;
@@ -119,16 +120,34 @@ public class BackpackCoordEditScreen extends Screen {
         }
 
         int addY = this.height - 28;
-        this.addRenderableWidget(Button.builder(
-                Component.translatable("yyzsbackpack.config.add_pos"), b -> {
-                    collectValues();
-                    this.values.add(new int[]{0, 0});
-                    rebuild();
-                }).bounds(10, addY, 130, 20).build());
+
+        boolean isUi = (mode == EditMode.UI);
+        // UI 模式：每段占 2 个条目（目标位置 + 锚点），最多 MAX_UI_SEGMENTS 段
+        boolean canAdd = !isUi || this.values.size() < MAX_UI_SEGMENTS * 2;
+
+        Component addLabel = isUi
+                ? Component.translatable("yyzsbackpack.config.add_anchor")
+                : Component.translatable("yyzsbackpack.config.add_pos");
+
+        Button addBtn = Button.builder(addLabel, b -> {
+            collectValues();
+            this.values.add(new int[]{0, 0});
+            rebuild();
+        }).bounds(10, addY, 130, 20).build();
+        addBtn.active = canAdd;
+        this.addRenderableWidget(addBtn);
 
         this.addRenderableWidget(Button.builder(
                 Component.translatable("yyzsbackpack.config.done"), b -> {
                     collectValues();
+                    if (mode == EditMode.UI) {
+                        // 每一段的锚点百分比钳制到 0~100（index 1, 3, 5, ...）
+                        for (int i = 1; i < this.values.size(); i += 2) {
+                            int[] a = this.values.get(i);
+                            a[0] = Math.max(0, Math.min(100, a[0]));
+                            a[1] = Math.max(0, Math.min(100, a[1]));
+                        }
+                    }
                     onSave.accept(this.values);
                     if (this.minecraft != null) this.minecraft.gui.setScreen(parent);
                 }).bounds(this.width / 2 - 60, addY, 120, 20).build());
@@ -152,12 +171,6 @@ public class BackpackCoordEditScreen extends Screen {
         }
     }
 
-    /**
-     * 根据模式和行索引返回描述；返回 null 表示该行不显示描述。
-     * Control:  第 0 行 = 基础按钮，第 1 行 = 额外按钮，其余 null
-     * Offset:   第 0 行 = 配方书自动偏移，其余 null
-     * UI:       第 0 行 = 背包初始位置，其余 null
-     */
     private Component labelFor(int index) {
         return switch (mode) {
             case CONTROL -> {
@@ -165,12 +178,15 @@ public class BackpackCoordEditScreen extends Screen {
                 if (index == 1) yield Component.translatable("yyzsbackpack.config.group.extra");
                 yield null;
             }
-            case OFFSET -> index == 0
-                    ? Component.translatable("yyzsbackpack.config.group.offset")
-                    : null;
-            case UI -> index == 0
-                    ? Component.translatable("yyzsbackpack.config.group.ui")
-                    : null;
+            case OFFSET -> Component.translatable(
+                    "yyzsbackpack.config.group.offset_seg", index);
+            case UI -> {
+                int seg = index / 2;
+                boolean isAnchor = (index % 2) == 1;
+                yield isAnchor
+                        ? Component.translatable("yyzsbackpack.config.group.ui_anchor_seg", seg)
+                        : Component.translatable("yyzsbackpack.config.group.ui_target_seg", seg);
+            }
         };
     }
 

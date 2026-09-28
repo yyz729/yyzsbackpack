@@ -4,21 +4,9 @@
   "segments": [
     {
       "startSlot": 0,
-      "endSlot": 18,
-      "order": "DEFAULT",
-      "startX": -78,
-      "startY": 17,
-      "columns": 4,
-      "rows": 8,
-      "backgroundTexture": "yyzsbackpack:textures/gui/4x9backpack.png",
-      "backgroundX": -8,
-      "backgroundY": -17
-    },
-    {
-      "startSlot": 18,
       "endSlot": 36,
       "order": "DEFAULT",
-      "startX": -178,
+      "startX": -78,
       "startY": 17,
       "columns": 4,
       "rows": 8,

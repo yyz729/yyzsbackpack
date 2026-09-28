@@ -85,7 +85,13 @@
   "yyzsbackpack.config.group.extra": "额外按钮",
   "yyzsbackpack.config.group.offset": "配方书自动偏移",
   "yyzsbackpack.config.group.ui": "背包界面位置",
+  "yyzsbackpack.config.group.ui_anchor": "锚点（占 GUI 尺寸百分比）",
+  "yyzsbackpack.config.add_anchor": "添加锚点",
 
   "yyzsbackpack.config.x": "X",
-  "yyzsbackpack.config.y": "Y"
+  "yyzsbackpack.config.y": "Y",
+
+  "yyzsbackpack.config.group.offset_seg":       "偏移（段 %s）",
+  "yyzsbackpack.config.group.ui_target_seg":    "目标位置（段 %s）",
+  "yyzsbackpack.config.group.ui_anchor_seg":    "锚点（段 %s）"
 }

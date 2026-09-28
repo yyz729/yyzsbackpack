@@ -22,7 +22,8 @@
     "minecraft.container.inventory.InventoryMenuMixin",
     "minecraft.container.loom.LoomMenuMixin",
     "minecraft.container.merchant.MerchantMenuMixin",
-    "minecraft.container.mount.AbstractMountInventoryMenuMixin",
+    "minecraft.container.mount.HorseInventoryMenuMixin",
+    "minecraft.container.mount.NautilusInventoryMenuMixin",
     "minecraft.container.shulker.ShulkerBoxMenuMixin",
     "minecraft.container.stonecutter.StonecutterMenuMixin",
     "minecraft.data.PlayerMixin"

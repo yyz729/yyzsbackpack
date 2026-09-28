@@ -14,7 +14,7 @@ public class AbstractMountInventoryScreenMixin {
 
     @Inject(method = "extractBackground", at = @At("RETURN"))
     private void onExtractBackgroundReturn(CallbackInfo ci) {
-        BackpackScreenHelper.setupBackpackSlots((AbstractMountInventoryScreen) (Object) this);
+        BackpackScreenHelper.setupBackpackSlots((AbstractMountInventoryScreen<?>) (Object) this);
     }
 
 
@@ -27,10 +27,11 @@ public class AbstractMountInventoryScreenMixin {
             )
     )
     private void onExtractBackgroundInvoke(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((AbstractMountInventoryScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((AbstractMountInventoryScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((AbstractMountInventoryScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((AbstractMountInventoryScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((AbstractMountInventoryScreen) (Object) this);
+        AbstractMountInventoryScreen<?> mountInventoryScreen = (AbstractMountInventoryScreen<?>) (Object) this;
+        BackpackScreenHelper.addBackpackBackground(mountInventoryScreen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(mountInventoryScreen);
+        BackpackScreenHelper.addBackpackScrollbar(mountInventoryScreen);
+        BackpackScreenHelper.addBackpackTitle(mountInventoryScreen, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls(mountInventoryScreen);
     }
 }

@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "yyzsbackpack",
+	"version": "${version}",
+	"name": "Yyz's Backpack",
+	"description": "A new backpack mod may be more suitable for you",
+	"authors": [
+		"yyz729"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/yyzsbackpack",
+		"sources": "https://github.com/yyz729/yyzsbackpack"
+	},
+	"license": "MIT",
+	"icon": "assets/yyzsbackpack/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.yyz.yyzsbackpack.Backpack"
+		],
+		"client": [
+			"com.yyz.yyzsbackpack.BackpackClient"
+		]
+	},
+	"mixins": [
+		"yyzsbackpack.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "yyzsbackpack",
+  "pattern": [
+    "LIL",
+    "ICI",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "I": "minecraft:gold_ingot",
+    "C": "minecraft:ender_chest"
+  },
+  "result": {
+    "id": "yyzsbackpack:gold_backpack",
+    "count": 1
+  }
+}

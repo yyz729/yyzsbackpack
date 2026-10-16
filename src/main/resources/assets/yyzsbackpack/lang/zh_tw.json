@@ -1,0 +1,10 @@
+{
+  "item.yyzsbackpack.woolen_backpack": "木背包",
+  "item.yyzsbackpack.stone_backpack": "石背包",
+  "item.yyzsbackpack.iron_backpack": "鐵背包",
+  "item.yyzsbackpack.gold_backpack": "金背包",
+  "item.yyzsbackpack.diamond_backpack": "鑽石背包",
+  "item.yyzsbackpack.netherite_backpack": "獄髓背包",
+
+  "itemGroup.yyzsbackpack.title": "yyz's backpack"
+}

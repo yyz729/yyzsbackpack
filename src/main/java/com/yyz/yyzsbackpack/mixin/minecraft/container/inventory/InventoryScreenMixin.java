@@ -24,18 +24,18 @@ public abstract class InventoryScreenMixin implements IBackpackOffset, IBackpack
     public abstract RecipeBookComponent getRecipeBookComponent();
 
     @Override
-    public int yyzsbackpack$getBackpackOffsetX() {
+    public int yyzsbackpack$getBackpackOffsetX(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             InventoryScreen screen = (InventoryScreen) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetX(screen, segmentIndex);
         }
         return 0;
     }
     @Override
-    public int yyzsbackpack$getBackpackOffsetY() {
+    public int yyzsbackpack$getBackpackOffsetY(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             InventoryScreen screen = (InventoryScreen) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetY(screen, segmentIndex);
         }
         return 0;
     }

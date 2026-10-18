@@ -18,18 +18,18 @@ public abstract class AbstractFurnaceScreenMixin implements IBackpackOffset {
     public abstract RecipeBookComponent getRecipeBookComponent();
 
     @Override
-    public int yyzsbackpack$getBackpackOffsetX() {
+    public int yyzsbackpack$getBackpackOffsetX(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetX(screen, segmentIndex);
         }
         return 0;
     }
     @Override
-    public int yyzsbackpack$getBackpackOffsetY() {
+    public int yyzsbackpack$getBackpackOffsetY(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetY(screen, segmentIndex);
         }
         return 0;
     }

@@ -32,6 +32,16 @@ public class BackpackOffsetConfig {
         return INSTANCE;
     }
 
+    public static int[] offsetFor(Map<String, List<int[]>> map, String screenType, int segmentIndex) {
+        if (map == null) return new int[]{0, 0};
+        List<int[]> list = map.get(screenType);
+        if (list == null || list.isEmpty()) return new int[]{0, 0};
+        int idx = Math.max(0, Math.min(segmentIndex, list.size() - 1));
+        int[] v = list.get(idx);
+        if (v == null || v.length < 2) return new int[]{0, 0};
+        return new int[]{v[0], v[1]};
+    }
+
     public static void generateModDefaultConfig(String modId, Map<String, List<int[]>> defaultEntries) {
         Path offsetDir = FMLPaths.CONFIGDIR.get().resolve("yyzsbackpack/offset");
         File targetFile = offsetDir.resolve(modId + ".json").toFile();

@@ -254,7 +254,7 @@ public abstract class AbstractContainerScreenMixin extends Screen implements IBa
             return;
         }
 
-        if (button == 0 && hasAltDown() && hoveredSlot != null && !hoveredSlot.getItem().isEmpty()) {
+        if (hasAltDown() && hoveredSlot != null && !hoveredSlot.getItem().isEmpty()) {
             // 获取全局槽位索引
             int slotIndex = ((AbstractContainerScreen<?>) (Object) this).getMenu().slots.indexOf(hoveredSlot);
             if (slotIndex != -1) {

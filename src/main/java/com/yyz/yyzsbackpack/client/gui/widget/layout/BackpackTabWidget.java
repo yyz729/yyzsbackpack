@@ -38,7 +38,7 @@ public class BackpackTabWidget extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.isMouseOver(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             onSwitch.run();
             return true;
         }

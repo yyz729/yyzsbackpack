@@ -41,24 +41,13 @@ public abstract class CraftingScreenMixin implements IBackpackOffset, IBackpackS
     }
 
     @Inject(method = "renderBg", at = @At("RETURN"))
-    private void onExtractBackgroundReturn(CallbackInfo ci) {
-        BackpackScreenHelper.setupBackpackSlots((CraftingScreen) (Object) this);
-    }
-
-
-    @Inject(
-            method = "renderBg",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void onExtractBackgroundInvoke(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((CraftingScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((CraftingScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((CraftingScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((CraftingScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((CraftingScreen) (Object) this);
+    private void onExtractBackgroundReturn(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        CraftingScreen screen = (CraftingScreen) (Object) this;
+        BackpackScreenHelper.setupBackpackSlots(screen);
+        BackpackScreenHelper.addBackpackBackground(screen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(screen);
+        BackpackScreenHelper.addBackpackScrollbar(screen);
+        BackpackScreenHelper.addBackpackTitle(screen, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls(screen);
     }
 }

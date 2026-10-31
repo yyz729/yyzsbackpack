@@ -25,26 +25,17 @@ public abstract class ContainerScreenMixin extends AbstractContainerScreen<Chest
     }
 
     @Inject(method = "renderBg", at = @At("RETURN"))
-    private void onExtractBackgroundReturn(CallbackInfo ci) {
+    private void onExtractBackgroundReturn(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        ContainerScreen screen = (ContainerScreen)(Object)this;
         BackpackScreenHelper.setupBackpackSlots(this);
-    }
-
-
-    @Inject(
-            method = "renderBg",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void onExtractBackgroundInvoke(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((ContainerScreen) (Object)this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((ContainerScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((ContainerScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((ContainerScreen) (Object) this, graphics, partialTick);
+        BackpackScreenHelper.addBackpackBackground(screen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(screen);
+        BackpackScreenHelper.addBackpackScrollbar(screen);
+        BackpackScreenHelper.addBackpackTitle(screen, graphics, partialTick);
         int rows = this.menu.getRowCount();
         int extraYOffset = (rows - 3) * 18;
-        BackpackScreenHelper.addBackpackControls((ContainerScreen) (Object) this, extraYOffset);
+        BackpackScreenHelper.addBackpackControls(screen, extraYOffset);
     }
+
+    
 }

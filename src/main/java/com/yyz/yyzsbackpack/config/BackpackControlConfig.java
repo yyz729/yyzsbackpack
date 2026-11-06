@@ -41,23 +41,14 @@ public class BackpackControlConfig {
         put("HorseInventoryScreen",     Collections.singletonList(new int[]{139, 80}));
     }};
 
-    // ==== 运行期元信息（不序列化） ====
     private transient Map<String, File> sourceFiles = new HashMap<>();
     private transient File defaultFile;
     private transient File configDir;
 
-    /** 主 mod 应该通过这个拿实例，这样重载后自动是新数据。 */
     public static BackpackControlConfig getInstance() {
         return INSTANCE;
     }
 
-    /**
-     * 在 control 配置文件夹内生成一个以 modId 命名的默认配置文件。
-     * 如果文件已存在则跳过，不会覆盖用户或整合包的自定义内容。
-     *
-     * 如果 generate 发生在 loadConfig 之后（即其它兼容 mod 初始化较晚），
-     * 会把条目直接补进已加载的 INSTANCE，第一次启动就能生效。
-     */
     public static void generateModDefaultConfig(String modId, Map<String, List<int[]>> defaultEntries) {
         Path controlDir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control");
         File targetFile = controlDir.resolve(modId + ".json").toFile();
@@ -135,7 +126,6 @@ public class BackpackControlConfig {
         return config;
     }
 
-    /** 重新从磁盘加载，返回并替换 INSTANCE。 */
     public static BackpackControlConfig reload() {
         Path dir = FabricLoader.getInstance().getConfigDir().resolve("yyzsbackpack/control");
         return loadConfig(dir.toFile());
@@ -149,7 +139,6 @@ public class BackpackControlConfig {
         return this.configDir;
     }
 
-    /** 目录下所有 .json（字母序）。 */
     public List<File> getAllFiles() {
         List<File> result = new ArrayList<>();
         if (configDir != null && configDir.exists()) {
@@ -163,7 +152,6 @@ public class BackpackControlConfig {
         return result;
     }
 
-    /** 某个文件里包含的所有 key（按字母序）。 */
     public List<String> getKeysFromFile(File file) {
         if (file == null || !file.exists()) return Collections.emptyList();
         try {
@@ -178,7 +166,6 @@ public class BackpackControlConfig {
         }
     }
 
-    /** 从某个文件读 key 的值（拷贝一份）。 */
     public List<int[]> getValueFromFile(File file, String key) {
         List<int[]> copy = new ArrayList<>();
         if (file == null || !file.exists()) return copy;
@@ -194,7 +181,6 @@ public class BackpackControlConfig {
         return copy;
     }
 
-    /** 写回指定文件（保留文件内其它 key）。 */
     public void saveKeyTo(String key, List<int[]> values, File file) throws IOException {
         if (file == null) throw new IOException("null target file");
 

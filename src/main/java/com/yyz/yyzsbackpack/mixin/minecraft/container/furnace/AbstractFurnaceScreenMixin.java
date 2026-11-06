@@ -18,41 +18,30 @@ public abstract class AbstractFurnaceScreenMixin implements IBackpackOffset {
     public abstract RecipeBookComponent getRecipeBookComponent();
 
     @Override
-    public int yyzsbackpack$getBackpackOffsetX() {
+    public int yyzsbackpack$getBackpackOffsetX(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetX(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetX(screen, segmentIndex);
         }
         return 0;
     }
     @Override
-    public int yyzsbackpack$getBackpackOffsetY() {
+    public int yyzsbackpack$getBackpackOffsetY(int segmentIndex) {
         if (getRecipeBookComponent().isVisible()) {
             AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
-            return BackpackScreenHelper.getConfigOffsetY(screen, 0);
+            return BackpackScreenHelper.getConfigOffsetY(screen, segmentIndex);
         }
         return 0;
     }
 
     @Inject(method = "renderBg", at = @At("RETURN"))
-    private void onExtractBackgroundReturn(CallbackInfo ci) {
-        BackpackScreenHelper.setupBackpackSlots((AbstractFurnaceScreen) (Object) this);
-    }
-
-
-    @Inject(
-            method = "renderBg",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void onExtractBackgroundInvoke(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((AbstractFurnaceScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((AbstractFurnaceScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((AbstractFurnaceScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((AbstractFurnaceScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((AbstractFurnaceScreen) (Object) this);
+    private void onExtractBackgroundReturn(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        AbstractFurnaceScreen<?> screen = (AbstractFurnaceScreen<?>) (Object) this;
+        BackpackScreenHelper.setupBackpackSlots(screen);
+        BackpackScreenHelper.addBackpackBackground(screen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(screen);
+        BackpackScreenHelper.addBackpackScrollbar(screen);
+        BackpackScreenHelper.addBackpackTitle(screen, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls(screen);
     }
 }

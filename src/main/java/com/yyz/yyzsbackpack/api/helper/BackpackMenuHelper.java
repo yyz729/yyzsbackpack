@@ -348,11 +348,11 @@ public final class BackpackMenuHelper {
                 if (matchTypes.isEmpty()) return;
             }
 
-            boolean all = (mode == MoveMode.ALL);
-            boolean moved;
-            do {
-                moved = handler.transfer(menu, player, 0, 0, invStart, invEnd, false, all, matchTypes);
-            } while (moved);
+            boolean loop = (mode == MoveMode.ALL || mode == MoveMode.MATCHING);
+            boolean moved = handler.transfer(menu, player, 0, 0, invStart, invEnd, false, mode, matchTypes);
+            while (loop && moved) {
+                moved = handler.transfer(menu, player, 0, 0, invStart, invEnd, false, mode, matchTypes);
+            }
             return;
         }
 
@@ -404,11 +404,11 @@ public final class BackpackMenuHelper {
                 if (matchTypes.isEmpty()) return;
             }
 
-            boolean all = (mode == MoveMode.ALL);
-            boolean moved;
-            do {
-                moved = handler.transfer(menu, player, invStart, invEnd, 0, 0, true, all, matchTypes);
-            } while (moved);
+            boolean loop = (mode == MoveMode.ALL || mode == MoveMode.MATCHING);
+            boolean moved = handler.transfer(menu, player, invStart, invEnd, 0, 0, true, mode, matchTypes);
+            while (loop && moved) {
+                moved = handler.transfer(menu, player, invStart, invEnd, 0, 0, true, mode, matchTypes);
+            }
             return;
         }
 
@@ -468,11 +468,11 @@ public final class BackpackMenuHelper {
                 if (matchTypes.isEmpty()) return;
             }
 
-            boolean all = (mode == MoveMode.ALL);
-            boolean moved;
-            do {
-                moved = handler.transfer(menu, player, 0, 0, backpackStart, backpackEnd, false, all, matchTypes);
-            } while (moved);
+            boolean loop = (mode == MoveMode.ALL || mode == MoveMode.MATCHING);
+            boolean moved = handler.transfer(menu, player, 0, 0, backpackStart, backpackEnd, false, mode, matchTypes);
+            while (loop && moved) {
+                moved = handler.transfer(menu, player, 0, 0, backpackStart, backpackEnd, false, mode, matchTypes);
+            }
             return;
         }
 
@@ -525,11 +525,11 @@ public final class BackpackMenuHelper {
                 if (matchTypes.isEmpty()) return;
             }
 
-            boolean all = (mode == MoveMode.ALL);
-            boolean moved;
-            do {
-                moved = handler.transfer(menu, player, backpackStart, backpackEnd, 0, 0, true, all, matchTypes);
-            } while (moved);
+            boolean loop = (mode == MoveMode.ALL || mode == MoveMode.MATCHING);
+            boolean moved = handler.transfer(menu, player, backpackStart, backpackEnd, 0, 0, true, mode, matchTypes);
+            while (loop && moved) {
+                moved = handler.transfer(menu, player, backpackStart, backpackEnd, 0, 0, true, mode, matchTypes);
+            }
             return;
         }
 
@@ -845,17 +845,28 @@ public final class BackpackMenuHelper {
 
         IBackpackMenu backpackMenu = (IBackpackMenu) menu;
 
-        if (sourceSlot instanceof BackpackSlot) {
-            // 背包槽 → 快捷栏（物品栏 0-8）
-            int[] hotbarRange = findPlayerInventoryRange(menu, player);
-            if (hotbarRange == null) return;
+        // 保存移动前的副本，用于 onTake（不能复用 stack，因为 moveItemStackTo 会改它的 count）
+        ItemStack originalStack = stack.copy();
+        boolean moved = false;
 
-            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, hotbarRange[0], hotbarRange[1], true)) {
-                // 移动成功，更新源槽位
-                if (stack.isEmpty()) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.set(stack);
+        if (sourceSlot instanceof BackpackSlot) {
+            // 优先快捷栏 0~8
+            int[] hotbarRange = findHotbarRange(menu, player);
+            if (hotbarRange != null) {
+                if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                        stack, hotbarRange[0], hotbarRange[1], true)) {
+                    moved = true;
+                }
+            }
+
+            // 快捷栏没放完，再尝试主物品栏 9~35
+            if (!stack.isEmpty()) {
+                int[] mainRange = findInventoryMainRange(menu, player);
+                if (mainRange != null) {
+                    if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                            stack, mainRange[0], mainRange[1], true)) {
+                        moved = true;
+                    }
                 }
             }
         } else {
@@ -866,13 +877,17 @@ public final class BackpackMenuHelper {
             if (size <= 0) return;
             int backpackEnd = Math.min(backpackStart + size, menu.slots.size());
 
-            if (backpackMenu.yyzsbackpack$moveItemStackTo(stack, backpackStart, backpackEnd, false)) {
-                if (stack.isEmpty()) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.set(stack);
-                }
+            if (backpackMenu.yyzsbackpack$moveItemStackTo(
+                    stack, backpackStart, backpackEnd, false)) {
+                moved = true;
             }
         }
+
+        // 没有移动则不写回、不触发 onTake（对应原版“没动就不消耗”的语义）
+        if (!moved) return;
+
+        sourceSlot.setByPlayer(stack);
+        sourceSlot.setChanged();
+        sourceSlot.onTake(player, originalStack);
     }
 }

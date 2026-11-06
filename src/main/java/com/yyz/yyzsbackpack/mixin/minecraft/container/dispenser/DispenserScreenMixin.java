@@ -16,27 +16,16 @@ public class DispenserScreenMixin implements IBackpackScreen {
     public String yyzsbackpack$getScreenType() {
         return "DispenserScreen";
     }
-   
+
 
     @Inject(method = "renderBg", at = @At("RETURN"))
-    private void onExtractBackgroundReturn(CallbackInfo ci) {
-        BackpackScreenHelper.setupBackpackSlots((DispenserScreen) (Object) this);
-    }
-
-
-    @Inject(
-            method = "renderBg",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void onExtractBackgroundInvoke(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((DispenserScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((DispenserScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((DispenserScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((DispenserScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((DispenserScreen) (Object) this);
+    private void onExtractBackgroundReturn(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        DispenserScreen screen = (DispenserScreen)(Object)this;
+        BackpackScreenHelper.setupBackpackSlots(screen);
+        BackpackScreenHelper.addBackpackBackground(screen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(screen);
+        BackpackScreenHelper.addBackpackScrollbar(screen);
+        BackpackScreenHelper.addBackpackTitle(screen, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls(screen);
     }
 }

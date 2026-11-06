@@ -13,16 +13,13 @@ import java.nio.file.Path;
 public class BackpackMainConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** 全局读配置都从这里拿，reload 后自动变新。 */
     private static volatile BackpackMainConfig INSTANCE;
-    /** 记住加载时用的文件，reload 时不用再问外面。 */
     private static volatile File configFile;
 
     public boolean model = true;
     public int heavy = 2;
     public ButtonMode button = ButtonMode.SHOW;
 
-    /** 拿最新实例；如果还没加载过就先加载一次。 */
     public static BackpackMainConfig getInstance() {
         if (INSTANCE == null) {
             File f = (configFile != null)
@@ -60,7 +57,6 @@ public class BackpackMainConfig {
         return config;
     }
 
-    /** 从上次加载用的文件重新读一遍，替换 INSTANCE。 */
     public static BackpackMainConfig reload() {
         File f = configFile;
         if (f == null) {

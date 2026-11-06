@@ -16,27 +16,16 @@ public class BrewingStandScreenMixin implements IBackpackScreen {
     public String yyzsbackpack$getScreenType() {
         return "BrewingStandScreen";
     }
-   
+
 
     @Inject(method = "renderBg", at = @At("RETURN"))
-    private void onExtractBackgroundReturn(CallbackInfo ci) {
-        BackpackScreenHelper.setupBackpackSlots((BrewingStandScreen) (Object) this);
-    }
-
-
-    @Inject(
-            method = "renderBg",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void onExtractBackgroundInvoke(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        BackpackScreenHelper.addBackpackBackground((BrewingStandScreen) (Object) this, graphics, mouseX, mouseY, partialTick);
-        BackpackScreenHelper.addBackpackTabs((BrewingStandScreen) (Object) this);
-        BackpackScreenHelper.addBackpackScrollbar((BrewingStandScreen) (Object) this);
-        BackpackScreenHelper.addBackpackTitle((BrewingStandScreen) (Object) this, graphics, partialTick);
-        BackpackScreenHelper.addBackpackControls((BrewingStandScreen) (Object) this);
+    private void onExtractBackgroundReturn(GuiGraphics graphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
+        BrewingStandScreen screen = (BrewingStandScreen)(Object)this;
+        BackpackScreenHelper.setupBackpackSlots(screen);
+        BackpackScreenHelper.addBackpackBackground(screen, graphics, mouseX, mouseY, partialTick);
+        BackpackScreenHelper.addBackpackTabs(screen);
+        BackpackScreenHelper.addBackpackScrollbar(screen);
+        BackpackScreenHelper.addBackpackTitle(screen, graphics, partialTick);
+        BackpackScreenHelper.addBackpackControls(screen);
     }
 }

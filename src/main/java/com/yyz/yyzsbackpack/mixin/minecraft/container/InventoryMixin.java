@@ -1,19 +1,19 @@
 package com.yyz.yyzsbackpack.mixin.minecraft.container;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.yyz.yyzsbackpack.api.IBackpackSlot;
 import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.function.Predicate;
 
 @Mixin(Inventory.class)
 public abstract class InventoryMixin implements IExtendedInventory {
@@ -41,6 +43,12 @@ public abstract class InventoryMixin implements IExtendedInventory {
     private final NonNullList<ItemStack> extraItems = NonNullList.withSize(EXTRA_SLOT_COUNT, ItemStack.EMPTY);
 
     @Unique private final boolean[] extraSlotEnabled = new boolean[EXTRA_SLOT_COUNT];
+
+    /**
+     * syncToBackpack 写回外部槽位时，对方可能再次触发 setChanged，避免重入。
+     */
+    @Unique
+    private boolean yyzsbackpack$syncingToBackpack;
 
     @Override
     public void yyzsbackpack$enableExtraSlots(int count) {
@@ -87,10 +95,15 @@ public abstract class InventoryMixin implements IExtendedInventory {
 
     @Override
     public void yyzsbackpack$syncToBackpack() {
+        if (yyzsbackpack$syncingToBackpack) return;
+
         Inventory inv = (Inventory)(Object)this;
         Player player = inv.player;
+        if (player == null) return;
 
-        ItemStack equippedBackpack = BackpackSlotHelper.getSelectedBackpack(player);
+        IBackpackSlot slot = BackpackSlotHelper.getSelectedSlot(player);
+        if (slot == null) return;
+        ItemStack equippedBackpack = slot.getStack();
         if (!(equippedBackpack.getItem() instanceof BackpackItem)) return;
 
         boolean anyEnabled = false;
@@ -112,6 +125,29 @@ public abstract class InventoryMixin implements IExtendedInventory {
         }
         ItemContainerContents newContents = ItemContainerContents.fromItems(contentsList);
         equippedBackpack.set(DataComponents.CONTAINER, newContents);
+
+        // 背包在玩家物品栏里时，创造模式会把整条物品栈（含 CONTAINER）经 1~45 槽同步到服务端。
+        // 背包在饰品栏等外部槽时，原版创造包不覆盖这些槽，必须 setStack 写回，服务端才会保存。
+        if (!player.level().isClientSide() && !yyzsbackpack$isStackInInventory(inv, equippedBackpack)) {
+            yyzsbackpack$syncingToBackpack = true;
+            try {
+                // 用拷贝写回，避免饰品栏用引用相等判断“没变化”从而不落盘、不同步。
+                slot.setStack(equippedBackpack.copy());
+            } finally {
+                yyzsbackpack$syncingToBackpack = false;
+            }
+        }
+    }
+
+    @Unique
+    private static boolean yyzsbackpack$isStackInInventory(Inventory inv, ItemStack stack) {
+        int size = inv.getContainerSize();
+        for (int i = 0; i < size; i++) {
+            if (inv.getItem(i) == stack) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -130,7 +166,6 @@ public abstract class InventoryMixin implements IExtendedInventory {
         yyzsbackpack$syncFromBackpack(BackpackSlotHelper.getSelectedBackpack(player));
         inv.setChanged();
     }
-
 
     @Unique
     private int getExtraIndex(int slot) {

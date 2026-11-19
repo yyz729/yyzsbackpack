@@ -4,7 +4,6 @@ import com.yyz.yyzsbackpack.api.IBackpackScreen;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
-import com.yyz.yyzsbackpack.mixin.minecraft.accessor.ScreenAccessor;
 import com.yyz.yyzsbackpack.network.packets.control.QuickMoveC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -20,6 +19,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -116,6 +116,9 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
             if (slot == null || targetIndex >= 0) {
                 player.inventoryMenu.clicked(targetIndex, buttonNum, input, player);
                 player.inventoryMenu.broadcastChanges();
+                if (slot instanceof BackpackSlot && targetIndex >= 0) {
+                    yyzsbackpack$sendCreativeSlot(player, targetIndex);
+                }
                 ci.cancel();
                 return;
             }
@@ -126,6 +129,9 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
             if (targetIndex >= 0) {
                 player.inventoryMenu.clicked(targetIndex, buttonNum, input, player);
                 player.inventoryMenu.broadcastChanges();
+                // 饰品栏背包不在 1~45，监听器发出的创造槽包会被原版丢掉。
+                // 这里再显式发一次，服务端 mixin 会接收背包槽。
+                yyzsbackpack$sendCreativeSlot(player, targetIndex);
             }
             ci.cancel();
             return;
@@ -177,6 +183,14 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
             ClientPlayNetworking.send(new QuickMoveC2SPacket(targetIndex));
             cir.setReturnValue(true);
         }
+    }
+
+    @Unique
+    private static void yyzsbackpack$sendCreativeSlot(Player player, int slotIndex) {
+        if (Minecraft.getInstance().gameMode == null) return;
+        if (slotIndex < 0 || slotIndex >= player.inventoryMenu.slots.size()) return;
+        ItemStack stack = player.inventoryMenu.getSlot(slotIndex).getItem();
+        Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(stack, slotIndex);
     }
 
     @Unique

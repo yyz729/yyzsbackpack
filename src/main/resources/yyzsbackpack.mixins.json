@@ -26,7 +26,8 @@
     "minecraft.container.merchant.MerchantMenuMixin",
     "minecraft.container.shulker.ShulkerBoxMenuMixin",
     "minecraft.container.stonecutter.StonecutterMenuMixin",
-    "minecraft.data.PlayerMixin"
+    "minecraft.data.PlayerMixin",
+    "minecraft.network.ServerGamePacketListenerImplMixin"
   ],
   "client": [
     "minecraft.accessor.ScreenAccessor",

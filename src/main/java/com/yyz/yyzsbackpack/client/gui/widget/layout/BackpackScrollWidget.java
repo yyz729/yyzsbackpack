@@ -41,7 +41,7 @@ public class BackpackScrollWidget extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && this.isMouseOver(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             this.dragging = true;
             return true;
         }

@@ -987,9 +987,10 @@ public final class BackpackScreenHelper {
         int segmentIndex = BackpackScreenHelper.getSegmentAtPosition(screen, mouseX, mouseY);
         if (segmentIndex >= 0) {
             IBackpackScroll scrollable = (IBackpackScroll) screen;
-            int delta = (int) Math.signum(scrollY);
+            int delta = (int) Math.signum(scrollY != 0 ? scrollY : scrollX);
             int oldOffset = scrollable.yyzsbackpack$getSegmentScrollOffset(segmentIndex);
             scrollable.yyzsbackpack$setSegmentScrollOffset(segmentIndex, oldOffset - delta);
+            BackpackScreenHelper.setupBackpackSlots(screen);
             return true;
         }
 

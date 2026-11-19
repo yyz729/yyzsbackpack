@@ -10,6 +10,7 @@ import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
 import com.yyz.yyzsbackpack.client.gui.widget.control.BackpackSortButton;
+import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackScrollWidget;
 import com.yyz.yyzsbackpack.client.gui.widget.layout.BackpackTabWidget;
 import com.yyz.yyzsbackpack.data.BackpackData;
 import com.yyz.yyzsbackpack.inventory.BackpackSlot;
@@ -149,6 +150,26 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Override
     public void yyzsbackpack$setTabScrollOffset(int offset) {
         this.tabScrollOffset = Math.max(0, offset);
+    }
+
+    @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
+    private void yyzsbackpack$barDrag(MouseButtonEvent event, double dx, double dy, CallbackInfoReturnable<Boolean> cir) {
+        for (var child : ((AbstractContainerScreen<?>) (Object) this).children()) {
+            if (child instanceof BackpackScrollWidget bar && bar.isBarDragging()) {
+                cir.setReturnValue(bar.mouseDragged(event, dx, dy));
+                return;
+            }
+        }
+    }
+
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    private void yyzsbackpack$barRelease(MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir) {
+        for (var child : ((AbstractContainerScreen<?>) (Object) this).children()) {
+            if (child instanceof BackpackScrollWidget bar && bar.isBarDragging()) {
+                cir.setReturnValue(bar.mouseReleased(event));
+                return;
+            }
+        }
     }
 
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)

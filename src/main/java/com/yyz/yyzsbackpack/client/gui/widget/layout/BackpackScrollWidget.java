@@ -1,5 +1,6 @@
 package com.yyz.yyzsbackpack.client.gui.widget.layout;
 
+import com.yyz.yyzsbackpack.Backpack;
 import com.yyz.yyzsbackpack.api.IBackpackScroll;
 import com.yyz.yyzsbackpack.api.helper.BackpackScreenHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -7,11 +8,15 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 public class BackpackScrollWidget extends AbstractWidget {
+    private static final Identifier TRACK_SPRITE = Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "scrollbar_track");
+    private static final Identifier THUMB_SPRITE = Identifier.fromNamespaceAndPath(Backpack.MOD_ID, "scrollbar_thumb");
     private final AbstractContainerScreen<?> screen;
     private final IBackpackScroll scrollable;
     private final int segmentIndex;
@@ -34,18 +39,25 @@ public class BackpackScrollWidget extends AbstractWidget {
         if (maxScroll <= 0) return; // 无需滚动，不绘制
 
         // 半透明背景
-        graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80000000);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TRACK_SPRITE, this.getX(), this.getY(), this.width, this.height);
 
         int currentScroll = scrollable.yyzsbackpack$getSegmentScrollOffset(segmentIndex);
         float progress = (float) currentScroll / maxScroll;
         int sliderHeight = Math.max(10, this.height / (maxScroll + 1));
         int sliderY = this.getY() + (int) ((this.height - sliderHeight) * progress);
-        graphics.fill(this.getX(), sliderY, this.getX() + this.width, sliderY + sliderHeight, 0xFFFFFFFF);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, THUMB_SPRITE, this.getX(), sliderY, this.width, sliderHeight);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.active && this.visible
+                && mouseX >= this.getX() - 3 && mouseX < this.getX() + this.width + 3
+                && mouseY >= this.getY() && mouseY < this.getY() + this.height;
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && this.isMouseOver(event.x(), event.y())) {
+        if ((event.button() == 0 || event.button() == 1) && this.isMouseOver(event.x(), event.y())) {
             this.dragging = true;
             return true;
         }
@@ -79,6 +91,10 @@ public class BackpackScrollWidget extends AbstractWidget {
     @Override
     protected void updateWidgetNarration(@NotNull NarrationElementOutput output) {
         // 无需操作
+    }
+
+    public boolean isBarDragging() {
+        return this.dragging;
     }
 
     public int getSegmentIndex() {

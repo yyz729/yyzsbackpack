@@ -74,8 +74,17 @@ public final class BackpackSlotHelper {
      * 获取玩家当前选中的背包物品
      */
     public static ItemStack getSelectedBackpack(Player player) {
+        IBackpackSlot slot = getSelectedSlot(player);
+        return slot == null ? ItemStack.EMPTY : slot.getStack();
+    }
+
+    /**
+     * 获取玩家当前选中的背包槽位。
+     * 返回的是提供者槽位本身，调用方可以 setStack 写回（饰品栏等外部槽位必须写回才会保存）。
+     */
+    public static IBackpackSlot getSelectedSlot(Player player) {
         List<IBackpackSlot> slots = getAllBackpackSlots(player);
-        if (slots.isEmpty()) return ItemStack.EMPTY;
+        if (slots.isEmpty()) return null;
 
         int idx = getSelectedIndex(player);
         if (idx < 0 || idx >= slots.size()) {
@@ -101,7 +110,7 @@ public final class BackpackSlotHelper {
                     BackpackIdComponent idComp = stack.get(ModComponents.BACKPACK_ID);
                     if (idComp != null && expectedUUID.equals(idComp.id().toString())) {
                         setSelectedIndex(player, i);
-                        return stack;
+                        return slots.get(i);
                     }
                 }
             }
@@ -110,7 +119,7 @@ public final class BackpackSlotHelper {
             ((IBackpackData) player).yyzsbackpack$setSelectedBackpackUuid(currentUUID);
         }
 
-        return slots.get(idx).getStack();
+        return slots.get(idx);
     }
 
     /**

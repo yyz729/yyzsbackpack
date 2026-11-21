@@ -21,6 +21,7 @@ public class BackpackMainConfig {
     public boolean model = true;
     public int heavy = 2;
     public ButtonMode button = ButtonMode.SHOW;
+    public boolean preferBackpackPickup = false;
 
     /** 拿最新实例；如果还没加载过就先加载一次。 */
     public static BackpackMainConfig getInstance() {

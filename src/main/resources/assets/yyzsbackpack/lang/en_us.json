@@ -78,6 +78,7 @@
   "yyzsbackpack.config.button_mode.show": "Show",
   "yyzsbackpack.config.button_mode.hide": "Hide",
   "yyzsbackpack.config.button_mode.auto": "Auto",
+  "yyzsbackpack.config.prefer_pickup": "Prefer Backpack Pickup: %s",
   "yyzsbackpack.config.on": "ON",
   "yyzsbackpack.config.off": "OFF",
 

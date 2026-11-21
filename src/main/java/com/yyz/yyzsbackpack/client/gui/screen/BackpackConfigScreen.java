@@ -6,6 +6,7 @@ import com.yyz.yyzsbackpack.config.BackpackControlConfig;
 import com.yyz.yyzsbackpack.config.BackpackMainConfig;
 import com.yyz.yyzsbackpack.config.BackpackOffsetConfig;
 import com.yyz.yyzsbackpack.config.BackpackUiConfig;
+import com.yyz.yyzsbackpack.network.packets.data.PreferBackpackConfigC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.io.File;
 import java.io.IOException;
@@ -196,6 +198,15 @@ public class BackpackConfigScreen extends Screen {
                     mainConfig.button = modes[(mainConfig.button.ordinal() + 1) % modes.length];
                     b.setMessage(buttonModeLabel());
                 }).bounds(centerX - w / 2, y, w, 20).build());
+        y += 28;
+
+        this.addRenderableWidget(Button.builder(
+                pickupLabel(), b -> {
+                    mainConfig.preferBackpackPickup = !mainConfig.preferBackpackPickup;
+                    b.setMessage(pickupLabel());
+                    PacketDistributor.sendToServer(
+                            new PreferBackpackConfigC2SPacket(BackpackMainConfig.getInstance().preferBackpackPickup));
+                }).bounds(centerX - w / 2, y, w, 20).build());
     }
 
     private Component modelLabel() {
@@ -208,6 +219,12 @@ public class BackpackConfigScreen extends Screen {
         Component mode = Component.translatable(
                 "yyzsbackpack.config.button_mode." + mainConfig.button.name().toLowerCase());
         return Component.translatable("yyzsbackpack.config.button_mode", mode);
+    }
+
+    private Component pickupLabel() {
+        Component state = Component.translatable(mainConfig.preferBackpackPickup
+                ? "yyzsbackpack.config.on" : "yyzsbackpack.config.off");
+        return Component.translatable("yyzsbackpack.config.prefer_pickup", state);
     }
 
     // ==================== 文件列表 ====================

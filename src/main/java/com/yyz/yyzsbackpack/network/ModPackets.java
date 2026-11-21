@@ -5,6 +5,7 @@ import com.yyz.yyzsbackpack.network.handler.ClientPacketHandler;
 import com.yyz.yyzsbackpack.network.handler.ServerPacketHandler;
 import com.yyz.yyzsbackpack.network.packets.control.*;
 import com.yyz.yyzsbackpack.network.packets.data.BackpackDataSyncS2CPacket;
+import com.yyz.yyzsbackpack.network.packets.data.PreferBackpackConfigC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,6 +29,12 @@ public class ModPackets {
                 SwitchBackpackC2SPacket.ID,
                 SwitchBackpackC2SPacket.CODEC,
                 ServerPacketHandler::handleSwitchBackpack
+        );
+
+        registrar.playToServer(
+                PreferBackpackConfigC2SPacket.ID,
+                PreferBackpackConfigC2SPacket.CODEC,
+                ServerPacketHandler::handlePreferBackpackConfig
         );
 
         registrar.playToServer(

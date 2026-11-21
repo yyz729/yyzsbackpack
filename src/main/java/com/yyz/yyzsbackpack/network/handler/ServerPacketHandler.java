@@ -5,7 +5,9 @@ import com.yyz.yyzsbackpack.api.IExtendedInventory;
 import com.yyz.yyzsbackpack.api.helper.BackpackMenuHelper;
 import com.yyz.yyzsbackpack.api.helper.BackpackSlotHelper;
 import com.yyz.yyzsbackpack.api.util.SortAlgorithms;
+import com.yyz.yyzsbackpack.network.PickupPrefs;
 import com.yyz.yyzsbackpack.network.packets.control.*;
+import com.yyz.yyzsbackpack.network.packets.data.PreferBackpackConfigC2SPacket;
 import com.yyz.yyzsbackpack.network.packets.data.SwitchBackpackC2SPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -36,6 +38,12 @@ public class ServerPacketHandler {
             if (player instanceof IBackpackData data) {
                 data.yyzsbackpack$setSyncedBackpack(selected);
             }
+        });
+    }
+
+    public static void handlePreferBackpackConfig(PreferBackpackConfigC2SPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            PickupPrefs.set(context.player().getUUID(), packet.prefer());
         });
     }
 

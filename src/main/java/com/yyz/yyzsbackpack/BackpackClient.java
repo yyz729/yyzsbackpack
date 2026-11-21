@@ -2,10 +2,11 @@ package com.yyz.yyzsbackpack;
 
 import com.yyz.yyzsbackpack.client.gui.screen.BackpackConfigScreen;
 import com.yyz.yyzsbackpack.client.key.BackpackKeyBinding;
+import com.yyz.yyzsbackpack.config.BackpackMainConfig;
 import com.yyz.yyzsbackpack.data.ColorDataLoaderClient;
 import com.yyz.yyzsbackpack.data.BackpackDataLoaderClient;
 import com.yyz.yyzsbackpack.item.BackpackItem;
-import com.yyz.yyzsbackpack.item.ModItems;
+import com.yyz.yyzsbackpack.network.packets.data.PreferBackpackConfigC2SPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -16,10 +17,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,12 @@ import java.util.List;
 public class BackpackClient {
     public BackpackClient(ModContainer container) {
 
+    }
+
+    @SubscribeEvent
+    public static void onJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        PacketDistributor.sendToServer(
+                new PreferBackpackConfigC2SPacket(BackpackMainConfig.getInstance().preferBackpackPickup));
     }
 
     @SubscribeEvent

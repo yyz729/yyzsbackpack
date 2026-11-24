@@ -15,8 +15,9 @@ import java.util.List;
 
 public class BackpackSortButton extends Button {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack_buttons.png");
-    private static final int U_BASE = 80;
-    private static final int HOVER_OFFSET = 10;
+    private static final int X = 6;
+    private static final int U_BASE = 12*X;
+    private static final int HOVER_OFFSET = 1*X;
 
     private static int currentAlgorithmIndex = 0;
     private static final int ALGORITHM_COUNT = SortAlgorithms.NAMES.length;
@@ -35,12 +36,11 @@ public class BackpackSortButton extends Button {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        int u = U_BASE + 3;
-        int v = 3;
+        int u = U_BASE;
         if (this.isHovered()) {
             u += HOVER_OFFSET;
         }
-        graphics.blit(TEXTURE, this.getX(), this.getY(), u, v, 6, 6, 256, 256);
+        graphics.blit(TEXTURE, this.getX(), this.getY(), u, 0, 6, 6, 192, 192);
 
         if (this.isHovered()) {
             String algoName = SortAlgorithms.NAMES[currentAlgorithmIndex];

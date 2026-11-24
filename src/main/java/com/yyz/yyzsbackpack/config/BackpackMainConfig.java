@@ -3,7 +3,9 @@ package com.yyz.yyzsbackpack.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.yyz.yyzsbackpack.api.enums.ButtonMode;
+import com.yyz.yyzsbackpack.network.packets.data.PreferBackpackConfigC2SPacket;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +23,7 @@ public class BackpackMainConfig {
     public boolean model = true;
     public int heavy = 2;
     public ButtonMode button = ButtonMode.SHOW;
-    public boolean preferBackpackPickup = false;
+    private boolean preferBackpackPickup = false;
 
     /** 拿最新实例；如果还没加载过就先加载一次。 */
     public static BackpackMainConfig getInstance() {
@@ -87,5 +89,15 @@ public class BackpackMainConfig {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save config", e);
         }
+    }
+
+    public boolean prefersBackpackPickup() {
+        return preferBackpackPickup;
+    }
+
+    public void setBackpackPickupPreference(boolean preferBackpackPickup) {
+        this.preferBackpackPickup = preferBackpackPickup;
+        PacketDistributor.sendToServer(
+                new PreferBackpackConfigC2SPacket(BackpackMainConfig.getInstance().prefersBackpackPickup()));
     }
 }

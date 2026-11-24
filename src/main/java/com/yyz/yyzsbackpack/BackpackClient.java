@@ -33,7 +33,7 @@ public class BackpackClient {
     @SubscribeEvent
     public static void onJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         PacketDistributor.sendToServer(
-                new PreferBackpackConfigC2SPacket(BackpackMainConfig.getInstance().preferBackpackPickup));
+                new PreferBackpackConfigC2SPacket(BackpackMainConfig.getInstance().prefersBackpackPickup()));
     }
 
     @SubscribeEvent

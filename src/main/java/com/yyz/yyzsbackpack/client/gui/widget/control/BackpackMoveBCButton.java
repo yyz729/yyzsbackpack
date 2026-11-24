@@ -15,8 +15,9 @@ import java.util.List;
 
 public class BackpackMoveBCButton extends Button {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Backpack.MOD_ID, "textures/gui/backpack_buttons.png");
-    private static final int U_BASE = 50;
-    private static final int HOVER_OFFSET = 20;
+    private static final int X = 6;
+    private static final int U_BASE = 9*X;
+    private static final int HOVER_OFFSET = 2*X;
 
     public BackpackMoveBCButton(int x, int y) {
         super(x, y, 6, 6, Component.empty(), btn -> {}, DEFAULT_NARRATION);
@@ -24,13 +25,12 @@ public class BackpackMoveBCButton extends Button {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        int u = U_BASE + 3;
-        int v = 3;
+        int u = U_BASE;
         if (this.isHovered()) {
             u += HOVER_OFFSET;
         }
         // 绘制按钮纹理，纹理尺寸为256x256
-        graphics.blit(TEXTURE, this.getX(), this.getY(), u, v, 6, 6, 256, 256);
+        graphics.blit(TEXTURE, this.getX(), this.getY(), u, 0, 6, 6, 192, 192);
 
         if (this.isHovered()) {
             List<Component> tooltip = List.of(

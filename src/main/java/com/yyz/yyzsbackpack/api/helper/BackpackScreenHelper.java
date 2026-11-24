@@ -885,12 +885,12 @@ public final class BackpackScreenHelper {
     }
 
     public static void addBackpackVisibleButton(AbstractContainerScreen<?> screen, int x, int y) {
-        Optional<BackpackVisibleButton> existing = screen.children().stream()
-                .filter(w -> w instanceof BackpackVisibleButton)
-                .map(w -> (BackpackVisibleButton) w)
+        Optional<BackpackVisiblePickupButton> existing = screen.children().stream()
+                .filter(w -> w instanceof BackpackVisiblePickupButton)
+                .map(w -> (BackpackVisiblePickupButton) w)
                 .findFirst();
         if (existing.isPresent()) { existing.get().setPosition(x, y); }
-        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackVisibleButton(x, y, (IBackpackVisible) screen)); }
+        else { ((ScreenInvoker) screen).invokeAddRenderableWidget(new BackpackVisiblePickupButton(x, y, (IBackpackVisible) screen)); }
     }
 
     public static void addBackpackControls(AbstractContainerScreen<?> screen) { addBackpackControls(screen, 0); }
@@ -952,7 +952,7 @@ public final class BackpackScreenHelper {
 
     private static void removeAllBackpackControlButtons(AbstractContainerScreen<?> screen) {
         List<Class<?>> buttonClasses = List.of(
-                BackpackVisibleButton.class, BackpackSortButton.class,
+                BackpackVisiblePickupButton.class, BackpackSortButton.class,
                 BackpackMoveBIButton.class, BackpackMoveIBButton.class,
                 BackpackMoveBCButton.class, BackpackMoveCBButton.class,
                 BackpackMoveICButton.class, BackpackMoveCIButton.class);

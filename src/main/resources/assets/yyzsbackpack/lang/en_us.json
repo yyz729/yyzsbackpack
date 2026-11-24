@@ -13,6 +13,9 @@
 
   "itemGroup.yyzsbackpack.title": "yyz's Backpack",
 
+  "yyzsbackpack.button.visiblepickup.line1": "§5Click§r: %s Backpack GUI",
+  "yyzsbackpack.button.visiblepickup.line2": "§5Shift+Click§r: %s Backpack Auto-Pickup",
+
   "yyzsbackpack.button.moveib.line1": "§5Click§r: Move matching items from inventory to backpack",
   "yyzsbackpack.button.moveib.line2": "§5Shift+Click§r: Move all items from inventory to backpack",
   "yyzsbackpack.button.moveib.line3": "§5Alt+Click§r: Fill matching items from inventory to backpack",
@@ -55,9 +58,6 @@
   "sort.algorithm.id": "By ID",
   "sort.algorithm.count": "By Count",
   "sort.algorithm.mod": "By Mod",
-
-  "yyzsbackpack.button.hide": "Hide Backpack GUI",
-  "yyzsbackpack.button.show": "Show Backpack GUI",
 
   "yyzsbackpack.config.title": "Backpack Config",
 

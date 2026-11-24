@@ -196,6 +196,7 @@ public class BackpackConfigScreen extends Screen {
                     mainConfig.button = modes[(mainConfig.button.ordinal() + 1) % modes.length];
                     b.setMessage(buttonModeLabel());
                 }).bounds(centerX - w / 2, y, w, 20).build());
+        y += 28;
     }
 
     private Component modelLabel() {
